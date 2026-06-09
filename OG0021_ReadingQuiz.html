@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milo and the Lost Color – Reading Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'ABeeZee', sans-serif;
+  background: #F5F3FF;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Screen System ────────────────────────────────────── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── Admin (Gear) ─────────────────────────────────────── */
+#admin-btn {
+  position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,.9); border: 2px solid #C4B5FD;
+  font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s;
+}
+#admin-btn:hover { transform: rotate(30deg); }
+#admin-panel {
+  display: none; position: fixed; bottom: 74px; right: 20px; z-index: 999;
+  background: white; border-radius: 16px; padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.15); min-width: 260px;
+  border: 2px solid #EDE9FE;
+}
+#admin-panel.open { display: block; }
+#admin-panel h3 { font-family:'Nunito',sans-serif; font-size:14px; color:#7C3AED; margin:0 0 14px; }
+#admin-panel label { font-size:12px; color:#6B7280; display:block; margin-bottom:6px; }
+#admin-panel input[type=file] { width:100%; font-size:12px; }
+.admin-divider { border:none; border-top:1px solid #EDE9FE; margin:14px 0; }
+.admin-action-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 10px 14px; border-radius: 10px; border: 2px solid #EDE9FE;
+  background: #F5F3FF; color: #7C3AED; cursor: pointer;
+  font-family:'Nunito',sans-serif; font-weight:800; font-size:13px;
+  text-decoration: none; transition: background .15s;
+}
+.admin-action-btn:hover { background: #EDE9FE; }
+
+/* ── Progress Dots ────────────────────────────────────── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  padding: 10px 0 8px;
+  display: none; justify-content: center; gap: 10px;
+  border-bottom: 2px solid #EDE9FE;
+}
+#progress-bar.show { display: flex; }
+.dot {
+  width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid #C4B5FD;
+  background: white; font-family:'Nunito',sans-serif; font-weight:800;
+  font-size: 13px; color: #7C3AED; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.dot.done { background: #7C3AED; border-color:#7C3AED; color:white; }
+.dot.active { background: #EDE9FE; border-color:#7C3AED; transform:scale(1.15); }
+
+/* ── Cover Page ───────────────────────────────────────── */
+#screen-cover {
+  background: linear-gradient(160deg, #F3EEFF, #EAF4FF, #FFF0F7);
+  align-items: center; justify-content: center; padding: 36px 20px;
+}
+.cover-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  max-width: 560px; width: 100%;
+}
+.cover-img-wrap {
+  width: 100%; max-width: 520px; border-radius: 24px;
+  overflow: hidden; box-shadow: 0 16px 48px rgba(124,58,237,.18);
+}
+.cover-img-wrap img { width: 100%; height: auto; display: block; }
+.cover-img-fallback {
+  display: none; width: 100%; height: 200px;
+  background: linear-gradient(135deg,#C4B5FD,#F9A8D4);
+  align-items: center; justify-content: center;
+  font-size: 72px;
+}
+.cover-title {
+  font-family: 'Nunito', sans-serif; font-size: clamp(22px,5vw,32px);
+  font-weight: 900; color: #7C3AED; text-align: center;
+  letter-spacing: .3px;
+}
+.btn-start {
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: 22px; padding: 16px 52px; border-radius: 50px;
+  background: linear-gradient(135deg, #7C3AED, #A78BFA);
+  color: white; border: none; cursor: pointer;
+  box-shadow: 0 8px 28px rgba(124,58,237,.35);
+  transition: all .2s; letter-spacing: .3px;
+}
+.btn-start:hover { transform: translateY(-3px) scale(1.05); }
+
+/* ── Question Screen ──────────────────────────────────── */
+.q-screen {
+  padding: 76px 16px 40px;
+  align-items: center; justify-content: flex-start;
+}
+.q-card {
+  background: white; border-radius: 28px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  padding: 28px 22px; width: 100%; max-width: 640px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.q-header { display: flex; align-items: center; gap: 12px; }
+.q-num-badge {
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:17px;
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: white;
+}
+.q-instruction { font-size: 17px; font-weight: 700; color: #374151; line-height: 1.5; }
+.q-type-tag {
+  margin-left: auto; font-size: 11px; padding: 4px 10px;
+  border-radius: 50px; white-space: nowrap; color: white; flex-shrink: 0;
+}
+
+/* ── Feedback Banner ──────────────────────────────────── */
+.feedback-banner {
+  display: none; border-radius: 16px; padding: 14px 18px;
+  font-size: 15px; font-weight: 600; text-align: center; line-height: 1.4;
+}
+.feedback-banner.show { display: block; }
+.feedback-banner.correct { background: #D1FAE5; color: #065F46; border: 2px solid #6EE7B7; }
+.feedback-banner.wrong   { background: #FEE2E2; color: #991B1B; border: 2px solid #FCA5A5; }
+
+/* ── Navigation Row ───────────────────────────────────── */
+.nav-row { display: flex; justify-content: center; gap: 12px; margin-top: 4px; }
+.btn-check, .btn-next {
+  font-family: 'Nunito', sans-serif; font-weight: 800;
+  border: none; border-radius: 50px; cursor: pointer;
+  padding: 12px 34px; font-size: 16px; transition: all .2s;
+}
+.btn-check { background: #7C3AED; color: white; }
+.btn-check:disabled { opacity: .42; cursor: default; }
+.btn-check:not(:disabled):hover { background: #6D28D9; transform: translateY(-2px); }
+.btn-next { background: #EDE9FE; color: #7C3AED; display: none; }
+.btn-next.show { display: block; }
+.btn-next:hover { background: #DDD6FE; }
+.btn-retry { background: #EDE9FE; color: #7C3AED; border: none; display: none;
+  font-family: 'Nunito', sans-serif; font-weight: 800;
+  border-radius: 50px; padding: 12px 34px; font-size: 16px; cursor: pointer; transition: all .2s; }
+.btn-retry.show { display: block; }
+.btn-retry:hover { background: #DDD6FE; }
+
+/* ── Q1: Sequencing ──────────────────────────────────── */
+.seq-answer-zone {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  min-height: 108px; padding: 12px; background: #F5F3FF;
+  border-radius: 20px; border: 2px dashed #C4B5FD;
+}
+.seq-slot {
+  width: 92px; height: 92px; border-radius: 14px;
+  border: 2.5px dashed #C4B5FD; background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; position: relative; transition: all .2s; flex-shrink: 0;
+}
+.seq-slot.drag-over { background: #EDE9FE; border-color: #7C3AED; transform: scale(1.05); }
+.seq-slot.filled { border-style: solid; border-color: #A78BFA; overflow: hidden; }
+.pos-label {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #7C3AED; color: white;
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:10px;
+  display: flex; align-items: center; justify-content: center; z-index: 2;
+}
+.seq-slot img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+.slot-placeholder { display:flex; align-items:center; justify-content:center; width:100%; height:100%; border-radius:10px; font-size:22px; }
+
+.seq-bank-zone {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  padding: 12px; background: #FFFBEB; border-radius: 20px; border: 2px solid #FDE68A;
+}
+.seq-item {
+  width: 92px; height: 92px; border-radius: 14px;
+  cursor: grab; overflow: hidden; position: relative;
+  border: 2.5px solid transparent; transition: all .2s; flex-shrink: 0;
+}
+.seq-item:hover { transform: scale(1.06); border-color: #A78BFA; }
+.seq-item.dragging { opacity: .35; }
+.seq-item img { width:100%; height:100%; object-fit:cover; pointer-events:none; -webkit-user-drag:none; }
+.scene-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:22px; pointer-events:none; }
+
+/* ── Q2: Audio ───────────────────────────────────────── */
+.audio-section {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px;
+}
+.audio-play-btn {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #FB923C, #FBBF24);
+  border: none; cursor: pointer; font-size: 22px; color: white;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(251,146,60,.4); transition: all .2s;
+}
+.audio-play-btn:hover { transform: scale(1.08); }
+.audio-play-btn.playing {
+  background: linear-gradient(135deg, #F87171, #FB923C);
+  animation: pulse .8s ease-in-out infinite alternate;
+}
+@keyframes pulse {
+  from { box-shadow: 0 8px 24px rgba(248,113,113,.4); }
+  to   { box-shadow: 0 8px 40px rgba(248,113,113,.7); transform: scale(1.06); }
+}
+.audio-label { font-size: 14px; color: #9CA3AF; }
+.audio-error { font-size: 12px; color: #EF4444; display: none; margin-top: 4px; }
+
+.img-mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.img-mcq-opt {
+  border-radius: 16px; overflow: hidden; cursor: pointer;
+  border: 3px solid transparent; transition: all .2s;
+  aspect-ratio: 3/2; position: relative;
+}
+.img-mcq-opt:hover  { border-color: #A78BFA; transform: scale(1.03); }
+.img-mcq-opt.selected    { border-color: #7C3AED; box-shadow: 0 0 0 3px #C4B5FD; }
+.img-mcq-opt.correct-ans { border-color: #10B981; box-shadow: 0 0 0 3px #A7F3D0; }
+.img-mcq-opt.wrong-ans   { border-color: #EF4444; box-shadow: 0 0 0 3px #FCA5A5; }
+.img-mcq-opt img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:28px; }
+
+/* ── Q3: Unscramble ──────────────────────────────────── */
+.unscrm-answer-zone {
+  min-height: 66px; padding: 12px 16px;
+  background: #F5F3FF; border-radius: 20px; border: 2px dashed #C4B5FD;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center;
+}
+.placeholder-hint { color: #9CA3AF; font-size: 14px; font-style: italic; pointer-events: none; width: 100%; text-align: center; }
+.word-bank {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  padding: 14px; background: #FFFBEB; border-radius: 20px; border: 2px solid #FDE68A;
+}
+.word-chip {
+  background: white; border: 2.5px solid #FCD34D; border-radius: 50px;
+  padding: 8px 18px; font-size: 16px; cursor: grab; transition: all .2s;
+  user-select: none; box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
+.word-chip:hover { border-color: #F59E0B; transform: translateY(-2px); }
+.word-chip.dragging { opacity: .35; }
+.word-chip.in-answer { background: #EDE9FE; border-color: #A78BFA; cursor: pointer; }
+
+/* ── Text MCQ ─────────────────────────────────────────── */
+.text-mcq-list { display: flex; flex-direction: column; gap: 10px; }
+.text-mcq-opt {
+  padding: 13px 16px; border-radius: 16px; border: 2.5px solid #E5E7EB;
+  background: white; cursor: pointer; font-size: 15px; transition: all .2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.text-mcq-opt:hover  { border-color: #A78BFA; background: #F5F3FF; }
+.text-mcq-opt.selected    { border-color: #7C3AED; background: #EDE9FE; }
+.text-mcq-opt.correct-ans { border-color: #10B981; background: #ECFDF5; }
+.text-mcq-opt.wrong-ans   { border-color: #EF4444; background: #FEF2F2; }
+.opt-circle {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid #D1D5DB; display: flex; align-items: center; justify-content: center;
+  font-family:'Nunito',sans-serif; font-weight:800; font-size:12px; color:#6B7280;
+}
+.text-mcq-opt.selected    .opt-circle { background: #7C3AED; border-color:#7C3AED; color:white; }
+.text-mcq-opt.correct-ans .opt-circle { background: #10B981; border-color:#10B981; color:white; }
+.text-mcq-opt.wrong-ans   .opt-circle { background: #EF4444; border-color:#EF4444; color:white; }
+
+/* ── Scene strip (Q6) ────────────────────────────────── */
+.scene-strip { display: flex; justify-content: center; }
+.scene-thumb {
+  width: 140px; height: 100px; border-radius: 16px;
+  overflow: hidden; border: 2.5px solid #E5E7EB;
+}
+.scene-thumb img { width:100%; height:100%; object-fit:cover; }
+.scene-thumb .ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:28px; }
+
+/* ── Student Results ──────────────────────────────────── */
+#screen-student {
+  background: linear-gradient(160deg, #EDE9FE, #DBEAFE 60%);
+  align-items: center; justify-content: center; padding: 40px 20px;
+}
+.student-card {
+  background: white; border-radius: 32px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.1);
+  padding: 36px 28px; max-width: 460px; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+}
+.student-title {
+  font-family:'Nunito',sans-serif; font-weight:900;
+  font-size: clamp(20px,5vw,28px); color: #7C3AED; text-align: center;
+}
+.student-praise {
+  font-size: 15px; color: #374151; text-align: center;
+  background: #F5F3FF; border-radius: 16px; padding: 14px 18px; line-height: 1.65;
+  white-space: pre-line;
+}
+.ox-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; width: 100%;
+}
+.ox-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 12px 6px; border-radius: 14px; background: #F9FAFB; border: 2px solid #E5E7EB;
+}
+.ox-cell .q-label { font-family:'Nunito',sans-serif; font-weight:800; font-size:13px; color:#6B7280; }
+.ox-symbol {
+  font-size: 0; line-height: 1;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.ox-symbol.o {
+  background: #ECFDF5; border: 3px solid #34D399;
+  box-shadow: 0 2px 8px rgba(52,211,153,.25);
+}
+.ox-symbol.o::after {
+  content: ''; display: block;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 3.5px solid #10B981;
+}
+.ox-symbol.x {
+  background: #FEF2F2; border: 3px solid #F87171;
+  box-shadow: 0 2px 8px rgba(248,113,113,.25);
+}
+.ox-symbol.x::before, .ox-symbol.x::after {
+  content: ''; position: absolute;
+  width: 18px; height: 3.5px; border-radius: 2px; background: #EF4444;
+}
+.ox-symbol.x { position: relative; }
+.ox-symbol.x::before { transform: rotate(45deg); }
+.ox-symbol.x::after  { transform: rotate(-45deg); }
+.btn-parent-view {
+  font-family:'Nunito',sans-serif; font-weight:800;
+  padding: 12px 36px; border-radius: 50px; font-size:15px;
+  background: #F3F4F6; color: #374151; border: 2px solid #E5E7EB; cursor: pointer; transition: all .2s;
+}
+.btn-parent-view:hover { background: #E5E7EB; }
+.btn-again {
+  font-family:'Nunito',sans-serif; font-weight:800;
+  padding: 12px 36px; border-radius: 50px; font-size:15px;
+  background: #7C3AED; color: white; border: none; cursor: pointer; transition: all .2s;
+}
+.btn-again:hover { background: #6D28D9; transform: translateY(-2px); }
+
+/* ── Parent Results ──────────────────────────────────── */
+#screen-parent {
+  background: linear-gradient(160deg, #FFF7ED, #FFFBEB 60%);
+  align-items: center; justify-content: flex-start; padding: 40px 16px;
+}
+.parent-card {
+  background: white; border-radius: 28px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  padding: 28px 22px; max-width: 640px; width: 100%;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.parent-title {
+  font-family:'Nunito',sans-serif; font-weight:900;
+  font-size: 22px; color: #92400E;
+  border-bottom: 2px solid #FDE68A; padding-bottom: 12px;
+}
+.parent-score-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.parent-score-big { font-family:'Nunito',sans-serif; font-weight:900; font-size:52px; color:#7C3AED; }
+.parent-score-denom { font-size:20px; color:#9CA3AF; }
+.parent-score-label { font-size:13px; color:#6B7280; }
+.parent-q-card { border-radius: 16px; padding: 14px 16px; border: 2px solid #E5E7EB; margin-bottom: 10px; }
+.parent-q-card.pass { border-color: #A7F3D0; background: #ECFDF5; }
+.parent-q-card.fail { border-color: #FCA5A5; background: #FEF2F2; }
+.parent-q-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.parent-q-num {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: #7C3AED; color: white;
+  font-family:'Nunito',sans-serif; font-weight:900; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.parent-q-title { font-family:'ABeeZee',sans-serif; font-weight:400; font-size:13px; color:#6B7280; }
+.sg-label {
+  font-size: 11px; padding: 3px 9px; border-radius: 50px;
+  background: #EDE9FE; color: #7C3AED;
+  font-family:'Nunito',sans-serif; font-weight:700; white-space:nowrap;
+}
+.parent-q-score {
+  margin-left:auto; font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:13px; padding:3px 10px; border-radius:50px;
+}
+.pass .parent-q-score { background:#D1FAE5; color:#065F46; }
+.fail .parent-q-score { background:#FEE2E2; color:#991B1B; }
+.parent-q-body { font-size:13px; color:#4B5563; line-height:1.65; }
+.parent-risk {
+  background: #FFF7ED; border: 2px solid #FDE68A; border-radius:16px; padding:14px 16px;
+}
+.parent-risk-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; color:#92400E; margin-bottom:8px; }
+.parent-risk-body { font-size:13px; color:#78350F; line-height:1.7; }
+.parent-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+</style>
+</head>
+<body>
+
+<!-- ⚙ Admin Gear (fixed) -->
+<button id="admin-btn" onclick="toggleAdmin()" title="Settings">⚙️</button>
+<div id="admin-panel">
+  <h3>⚙️ Quiz Settings</h3>
+
+  <!-- 1) Load -->
+  <label>📂 Load Quiz Data</label>
+  <input type="file" accept=".xlsx" onchange="handleFile(event)">
+
+  <hr class="admin-divider">
+
+  <!-- 2) Download Quiz Data -->
+  <a class="admin-action-btn" href="OG0021_ReadingQuiz.xlsx" download="OG0021_ReadingQuiz.xlsx">
+    📥 Download Quiz Data
+  </a>
+
+  <hr class="admin-divider">
+
+  <!-- 3) Download Dev Spec -->
+  <button class="admin-action-btn" onclick="downloadDevSpec()">
+    📋 Download Dev Spec
+  </button>
+</div>
+
+<!-- Progress Dots (fixed, only during quiz) -->
+<div id="progress-bar">
+  <div class="dot" id="dot0" onclick="jumpTo(0)">1</div>
+  <div class="dot" id="dot1" onclick="jumpTo(1)">2</div>
+  <div class="dot" id="dot2" onclick="jumpTo(2)">3</div>
+  <div class="dot" id="dot3" onclick="jumpTo(3)">4</div>
+  <div class="dot" id="dot4" onclick="jumpTo(4)">5</div>
+  <div class="dot" id="dot5" onclick="jumpTo(5)">6</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  COVER                                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-cover" class="screen active">
+  <div class="cover-inner">
+    <div class="cover-img-wrap">
+      <img src="Cover/OG0021_Cover_L_I.png" alt="Milo and the Lost Color"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="cover-img-fallback" style="display:none">🦎</div>
+    </div>
+    <div class="cover-title">Reading Quiz</div>
+    <button class="btn-start" onclick="startQuiz()">Let's Start! →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q1 — Scene Sequencing                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q0" class="screen q-screen" style="background:#EDE9FE">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#7C3AED">Q1</div>
+      <div class="q-instruction">Put the scenes in the right order.</div>
+      <div class="q-type-tag" style="background:#7C3AED">Sequencing</div>
+    </div>
+
+    <!-- Answer slots TOP -->
+    <div class="seq-answer-zone" id="seq-slots">
+      <div class="seq-slot" data-pos="1" ondragover="seqOver(event)" ondragleave="seqLeave(event)" ondrop="seqDrop(event)">
+        <div class="pos-label">1</div><div class="slot-placeholder">?</div>
+      </div>
+      <div class="seq-slot" data-pos="2" ondragover="seqOver(event)" ondragleave="seqLeave(event)" ondrop="seqDrop(event)">
+        <div class="pos-label">2</div><div class="slot-placeholder">?</div>
+      </div>
+      <div class="seq-slot" data-pos="3" ondragover="seqOver(event)" ondragleave="seqLeave(event)" ondrop="seqDrop(event)">
+        <div class="pos-label">3</div><div class="slot-placeholder">?</div>
+      </div>
+      <div class="seq-slot" data-pos="4" ondragover="seqOver(event)" ondragleave="seqLeave(event)" ondrop="seqDrop(event)">
+        <div class="pos-label">4</div><div class="slot-placeholder">?</div>
+      </div>
+      <div class="seq-slot" data-pos="5" ondragover="seqOver(event)" ondragleave="seqLeave(event)" ondrop="seqDrop(event)">
+        <div class="pos-label">5</div><div class="slot-placeholder">?</div>
+      </div>
+    </div>
+
+    <!-- Scene bank BOTTOM -->
+    <div class="seq-bank-zone" id="seq-bank">
+      <div class="seq-item" data-scene="SC05" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0021_SC05_I.png" alt="SC05" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#FFCCBC;display:none">🌸</div>
+      </div>
+      <div class="seq-item" data-scene="SC01" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0021_SC01_I.png" alt="SC01" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#B2EBF2;display:none">🦎</div>
+      </div>
+      <div class="seq-item" data-scene="SC10" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0021_SC10_I.png" alt="SC10" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#FFF8E1;display:none">🪞</div>
+      </div>
+      <div class="seq-item" data-scene="SC03" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0021_SC03_I.png" alt="SC03" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#FFF9C4;display:none">🦋</div>
+      </div>
+      <div class="seq-item" data-scene="SC06" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0021_SC06_I.png" alt="SC06" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#B3E5FC;display:none">💧</div>
+      </div>
+    </div>
+
+    <div class="feedback-banner" id="fb0"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry0" onclick="retryQ(0)">↩ Retry</button>
+      <button class="btn-check" id="chk0" onclick="submitQ(0)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt0" onclick="goNext(0)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q2 — Listening                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q1" class="screen q-screen" style="background:#DBEAFE">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#2563EB">Q2</div>
+      <div class="q-instruction">Listen and choose the matching scene.</div>
+      <div class="q-type-tag" style="background:#2563EB">Listening</div>
+    </div>
+
+    <div class="audio-section">
+      <button class="audio-play-btn" id="play-btn" onclick="toggleAudio()">▶</button>
+      <div class="audio-label">Tap to listen!</div>
+      <div class="audio-error" id="audio-error">Audio file not found. Check the Audio/ folder.</div>
+    </div>
+    <audio id="q2-audio" onended="resetPlayBtn()" onerror="showAudioError()"></audio>
+
+    <div class="img-mcq-grid" id="q2-grid">
+      <div class="img-mcq-opt" data-opt="A" onclick="selectImgMCQ(1,'A')">
+        <img src="Image/OG0021_SC02_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-ph" style="background:#CFD8DC;display:none">☁️</div>
+      </div>
+      <div class="img-mcq-opt" data-opt="B" onclick="selectImgMCQ(1,'B')">
+        <img src="Image/OG0021_SC03_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-ph" style="background:#FFF9C4;display:none">🦋</div>
+      </div>
+      <div class="img-mcq-opt" data-opt="C" onclick="selectImgMCQ(1,'C')">
+        <img src="Image/OG0021_SC06_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-ph" style="background:#B3E5FC;display:none">💧</div>
+      </div>
+      <div class="img-mcq-opt" data-opt="D" onclick="selectImgMCQ(1,'D')">
+        <img src="Image/OG0021_SC09_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-ph" style="background:#C8E6C9;display:none">🌈</div>
+      </div>
+    </div>
+
+    <div class="feedback-banner" id="fb1"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry1" onclick="retryQ(1)">↩ Retry</button>
+      <button class="btn-check" id="chk1" onclick="submitQ(1)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt1" onclick="goNext(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q3 — Word Unscramble                               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q2" class="screen q-screen" style="background:#D1FAE5">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#059669">Q3</div>
+      <div class="q-instruction">Build the sentence! Drag the words into order.</div>
+      <div class="q-type-tag" style="background:#059669">Unscramble</div>
+    </div>
+
+    <!-- Answer zone TOP -->
+    <div class="unscrm-answer-zone" id="unscrm-answer"
+         ondragover="wordOver(event)" ondrop="wordDrop(event)">
+      <div class="placeholder-hint" id="unscrm-hint">Drop words here.</div>
+    </div>
+
+    <!-- Word bank BOTTOM -->
+    <div class="word-bank" id="word-bank">
+      <div class="word-chip" draggable="true" data-word="helps" ondragstart="wordStart(event)" ondragend="wordEnd(event)">helps</div>
+      <div class="word-chip" draggable="true" data-word="fly."  ondragstart="wordStart(event)" ondragend="wordEnd(event)">fly.</div>
+      <div class="word-chip" draggable="true" data-word="color" ondragstart="wordStart(event)" ondragend="wordEnd(event)">color</div>
+      <div class="word-chip" draggable="true" data-word="My"    ondragstart="wordStart(event)" ondragend="wordEnd(event)">My</div>
+      <div class="word-chip" draggable="true" data-word="me"    ondragstart="wordStart(event)" ondragend="wordEnd(event)">me</div>
+    </div>
+
+    <div class="feedback-banner" id="fb2"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry2" onclick="retryQ(2)">↩ Retry</button>
+      <button class="btn-check" id="chk2" onclick="submitQ(2)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt2" onclick="goNext(2)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q4 — Emotion                                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q3" class="screen q-screen" style="background:#FEF3C7">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#D97706">Q4</div>
+      <div class="q-instruction">How does Milo feel in this scene?</div>
+      <div class="q-type-tag" style="background:#D97706">Emotion</div>
+    </div>
+    <div class="scene-strip">
+      <div class="scene-thumb">
+        <img src="Image/OG0021_SC06_I.png" alt="SC06"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="ph" style="background:#B3E5FC;display:none">💧</div>
+      </div>
+    </div>
+    <div class="text-mcq-list" id="q4-opts">
+      <div class="text-mcq-opt" data-opt="A" onclick="selectTextMCQ(3,'A')">
+        <div class="opt-circle">A</div>😄 Happy
+      </div>
+      <div class="text-mcq-opt" data-opt="B" onclick="selectTextMCQ(3,'B')">
+        <div class="opt-circle">B</div>😢 Sad
+      </div>
+      <div class="text-mcq-opt" data-opt="C" onclick="selectTextMCQ(3,'C')">
+        <div class="opt-circle">C</div>😠 Angry
+      </div>
+      <div class="text-mcq-opt" data-opt="D" onclick="selectTextMCQ(3,'D')">
+        <div class="opt-circle">D</div>😮 Surprised
+      </div>
+    </div>
+    <div class="feedback-banner" id="fb3"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry3" onclick="retryQ(3)">↩ Retry</button>
+      <button class="btn-check" id="chk3" onclick="submitQ(3)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt3" onclick="goNext(3)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q5 — Character Goal                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q4" class="screen q-screen" style="background:#FCE7F3">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#BE185D">Q5</div>
+      <div class="q-instruction">What does Milo want most?</div>
+      <div class="q-type-tag" style="background:#BE185D">Character Goal</div>
+    </div>
+    <div class="text-mcq-list" id="q5-opts">
+      <div class="text-mcq-opt" data-opt="A" onclick="selectTextMCQ(4,'A')">
+        <div class="opt-circle">A</div>To find his lost color.
+      </div>
+      <div class="text-mcq-opt" data-opt="B" onclick="selectTextMCQ(4,'B')">
+        <div class="opt-circle">B</div>To explore the forest.
+      </div>
+      <div class="text-mcq-opt" data-opt="C" onclick="selectTextMCQ(4,'C')">
+        <div class="opt-circle">C</div>To become the fastest chameleon.
+      </div>
+      <div class="text-mcq-opt" data-opt="D" onclick="selectTextMCQ(4,'D')">
+        <div class="opt-circle">D</div>To sit by the pond alone.
+      </div>
+    </div>
+    <div class="feedback-banner" id="fb4"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry4" onclick="retryQ(4)">↩ Retry</button>
+      <button class="btn-check" id="chk4" onclick="submitQ(4)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt4" onclick="goNext(4)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  Q6 — Main Idea                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-q5" class="screen q-screen" style="background:#FFEDD5">
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num-badge" style="background:#EA580C">Q6</div>
+      <div class="q-instruction">What did Milo find out at the end?</div>
+      <div class="q-type-tag" style="background:#EA580C">Main Idea</div>
+    </div>
+    <div class="text-mcq-list" id="q6-opts">
+      <div class="text-mcq-opt" data-opt="A" onclick="selectTextMCQ(5,'A')">
+        <div class="opt-circle">A</div>Colors keep you safe.
+      </div>
+      <div class="text-mcq-opt" data-opt="B" onclick="selectTextMCQ(5,'B')">
+        <div class="opt-circle">B</div>Friends always help you.
+      </div>
+      <div class="text-mcq-opt" data-opt="C" onclick="selectTextMCQ(5,'C')">
+        <div class="opt-circle">C</div>Your color is inside you.
+      </div>
+      <div class="text-mcq-opt" data-opt="D" onclick="selectTextMCQ(5,'D')">
+        <div class="opt-circle">D</div>The world has many colors.
+      </div>
+    </div>
+    <div class="feedback-banner" id="fb5"></div>
+    <div class="nav-row">
+      <button class="btn-retry" id="retry5" onclick="retryQ(5)">↩ Retry</button>
+      <button class="btn-check" id="chk5" onclick="submitQ(5)" disabled>Check ✓</button>
+      <button class="btn-next" id="nxt5" onclick="showStudentResults()">See Results! 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STUDENT RESULTS                                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-student" class="screen">
+  <div class="student-card">
+    <div class="student-title" id="student-title">Quiz Complete!</div>
+    <div class="student-praise" id="student-praise"></div>
+    <div class="ox-grid" id="ox-grid"></div>
+    <button class="btn-parent-view" onclick="showParentResults()">📊 Parent Report</button>
+    <button class="btn-again" onclick="restartAll()">Try Again ↩</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  PARENT RESULTS                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="screen-parent" class="screen">
+  <div class="parent-card">
+    <div class="parent-title">📋 학부모 리포트 — OG0021</div>
+    <div class="parent-score-row">
+      <div class="parent-score-big" id="parent-score-big">--</div>
+      <div class="parent-score-denom">/ 100점</div>
+      <div class="parent-score-label" id="parent-score-label"></div>
+    </div>
+    <div id="parent-q-list"></div>
+    <div class="parent-risk">
+      <div class="parent-risk-title">⚠️ 집중 관리 영역</div>
+      <div class="parent-risk-body" id="parent-risk-body"></div>
+    </div>
+    <div class="parent-btns">
+      <button class="btn-parent-view" onclick="showScreen('screen-student')">← 학생 화면</button>
+      <button class="btn-again" onclick="restartAll()">다시 시작 ↩</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+/* ── Quiz Data ────────────────────────────────────── */
+const QD = {
+  q01: {
+    correct: ['SC01','SC03','SC05','SC06','SC10'],
+    weights: {SC01:2.5, SC03:1.5, SC05:1.5, SC06:1.0, SC10:2.5},
+    sg:'setting_sequence', sgLabel:'Scene Sequencing'
+  },
+  q02: {
+    opts: {
+      A:{s:100, w:null},
+      B:{s:20,  w:'이야기 발단(SC02)과 시도(SC03) 장면을 혼동함'},
+      C:{s:30,  w:'발단 장면과 슬픔 장면(SC06)을 혼동함'},
+      D:{s:0,   w:'발단 장면과 해결 장면(SC09)을 혼동함'}
+    },
+    correct:'A', sg:'initiating_event', sgLabel:'Sentence–Scene Match',
+    audioSrc:'Audio/SC02_ST01_N.mp3'
+  },
+  q03: {
+    correct:['My','color','helps','me','fly.'],
+    weights:{My:2.0,color:1.5,helps:2.0,me:1.5,'fly.':2.0},
+    sg:'attempt', sgLabel:'Sentence Unscramble'
+  },
+  q04: {
+    opts: {
+      A:{s:0,   w:'해결 장면의 기쁨을 슬픔 장면(SC06)에 혼동함'},
+      B:{s:100, w:null},
+      C:{s:40,  w:'"화남"과 "슬픔"을 혼동함'},
+      D:{s:20,  w:'다음 장면의 감정을 현재 장면에 투영함'}
+    },
+    correct:'B', sg:'reaction', sgLabel:'Emotion Identification'
+  },
+  q05: {
+    opts: {
+      A:{s:100, w:null},
+      B:{s:25,  w:'배경(장소)를 목표로 혼동함'},
+      C:{s:0,   w:'이야기와 무관한 선택'},
+      D:{s:15,  w:'결과 장면을 목표로 혼동함'}
+    },
+    correct:'A', sg:'initiating_event', sgLabel:'Character Goal'
+  },
+  q06: {
+    opts: {
+      A:{s:10,  w:'카멜레온의 생태 사실을 주제로 혼동함'},
+      B:{s:30,  w:'친구의 도움(행동)을 주제로 혼동함'},
+      C:{s:100, w:null},
+      D:{s:20,  w:'배경·분위기를 주제로 혼동함'}
+    },
+    correct:'C', sg:'theme', sgLabel:'Main Idea'
+  }
+};
+
+/* ── State ────────────────────────────────────────── */
+let currentQ = -1;
+const scores   = [null,null,null,null,null,null];
+const answered = [false,false,false,false,false,false];
+const mcqSel   = [null,null,null,null,null,null];
+const answerLog = {};
+
+// Q1
+const seqSlots = {1:null,2:null,3:null,4:null,5:null};
+let seqDragScene = null, seqDragFrom = null;
+
+// Q3
+let wordOrder = [], wordDragWord = null, wordDragFrom = null;
+
+/* ── Screen ───────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const inQuiz = id.startsWith('screen-q');
+  document.getElementById('progress-bar').classList.toggle('show', inQuiz);
+  window.scrollTo(0,0);
+}
+
+function startQuiz() {
+  currentQ = 0;
+  showScreen('screen-q0');
+  updateDots();
+}
+
+function jumpTo(idx) {
+  currentQ = idx;
+  showScreen('screen-q'+idx);
+  updateDots();
+}
+
+function goNext(qIdx) {
+  currentQ = qIdx + 1;
+  showScreen('screen-q'+currentQ);
+  updateDots();
+}
+
+function updateDots() {
+  for (let i = 0; i < 6; i++) {
+    const d = document.getElementById('dot'+i);
+    d.className = 'dot' + (answered[i]?' done':'') + (i===currentQ?' active':'');
+  }
+}
+
+/* ── Excel Download ───────────────────────────────── */
+function downloadQuizExcel() {
+  const wb = XLSX.utils.book_new();
+
+  /* ── Sheet 1: 문항 정보 ── */
+  const qInfo = [
+    ['문항', '유형', 'Story Grammar', '지시문', 'A 선택지', 'A 점수', 'B 선택지', 'B 점수', 'C 선택지', 'C 점수', 'D 선택지', 'D 점수', '정답'],
+    // Q1 — Sequence
+    ['Q1', '장면 순서 (Drag & Drop)', 'Setting & Sequence',
+     'Put the scenes in order.',
+     'SC01→SC02→SC03→SC04→SC05 (정답순)', 100,
+     '위치 이탈 1칸', 60,
+     '위치 이탈 2칸', 30,
+     '무순서', 0,
+     '(가중 위치점수)'],
+    // Q2 — Listening
+    ['Q2', '듣기: 문장-장면 연결 (MCQ)', 'Initiating Event',
+     'Listen and choose the matching scene.',
+     QD.q02.opts.A ? '(A 선택지)' : '', QD.q02.opts.A?.s ?? '',
+     QD.q02.opts.B ? '(B 선택지)' : '', QD.q02.opts.B?.s ?? '',
+     QD.q02.opts.C ? '(C 선택지)' : '', QD.q02.opts.C?.s ?? '',
+     QD.q02.opts.D ? '(D 선택지)' : '', QD.q02.opts.D?.s ?? '',
+     QD.q02.correct],
+    // Q3 — Word Unscramble
+    ['Q3', '단어 배열 (Drag & Drop)', 'Attempt',
+     'Put the words in the right order.',
+     'My color helps me fly. (정답)', 100,
+     '핵심어 위치 이탈', 60,
+     '부분 정렬', 30,
+     '무순서', 0,
+     '(가중 단어점수)'],
+    // Q4 — Emotion
+    ['Q4', '감정 이해 (MCQ)', 'Reaction',
+     'How does Milo feel in this scene?',
+     '😄 Happy', QD.q04.opts.A?.s ?? '',
+     '😢 Sad',   QD.q04.opts.B?.s ?? '',
+     '😠 Angry', QD.q04.opts.C?.s ?? '',
+     '😮 Surprised', QD.q04.opts.D?.s ?? '',
+     QD.q04.correct],
+    // Q5 — Character Goal
+    ['Q5', '주인공 목표 (MCQ)', 'Initiating Event',
+     'What does Milo want most?',
+     'To find his lost color.', QD.q05.opts.A?.s ?? '',
+     'To explore the forest.',  QD.q05.opts.B?.s ?? '',
+     'To become the fastest chameleon.', QD.q05.opts.C?.s ?? '',
+     'To sit by the pond alone.', QD.q05.opts.D?.s ?? '',
+     QD.q05.correct],
+    // Q6 — Main Idea
+    ['Q6', '중심 내용 파악 (MCQ)', 'Theme',
+     'What did Milo find out at the end?',
+     'Colors keep you safe.',    QD.q06.opts.A?.s ?? '',
+     'Friends always help you.', QD.q06.opts.B?.s ?? '',
+     'Your color is inside you.',QD.q06.opts.C?.s ?? '',
+     'The world has many colors.', QD.q06.opts.D?.s ?? '',
+     QD.q06.correct],
+  ];
+
+  const ws1 = XLSX.utils.aoa_to_sheet(qInfo);
+  // 열 너비 설정
+  ws1['!cols'] = [
+    {wch:4},{wch:22},{wch:20},{wch:32},
+    {wch:28},{wch:6},{wch:28},{wch:6},{wch:28},{wch:6},{wch:28},{wch:6},{wch:6}
+  ];
+  XLSX.utils.book_append_sheet(wb, ws1, '문항 정보');
+
+  /* ── Sheet 2: 현재 세션 결과 ── */
+  const qLabels = [
+    {q:'Q1', sg:'Setting & Sequence',  kor:'장면 순서 맞추기'},
+    {q:'Q2', sg:'Initiating Event',    kor:'듣기: 문장-장면 연결'},
+    {q:'Q3', sg:'Attempt',             kor:'단어 배열'},
+    {q:'Q4', sg:'Reaction',            kor:'감정 이해'},
+    {q:'Q5', sg:'Initiating Event',    kor:'주인공 목표'},
+    {q:'Q6', sg:'Theme',               kor:'중심 내용 파악'},
+  ];
+  const logKeys = ['q01','q02','q03','q04','q05','q06'];
+  const mcqKeys = [null, 'q02', null, 'q04', 'q05', 'q06'];
+
+  const sessionRows = [['문항', 'Story Grammar', '유형', '선택 답안', '점수 (0-100)', '정답 여부']];
+  qLabels.forEach((ql, i) => {
+    const s = scores[i] ?? '미응답';
+    const sel = mcqSel[i] ?? (answered[i] ? '(drag완료)' : '미선택');
+    const pass = typeof s === 'number' ? (s >= 85 ? '✅ 정답' : '❌ 오답') : '-';
+    sessionRows.push([ql.q, ql.sg, ql.kor, sel, s, pass]);
+  });
+  const totalScore = scores.every(s => s !== null)
+    ? Math.round(scores.reduce((a,b)=>a+(b||0),0)/6)
+    : '미완료';
+  sessionRows.push(['', '', '', '종합 점수', totalScore, '']);
+
+  const ws2 = XLSX.utils.aoa_to_sheet(sessionRows);
+  ws2['!cols'] = [{wch:4},{wch:20},{wch:22},{wch:16},{wch:14},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws2, '세션 결과');
+
+  /* ── 다운로드 ── */
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  XLSX.writeFile(wb, `OG0021_QuizData_${stamp}.xlsx`);
+}
+
+/* ── Dev Spec Excel ───────────────────────────────── */
+function downloadDevSpec() {
+  const wb = XLSX.utils.book_new();
+  const STORY = 'OG0021';
+
+  /* ════════════════════════════════════════════════
+     Sheet 1 : QUESTIONS
+     한 문항 = 1행, 셀 병합 없음
+  ════════════════════════════════════════════════ */
+  const qRows = [[
+    'q_id','story_id','q_number','q_type_code','q_type_label',
+    'sg_element','sg_label_en','instruction_en',
+    'img_resource','audio_resource',
+    'correct_answer','scoring_type','max_score'
+  ]];
+
+  const qMeta = [
+    {
+      q_id:'OG0021_Q01', q_number:1,
+      q_type_code:'SEQ_DRAG',  q_type_label:'Sequence Drag & Drop',
+      sg_element:'setting_sequence', sg_label_en:'Setting & Sequence',
+      instruction:'Put the scenes in order.',
+      img:'OG0021_SC01_I.png, OG0021_SC03_I.png, OG0021_SC05_I.png, OG0021_SC06_I.png, OG0021_SC10_I.png',
+      audio:'-',
+      correct:'SC01, SC03, SC05, SC06, SC10',
+      scoring:'weighted_position'
+    },
+    {
+      q_id:'OG0021_Q02', q_number:2,
+      q_type_code:'LISTEN_MCQ', q_type_label:'Listening MCQ',
+      sg_element:'initiating_event', sg_label_en:'Initiating Event',
+      instruction:'Listen and choose the matching scene.',
+      img:'OG0021_SC01_I.png, OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC04_I.png',
+      audio:'Audio/SC02_ST01_N.mp3',
+      correct:'B',
+      scoring:'fixed_option_score'
+    },
+    {
+      q_id:'OG0021_Q03', q_number:3,
+      q_type_code:'WORD_DRAG', q_type_label:'Word Unscramble Drag & Drop',
+      sg_element:'attempt', sg_label_en:'Attempt',
+      instruction:'Put the words in the right order.',
+      img:'-', audio:'-',
+      correct:'My, color, helps, me, fly.',
+      scoring:'weighted_sequence'
+    },
+    {
+      q_id:'OG0021_Q04', q_number:4,
+      q_type_code:'IMG_MCQ', q_type_label:'Image MCQ',
+      sg_element:'reaction', sg_label_en:'Reaction',
+      instruction:'How does Milo feel in this scene?',
+      img:'OG0021_SC06_I.png', audio:'-',
+      correct:'B',
+      scoring:'fixed_option_score'
+    },
+    {
+      q_id:'OG0021_Q05', q_number:5,
+      q_type_code:'TEXT_MCQ', q_type_label:'Text MCQ',
+      sg_element:'initiating_event', sg_label_en:'Initiating Event',
+      instruction:'What does Milo want most?',
+      img:'-', audio:'-',
+      correct:'A',
+      scoring:'fixed_option_score'
+    },
+    {
+      q_id:'OG0021_Q06', q_number:6,
+      q_type_code:'TEXT_MCQ', q_type_label:'Text MCQ',
+      sg_element:'theme', sg_label_en:'Theme',
+      instruction:'What did Milo find out at the end?',
+      img:'-', audio:'-',
+      correct:'C',
+      scoring:'fixed_option_score'
+    },
+  ];
+
+  qMeta.forEach(m => qRows.push([
+    m.q_id, STORY, m.q_number, m.q_type_code, m.q_type_label,
+    m.sg_element, m.sg_label_en, m.instruction,
+    m.img, m.audio, m.correct, m.scoring, 100
+  ]));
+
+  const ws1 = XLSX.utils.aoa_to_sheet(qRows);
+  ws1['!cols'] = [
+    {wch:14},{wch:9},{wch:9},{wch:14},{wch:26},{wch:20},{wch:22},{wch:36},
+    {wch:56},{wch:22},{wch:36},{wch:22},{wch:11}
+  ];
+  XLSX.utils.book_append_sheet(wb, ws1, 'QUESTIONS');
+
+  /* ════════════════════════════════════════════════
+     Sheet 2 : OPTIONS
+     선택지/드래그 아이템 1개 = 1행
+     q_id로 QUESTIONS 시트와 JOIN
+  ════════════════════════════════════════════════ */
+  const optRows = [[
+    'q_id','option_key','option_text','item_weight','score_value','is_correct','resource_file'
+  ]];
+
+  // Q01 — 드래그 아이템 (이미지 순서)
+  const q01Items = [
+    {k:'1', text:'SC01', weight:2.5, res:'OG0021_SC01_I.png'},
+    {k:'2', text:'SC03', weight:1.5, res:'OG0021_SC03_I.png'},
+    {k:'3', text:'SC05', weight:1.5, res:'OG0021_SC05_I.png'},
+    {k:'4', text:'SC06', weight:1.0, res:'OG0021_SC06_I.png'},
+    {k:'5', text:'SC10', weight:2.5, res:'OG0021_SC10_I.png'},
+  ];
+  q01Items.forEach(o => optRows.push(['OG0021_Q01', o.k, o.text, o.weight, '-', 'TRUE', o.res]));
+
+  // Q02 — 이미지 MCQ
+  const q02 = QD.q02;
+  [['A','OG0021_SC01_I.png'],['B','OG0021_SC02_I.png'],
+   ['C','OG0021_SC03_I.png'],['D','OG0021_SC04_I.png']].forEach(([k,res]) => {
+    const opt = q02.opts[k];
+    optRows.push(['OG0021_Q02', k, res, '-', opt?.s??0, k===q02.correct?'TRUE':'FALSE', res]);
+  });
+
+  // Q03 — 단어 드래그
+  const q03Items = [
+    {k:'1', text:'My',    weight:2.0},
+    {k:'2', text:'color', weight:1.5},
+    {k:'3', text:'helps', weight:2.0},
+    {k:'4', text:'me',    weight:1.5},
+    {k:'5', text:'fly.',  weight:2.0},
+  ];
+  q03Items.forEach(o => optRows.push(['OG0021_Q03', o.k, o.text, o.weight, '-', 'TRUE', '-']));
+
+  // Q04 — 감정 MCQ (이미지 있음)
+  const q04 = QD.q04;
+  const q04texts = {A:'😄 Happy', B:'😢 Sad', C:'😠 Angry', D:'😮 Surprised'};
+  ['A','B','C','D'].forEach(k => {
+    const opt = q04.opts[k];
+    optRows.push(['OG0021_Q04', k, q04texts[k], '-', opt?.s??0, k===q04.correct?'TRUE':'FALSE', 'OG0021_SC06_I.png (scene ref)']);
+  });
+
+  // Q05 — 주인공 목표 MCQ
+  const q05 = QD.q05;
+  const q05texts = {
+    A:'To find his lost color.',
+    B:'To explore the forest.',
+    C:'To become the fastest chameleon.',
+    D:'To sit by the pond alone.'
+  };
+  ['A','B','C','D'].forEach(k => {
+    const opt = q05.opts[k];
+    optRows.push(['OG0021_Q05', k, q05texts[k], '-', opt?.s??0, k===q05.correct?'TRUE':'FALSE', '-']);
+  });
+
+  // Q06 — 중심 내용 MCQ
+  const q06 = QD.q06;
+  const q06texts = {
+    A:'Colors keep you safe.',
+    B:'Friends always help you.',
+    C:'Your color is inside you.',
+    D:'The world has many colors.'
+  };
+  ['A','B','C','D'].forEach(k => {
+    const opt = q06.opts[k];
+    optRows.push(['OG0021_Q06', k, q06texts[k], '-', opt?.s??0, k===q06.correct?'TRUE':'FALSE', '-']);
+  });
+
+  const ws2 = XLSX.utils.aoa_to_sheet(optRows);
+  ws2['!cols'] = [{wch:14},{wch:11},{wch:34},{wch:13},{wch:12},{wch:11},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'OPTIONS');
+
+  /* ════════════════════════════════════════════════
+     Sheet 3 : SCORING_RULES
+     채점 공식 — 문항당 1행
+  ════════════════════════════════════════════════ */
+  const srRows = [['q_id','scoring_type','formula_pseudocode','note']];
+  const rules = [
+    [
+      'OG0021_Q01','weighted_position',
+      'score = round( SUM(weight_i * max(0, 1 - |placed_pos_i - correct_pos_i| * 0.5)) / SUM(weight_i) * 100 )',
+      '아이템이 정위치에서 1칸 멀어질 때마다 해당 weight의 50% 감점. 범위 밖이면 0점.'
+    ],
+    [
+      'OG0021_Q02','fixed_option_score',
+      'score = opts[selected].score_value',
+      '선택지별 고정 점수 적용. 정답 100, 오답은 오개념 유사도에 따라 차등.'
+    ],
+    [
+      'OG0021_Q03','weighted_sequence',
+      'score = round( SUM(weight_i * (placed_word_i === correct_word_i ? 1 : 0)) / SUM(weight_i) * 100 )',
+      '정위치에 놓인 단어의 weight만 누적. 순서가 틀리면 해당 단어 0점.'
+    ],
+    [
+      'OG0021_Q04','fixed_option_score',
+      'score = opts[selected].score_value',
+      '선택지별 고정 점수 적용.'
+    ],
+    [
+      'OG0021_Q05','fixed_option_score',
+      'score = opts[selected].score_value',
+      '선택지별 고정 점수 적용.'
+    ],
+    [
+      'OG0021_Q06','fixed_option_score',
+      'score = opts[selected].score_value',
+      '선택지별 고정 점수 적용.'
+    ],
+  ];
+  rules.forEach(r => srRows.push(r));
+
+  const ws3 = XLSX.utils.aoa_to_sheet(srRows);
+  ws3['!cols'] = [{wch:14},{wch:22},{wch:72},{wch:46}];
+  XLSX.utils.book_append_sheet(wb, ws3, 'SCORING_RULES');
+
+  XLSX.writeFile(wb, `OG0021_DevSpec.xlsx`);
+}
+
+/* ── Admin ────────────────────────────────────────── */
+function toggleAdmin() {
+  document.getElementById('admin-panel').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('admin-btn').contains(e.target) &&
+      !document.getElementById('admin-panel').contains(e.target)) {
+    document.getElementById('admin-panel').classList.remove('open');
+  }
+});
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(ev.target.result, {type:'binary'});
+      loadWorkbook(wb);
+      document.getElementById('admin-panel').classList.remove('open');
+      alert('Quiz data updated!');
+    } catch(err) { alert('Error reading file: ' + err.message); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function loadWorkbook(wb) {
+  // Read audio filename from Q02_SENT_MATCH sheet
+  if (wb.SheetNames.includes('Q02_SENT_MATCH')) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['Q02_SENT_MATCH'], {header:1});
+    for (const row of rows) {
+      if (row[0] && String(row[0]).toLowerCase().includes('audio') && row[1]) {
+        const fname = String(row[1]).trim();
+        QD.q02.audioSrc = fname.includes('/') ? fname : 'Audio/' + fname;
+        document.getElementById('q2-audio').src = QD.q02.audioSrc;
+        break;
+      }
+    }
+  }
+}
+
+/* ── Q1: Sequencing ───────────────────────────────── */
+function seqStart(e) {
+  const item = e.currentTarget;
+  seqDragScene = item.dataset.scene;
+  // Find if dragging from a slot
+  const slot = item.closest('.seq-slot');
+  seqDragFrom = slot ? slot.dataset.pos : 'bank';
+  item.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function seqEnd(e) { e.currentTarget.classList.remove('dragging'); }
+function seqOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function seqLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function seqDrop(e) {
+  e.preventDefault();
+  const slot = e.currentTarget;
+  slot.classList.remove('drag-over');
+  const pos = parseInt(slot.dataset.pos);
+  if (!seqDragScene) return;
+
+  if (seqSlots[pos]) returnSeqCard(pos);
+
+  seqSlots[pos] = seqDragScene;
+
+  if (seqDragFrom === 'bank') {
+    document.querySelector(`#seq-bank [data-scene="${seqDragScene}"]`)?.remove();
+  } else {
+    const fp = parseInt(seqDragFrom);
+    seqSlots[fp] = null;
+    renderSeqSlot(fp);
+  }
+
+  renderSeqSlot(pos);
+  seqDragScene = null; seqDragFrom = null;
+  checkSeqReady();
+  // 뱅크가 비면 숨기기
+  const bank = document.getElementById('seq-bank');
+  bank.style.display = bank.children.length === 0 ? 'none' : '';
+}
+
+function renderSeqSlot(pos) {
+  const slot = document.querySelector(`#seq-slots [data-pos="${pos}"]`);
+  if (!slot) return;
+  const sc = seqSlots[pos];
+  if (sc) {
+    slot.classList.add('filled');
+    slot.innerHTML = `<div class="pos-label">${pos}</div>`;
+    const img = document.createElement('img');
+    img.src = `Image/OG0021_${sc}_I.png`; img.alt = sc;
+    img.draggable = false;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:10px;pointer-events:none;';
+    img.onerror = function() {
+      this.remove();
+      const ph = document.createElement('div');
+      ph.style.cssText='width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:10px;background:#EDE9FE;';
+      ph.textContent = sc; slot.appendChild(ph);
+    };
+    slot.draggable = true;
+    slot.ondragstart = ev => { seqDragScene=sc; seqDragFrom=String(pos); ev.dataTransfer.effectAllowed='move'; };
+    slot.appendChild(img);
+  } else {
+    slot.classList.remove('filled');
+    slot.draggable = false; slot.ondragstart = null;
+    slot.innerHTML = `<div class="pos-label">${pos}</div><div class="slot-placeholder">?</div>`;
+  }
+}
+
+function returnSeqCard(pos) {
+  const sc = seqSlots[pos]; if (!sc) return;
+  const div = document.createElement('div');
+  div.className='seq-item'; div.dataset.scene=sc; div.draggable=true;
+  div.ondragstart=seqStart; div.ondragend=seqEnd;
+  const img = document.createElement('img');
+  img.src=`Image/OG0021_${sc}_I.png`; img.alt=sc;
+  img.style.cssText='width:100%;height:100%;object-fit:cover;';
+  img.onerror=function(){ this.remove(); div.textContent=sc; div.style.fontSize='11px'; div.style.display='flex'; div.style.alignItems='center'; div.style.justifyContent='center'; };
+  div.appendChild(img);
+  const seqBank = document.getElementById('seq-bank');
+  seqBank.appendChild(div);
+  seqBank.style.display = '';
+  seqSlots[pos]=null;
+}
+
+function checkSeqReady() {
+  document.getElementById('chk0').disabled = Object.values(seqSlots).filter(Boolean).length < 5;
+}
+
+/* ── Q2: Audio ────────────────────────────────────── */
+document.getElementById('q2-audio').src = QD.q02.audioSrc;
+
+function toggleAudio() {
+  const audio = document.getElementById('q2-audio');
+  const btn   = document.getElementById('play-btn');
+  if (audio.paused) {
+    audio.play().then(() => { btn.textContent='⏸'; btn.classList.add('playing'); })
+      .catch(showAudioError);
+  } else {
+    audio.pause(); audio.currentTime=0; resetPlayBtn();
+  }
+}
+function resetPlayBtn() {
+  const btn = document.getElementById('play-btn');
+  btn.textContent='▶'; btn.classList.remove('playing');
+}
+function showAudioError() {
+  document.getElementById('audio-error').style.display='block';
+}
+
+/* ── Image MCQ ────────────────────────────────────── */
+function selectImgMCQ(qIdx, opt) {
+  if (answered[qIdx]) return;
+  document.querySelectorAll('#q2-grid .img-mcq-opt').forEach(el=>el.classList.remove('selected'));
+  document.querySelector(`#q2-grid [data-opt="${opt}"]`).classList.add('selected');
+  mcqSel[qIdx]=opt;
+  document.getElementById('chk'+qIdx).disabled=false;
+}
+
+/* ── Q3: Unscramble ───────────────────────────────── */
+function wordStart(e) {
+  wordDragWord = e.currentTarget.dataset.word;
+  wordDragFrom = e.currentTarget.parentElement.id==='unscrm-answer' ? 'answer' : 'bank';
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function wordEnd(e) { e.currentTarget.classList.remove('dragging'); }
+function wordOver(e) { e.preventDefault(); }
+
+function wordDrop(e) {
+  e.preventDefault();
+  if (!wordDragWord) return;
+  if (wordDragFrom==='bank') {
+    document.querySelector(`#word-bank [data-word="${wordDragWord}"]`)?.remove();
+    wordOrder.push(wordDragWord);
+  } else {
+    const idx=wordOrder.indexOf(wordDragWord);
+    if (idx>-1) { wordOrder.splice(idx,1); wordOrder.push(wordDragWord); }
+  }
+  renderWordAnswer(); wordDragWord=null; checkWordReady();
+  // 단어 뱅크가 비면 숨기기
+  const wb = document.getElementById('word-bank');
+  wb.style.display = wb.children.length === 0 ? 'none' : '';
+}
+
+function renderWordAnswer() {
+  const zone = document.getElementById('unscrm-answer');
+  zone.innerHTML='';
+  if (wordOrder.length===0) {
+    zone.innerHTML='<div class="placeholder-hint">Drop words here.</div>';
+    return;
+  }
+  wordOrder.forEach(w => {
+    const chip=document.createElement('div');
+    chip.className='word-chip in-answer'; chip.dataset.word=w;
+    chip.draggable=true; chip.textContent=w;
+    chip.ondragstart=wordStart; chip.ondragend=wordEnd;
+    chip.onclick=()=>{ if (!answered[2]) returnWordToBank(w); };
+    zone.appendChild(chip);
+  });
+}
+
+function returnWordToBank(w) {
+  const idx=wordOrder.indexOf(w); if (idx>-1) wordOrder.splice(idx,1);
+  renderWordAnswer();
+  const chip=document.createElement('div');
+  chip.className='word-chip'; chip.dataset.word=w; chip.draggable=true; chip.textContent=w;
+  chip.ondragstart=wordStart; chip.ondragend=wordEnd;
+  const wordBank = document.getElementById('word-bank');
+  wordBank.appendChild(chip);
+  wordBank.style.display = '';
+  checkWordReady();
+}
+
+function checkWordReady() {
+  document.getElementById('chk2').disabled = wordOrder.length < 5;
+}
+
+/* ── Text MCQ ─────────────────────────────────────── */
+function selectTextMCQ(qIdx, opt) {
+  if (answered[qIdx]) return;
+  const ids=['q4-opts','q5-opts','q6-opts'];
+  document.querySelectorAll('#'+ids[qIdx-3]+' .text-mcq-opt').forEach(el=>el.classList.remove('selected'));
+  document.querySelector('#'+ids[qIdx-3]+` [data-opt="${opt}"]`).classList.add('selected');
+  mcqSel[qIdx]=opt; document.getElementById('chk'+qIdx).disabled=false;
+}
+
+/* ── Submit ───────────────────────────────────────── */
+function submitQ(qIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx]=true;
+  document.getElementById('chk'+qIdx).disabled=true;
+  let score=0;
+
+  if (qIdx===0) {
+    const correct=QD.q01.correct, weights=QD.q01.weights;
+    let earned=0, total=Object.values(weights).reduce((a,b)=>a+b,0);
+    correct.forEach((sc,ci) => {
+      const maxPts=weights[sc];
+      let placed=null;
+      Object.entries(seqSlots).forEach(([p,s])=>{ if(s===sc) placed=parseInt(p); });
+      if (placed!==null) earned += maxPts*Math.max(0, 1-Math.abs(placed-(ci+1))*0.5);
+    });
+    score=Math.round(earned/total*100);
+    answerLog.q01={seqSlots:{...seqSlots}, score};
+    // Colour slots
+    correct.forEach((sc,ci)=>{
+      Object.entries(seqSlots).forEach(([p,s])=>{
+        if(s===sc){
+          const slot=document.querySelector(`#seq-slots [data-pos="${p}"]`);
+          if(slot) slot.style.borderColor=parseInt(p)===ci+1?'#10B981':'#EF4444';
+        }
+      });
+    });
+
+  } else if (qIdx===1) {
+    const sel=mcqSel[1];
+    score=sel?(QD.q02.opts[sel]?.s??0):0;
+    answerLog.q02={selected:sel, score};
+    document.querySelectorAll('#q2-grid .img-mcq-opt').forEach(el=>{
+      el.classList.remove('selected');
+      if(el.dataset.opt===QD.q02.correct) el.classList.add('correct-ans');
+      else if(el.dataset.opt===sel) el.classList.add('wrong-ans');
+    });
+
+  } else if (qIdx===2) {
+    const correct=QD.q03.correct, weights=QD.q03.weights;
+    let earned=0, total=Object.values(weights).reduce((a,b)=>a+b,0);
+    wordOrder.forEach((w,i)=>{ if(i<correct.length&&w===correct[i]) earned+=weights[w]||0; });
+    score=Math.round(earned/total*100);
+    answerLog.q03={wordOrder:[...wordOrder], score};
+    document.querySelectorAll('#unscrm-answer .word-chip').forEach((chip,i)=>{
+      chip.style.borderColor=wordOrder[i]===correct[i]?'#10B981':'#EF4444';
+      chip.style.background =wordOrder[i]===correct[i]?'#D1FAE5':'#FEE2E2';
+    });
+
+  } else {
+    const qKeys=['q04','q05','q06'];
+    const qd=QD[qKeys[qIdx-3]];
+    const sel=mcqSel[qIdx];
+    score=sel?(qd.opts[sel]?.s??0):0;
+    answerLog[qKeys[qIdx-3]]={selected:sel, score};
+    const listIds=['q4-opts','q5-opts','q6-opts'];
+    document.querySelectorAll('#'+listIds[qIdx-3]+' .text-mcq-opt').forEach(el=>{
+      el.classList.remove('selected');
+      if(el.dataset.opt===qd.correct) el.classList.add('correct-ans');
+      else if(el.dataset.opt===sel) el.classList.add('wrong-ans');
+    });
+  }
+
+  scores[qIdx]=score;
+  const fb=document.getElementById('fb'+qIdx);
+  fb.classList.add('show');
+  if(score>=85){
+    fb.className='feedback-banner show correct';
+    fb.textContent=score===100?'⭐ Perfect! 100 / 100':`✨ Great! ${score} / 100`;
+  } else if(score>=50){
+    fb.className='feedback-banner show wrong';
+    fb.textContent=`Good try! ${score} / 100 — Review the story!`;
+  } else {
+    fb.className='feedback-banner show wrong';
+    fb.textContent=`${score} / 100 — Let's look at the story again!`;
+  }
+
+  document.getElementById('retry'+qIdx).classList.add('show');
+  document.getElementById('nxt'+qIdx).classList.add('show');
+  updateDots();
+}
+
+/* ── Retry single question ────────────────────────── */
+function retryQ(qIdx) {
+  answered[qIdx] = false;
+  scores[qIdx] = null;
+  mcqSel[qIdx] = null;
+
+  // Hide feedback & retry & next
+  const fb = document.getElementById('fb'+qIdx);
+  fb.className = 'feedback-banner'; fb.textContent = '';
+  document.getElementById('retry'+qIdx).classList.remove('show');
+  document.getElementById('nxt'+qIdx).classList.remove('show');
+
+  // Reset Check button
+  document.getElementById('chk'+qIdx).disabled = true;
+
+  if (qIdx === 0) {
+    // Return all filled slots to bank
+    for (let p = 1; p <= 5; p++) {
+      if (seqSlots[p]) { returnSeqCard(p); renderSeqSlot(p); }
+    }
+    document.getElementById('seq-bank').style.display = '';
+    // Clear border colours
+    document.querySelectorAll('#seq-slots .seq-slot').forEach(s => s.style.borderColor = '');
+
+  } else if (qIdx === 1) {
+    // Reset image MCQ
+    document.querySelectorAll('#q2-grid .img-mcq-opt').forEach(el =>
+      el.classList.remove('selected','correct-ans','wrong-ans'));
+    resetPlayBtn();
+
+  } else if (qIdx === 2) {
+    // Return all answer words to bank
+    [...wordOrder].forEach(w => returnWordToBank(w));
+    wordOrder = [];
+    renderWordAnswer();
+    document.getElementById('word-bank').style.display = '';
+
+  } else {
+    // Text MCQ Q4–Q6
+    const ids = ['q4-opts','q5-opts','q6-opts'];
+    document.querySelectorAll('#'+ids[qIdx-3]+' .text-mcq-opt').forEach(el =>
+      el.classList.remove('selected','correct-ans','wrong-ans'));
+  }
+
+  updateDots();
+}
+
+/* ── Student Results ──────────────────────────────── */
+function showStudentResults() {
+  const total = Math.round(scores.reduce((a,b)=>a+(b||0),0)/6);
+  const oCount = scores.filter(s=>s>=85).length;
+  document.getElementById('student-title').textContent =
+    oCount===6 ? '⭐ Perfect Score!' : oCount>=4 ? '🎉 Great Job!' : '🌈 Quiz Complete!';
+  const praises = [
+    'Amazing! Every question was correct! You are a reading superstar! ⭐',
+    'So close to perfect! You understand this story really well! 🌟',
+    'Great reading skills! Keep it up! 📚',
+    'Good effort! A little more practice and you\'ll shine! 💪',
+    'Nice try! Every story makes you a better reader. 🦎',
+    'Keep going!\nMilo found his color —\nyou\'ll find your answers too! 🌈',
+    'Don\'t give up! Every quiz is a new adventure! 🌈'
+  ];
+  document.getElementById('student-praise').textContent = praises[6-oCount] || praises[6];
+
+  const grid = document.getElementById('ox-grid');
+  grid.innerHTML='';
+  ['Q1','Q2','Q3','Q4','Q5','Q6'].forEach((lbl,i)=>{
+    const isO=scores[i]>=85;
+    grid.innerHTML+=`<div class="ox-cell">
+      <div class="q-label">${lbl}</div>
+      <div class="ox-symbol ${isO?'o':'x'}">${isO?'○':'✕'}</div>
+    </div>`;
+  });
+
+  showScreen('screen-student');
+}
+
+/* ── Parent Results ───────────────────────────────── */
+function showParentResults() {
+  const total = Math.round(scores.reduce((a,b)=>a+(b||0),0)/6);
+  document.getElementById('parent-score-big').textContent = total;
+  document.getElementById('parent-score-label').textContent =
+    '— ' + (total>=90?'우수 (Excellent)':total>=70?'양호 (Good)':total>=50?'보통 (Average)':'집중 지도 필요');
+
+  const defs = [
+    {qNum:'Q1', sg:'Setting & Sequence', kor:'장면 순서 맞추기',    type:'seq',  logKey:'q01'},
+    {qNum:'Q2', sg:'Initiating Event',   kor:'듣기: 문장-장면 연결', type:'mcq',  logKey:'q02', qd:QD.q02},
+    {qNum:'Q3', sg:'Attempt',            kor:'단어 배열',           type:'word', logKey:'q03'},
+    {qNum:'Q4', sg:'Reaction',           kor:'감정 이해',            type:'mcq',  logKey:'q04', qd:QD.q04},
+    {qNum:'Q5', sg:'Initiating Event',   kor:'주인공 목표',          type:'mcq',  logKey:'q05', qd:QD.q05},
+    {qNum:'Q6', sg:'Theme',              kor:'중심 내용 파악',       type:'mcq',  logKey:'q06', qd:QD.q06},
+  ];
+
+  document.getElementById('parent-q-list').innerHTML = defs.map((d,i)=>{
+    const s=scores[i]??0, pass=s>=85;
+    return `<div class="parent-q-card ${pass?'pass':'fail'}">
+      <div class="parent-q-header">
+        <div class="parent-q-num">${d.qNum}</div>
+        <span class="sg-label">${d.sg}</span>
+        <div class="parent-q-title">${d.kor}</div>
+        <div class="parent-q-score">${s} / 100</div>
+      </div>
+      <div class="parent-q-body">${buildParentFeedback(d, s)}</div>
+    </div>`;
+  }).join('');
+
+  const risks=[];
+  if((scores[0]??0)<60) risks.push('• 이야기 구조(시작→전개→결말) 이해 훈련 필요');
+  if((scores[1]??0)<60) risks.push('• 청각적 언어 처리 및 발단 장면 인식 능력 부족');
+  if((scores[2]??0)<60) risks.push('• 영어 문장 구조(SVO) 이해 및 표현 능력 강화 필요');
+  if((scores[3]??0)<60) risks.push('• 이야기 주제(Theme) 추론 능력 부족 — 세부 사실과 주제를 구별하는 훈련 권장');
+  if((scores[4]??0)<60) risks.push('• 등장인물 목표 파악 능력 부족');
+  if((scores[5]??0)<60) risks.push('• 감정 어휘 이해 부족 — Sad/Happy/Angry/Surprised 기본 감정어 학습 권장');
+  document.getElementById('parent-risk-body').innerHTML =
+    risks.length ? risks.join('<br>') : '✅ 특별한 집중 지도 영역이 없습니다. 다음 단계로 진행하세요.';
+
+  showScreen('screen-parent');
+}
+
+function buildParentFeedback(def, score) {
+  if (score >= 85) return '✅ 정확히 이해하고 있습니다.';
+  const log = answerLog[def.logKey];
+  if (!log) return '문제를 완료하지 않았습니다.';
+
+  if (def.type==='seq') {
+    const correct=QD.q01.correct;
+    const names={SC01:'밀로 소개(SC01)',SC03:'나비 장면(SC03)',SC05:'꽃 장면(SC05)',SC06:'연못 슬픔(SC06)',SC10:'거울 장면(SC10)'};
+    const wrongs=[];
+    Object.entries(log.seqSlots).forEach(([pos,sc])=>{
+      if(!sc) return;
+      const cp=correct.indexOf(sc)+1;
+      if(parseInt(pos)!==cp) wrongs.push(`${names[sc]}을 ${pos}번째 배치 → 정답 ${cp}번째`);
+    });
+    return (wrongs.length ? `오답: ${wrongs.join('; ')}. ` : '') +
+      (score<40 ? '이야기 시작(SC01)과 끝(SC10)부터 고정 후 중간 사건 순서 복습을 권장합니다.'
+                : '중간 장면들의 순서가 불안정합니다. 각 장면의 핵심 사건을 함께 확인해보세요.');
+  }
+
+  if (def.type==='word') {
+    const correct=QD.q03.correct;
+    const wrongs=log.wordOrder.map((w,i)=>w!==correct[i]?`${i+1}번째: "${w}"→정답"${correct[i]}"`:null).filter(Boolean);
+    return (wrongs.length?`오답: ${wrongs.join(', ')}. `:'') +
+      '"My color(주어) helps(동사) me(목적어) fly(부정사)" 구조를 설명하고 비슷한 패턴을 반복 연습하세요.';
+  }
+
+  if (def.type==='mcq') {
+    const sel=log.selected, qd=def.qd;
+    const w=qd.opts[sel]?.w;
+    return `선택: 옵션 ${sel||'없음'} (${score}점). ` + (w?`오답 원인: ${w}.`:'');
+  }
+  return '';
+}
+
+/* ── Restart ──────────────────────────────────────── */
+function restartAll() {
+  scores.fill(null); answered.fill(false); mcqSel.fill(null);
+  Object.keys(answerLog).forEach(k=>delete answerLog[k]);
+  for(let i=1;i<=5;i++) seqSlots[i]=null;
+  wordOrder=[];
+
+  // Reset Q1 slots
+  for(let p=1;p<=5;p++) renderSeqSlot(p);
+
+  // Restore Q1 bank
+  document.getElementById('seq-bank').innerHTML=
+    [['SC05','#FFCCBC','🌸'],['SC01','#B2EBF2','🦎'],['SC10','#FFF8E1','🪞'],
+     ['SC03','#FFF9C4','🦋'],['SC06','#B3E5FC','💧']].map(([sc,bg,em])=>`
+    <div class="seq-item" data-scene="${sc}" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+      <img src="Image/OG0021_${sc}_I.png" alt="${sc}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="scene-ph" style="background:${bg};display:none">${em}</div>
+    </div>`).join('');
+
+  // Reset Q3
+  document.getElementById('unscrm-answer').innerHTML='<div class="placeholder-hint">Drop words here.</div>';
+  document.getElementById('word-bank').innerHTML=
+    ['helps','fly.','color','My','me'].map(w=>`
+    <div class="word-chip" draggable="true" data-word="${w}" ondragstart="wordStart(event)" ondragend="wordEnd(event)">${w}</div>`).join('');
+
+  // Reset MCQ selections
+  document.querySelectorAll('.img-mcq-opt,.text-mcq-opt').forEach(el=>el.className=el.className.replace(/\s*(selected|correct-ans|wrong-ans)/g,''));
+
+  // Reset feedbacks, buttons, slot borders
+  for(let i=0;i<6;i++){
+    const fb=document.getElementById('fb'+i);
+    if(fb){fb.className='feedback-banner';fb.textContent='';}
+    const chk=document.getElementById('chk'+i);
+    if(chk) chk.disabled=true;
+    const nxt=document.getElementById('nxt'+i);
+    if(nxt){ nxt.className='btn-next'+(i===5?' show':''); }
+    const rty=document.getElementById('retry'+i);
+    if(rty) rty.classList.remove('show');
+    document.querySelectorAll('#seq-slots .seq-slot').forEach(s=>s.style.borderColor='');
+  }
+
+  // Reset audio
+  resetPlayBtn();
+  document.getElementById('audio-error').style.display='none';
+  const audio=document.getElementById('q2-audio');
+  audio.pause(); audio.currentTime=0;
+
+  currentQ=0;
+  showScreen('screen-cover');
+}
+</script>
+</body>
+</html>
