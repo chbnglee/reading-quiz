@@ -286,9 +286,9 @@ body { font-family: 'ABeeZee', sans-serif; background: #F5F3FF; min-height: 100v
         <img src="Image/OG0005_SC07_I.png" alt="SC07" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div class="scene-ph" style="background:#CFD8DC;display:none">🌫️</div>
       </div>
-      <div class="seq-item" data-scene="SC01" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
-        <img src="Image/OG0005_SC01_I.png" alt="SC01" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="scene-ph" style="background:#B2EBF2;display:none">🪐</div>
+      <div class="seq-item" data-scene="SC03" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
+        <img src="Image/OG0005_SC03_I.png" alt="SC03" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="scene-ph" style="background:#C8E6C9;display:none">🌟</div>
       </div>
       <div class="seq-item" data-scene="SC12" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
         <img src="Image/OG0005_SC12_I.png" alt="SC12" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -330,8 +330,8 @@ body { font-family: 'ABeeZee', sans-serif; background: #F5F3FF; min-height: 100v
     <audio id="q2-audio" onended="resetPlayBtn()" onerror="showAudioError()"></audio>
     <div class="img-mcq-grid" id="q2-grid">
       <div class="img-mcq-opt" data-opt="A" onclick="selectImgMCQ(1,'A')">
-        <img src="Image/OG0005_SC01_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="img-ph" style="background:#B2EBF2;display:none">🪐</div>
+        <img src="Image/OG0005_SC03_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-ph" style="background:#C8E6C9;display:none">🌟</div>
       </div>
       <div class="img-mcq-opt" data-opt="B" onclick="selectImgMCQ(1,'B')">
         <img src="Image/OG0005_SC02_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -536,13 +536,13 @@ body { font-family: 'ABeeZee', sans-serif; background: #F5F3FF; min-height: 100v
 /* ── Quiz Data ────────────────────────────────────── */
 const QD = {
   q01: {
-    correct: ['SC01','SC02','SC05','SC07','SC12'],
-    weights: {SC01:2.0, SC02:2.0, SC05:1.5, SC07:1.5, SC12:2.5},
+    correct: ['SC02','SC03','SC05','SC07','SC12'],
+    weights: {SC02:2.5, SC03:1.5, SC05:1.5, SC07:1.5, SC12:2.5},
     sg:'setting_sequence', sgLabel:'Scene Sequencing'
   },
   q02: {
     opts: {
-      A:{s:20,  w:'배경 장면(SC01)과 사건 발생 장면(SC02)을 혼동함'},
+      A:{s:25,  w:'발단 직후 장면(SC03)과 발단 장면(SC02)을 혼동함'},
       B:{s:100, w:null},
       C:{s:15,  w:'발단(SC02)과 절정·포획 장면(SC05)을 혼동함'},
       D:{s:5,   w:'발단(SC02)과 지혜 전달 장면(SC09)을 혼동함'}
@@ -622,8 +622,8 @@ function downloadDevSpec() {
   const STORY = 'OG0005';
   const qRows = [['q_id','story_id','q_number','q_type_code','q_type_label','sg_element','sg_label_en','instruction_en','img_resource','audio_resource','correct_answer','scoring_type','max_score']];
   const qMeta = [
-    {q_id:'OG0005_Q01',q_number:1,q_type_code:'SEQ_DRAG',q_type_label:'Sequence Drag & Drop',sg_element:'setting_sequence',sg_label_en:'Setting & Sequence',instruction:'Put the scenes in the right order.',img:'OG0005_SC01_I.png, OG0005_SC02_I.png, OG0005_SC05_I.png, OG0005_SC07_I.png, OG0005_SC12_I.png',audio:'-',correct:'SC01, SC02, SC05, SC07, SC12',scoring:'weighted_position'},
-    {q_id:'OG0005_Q02',q_number:2,q_type_code:'LISTEN_MCQ',q_type_label:'Listening MCQ',sg_element:'initiating_event',sg_label_en:'Initiating Event',instruction:'Listen and choose the matching scene.',img:'OG0005_SC01_I.png, OG0005_SC02_I.png, OG0005_SC05_I.png, OG0005_SC09_I.png',audio:'Audio/OG0005_SC02_ST01_N_A.mp3',correct:'B',scoring:'fixed_option_score'},
+    {q_id:'OG0005_Q01',q_number:1,q_type_code:'SEQ_DRAG',q_type_label:'Sequence Drag & Drop',sg_element:'setting_sequence',sg_label_en:'Setting & Sequence',instruction:'Put the scenes in the right order.',img:'OG0005_SC02_I.png, OG0005_SC03_I.png, OG0005_SC05_I.png, OG0005_SC07_I.png, OG0005_SC12_I.png',audio:'-',correct:'SC02, SC03, SC05, SC07, SC12',scoring:'weighted_position'},
+    {q_id:'OG0005_Q02',q_number:2,q_type_code:'LISTEN_MCQ',q_type_label:'Listening MCQ',sg_element:'initiating_event',sg_label_en:'Initiating Event',instruction:'Listen and choose the matching scene.',img:'OG0005_SC03_I.png, OG0005_SC02_I.png, OG0005_SC05_I.png, OG0005_SC09_I.png',audio:'Audio/OG0005_SC02_ST01_N_A.mp3',correct:'B',scoring:'fixed_option_score'},
     {q_id:'OG0005_Q03',q_number:3,q_type_code:'WORD_DRAG',q_type_label:'Word Unscramble Drag & Drop',sg_element:'attempt',sg_label_en:'Attempt',instruction:'Build the sentence! Drag the words into order.',img:'-',audio:'-',correct:'By, trapping, it,, you, extinguished, its, light.',scoring:'weighted_sequence'},
     {q_id:'OG0005_Q04',q_number:4,q_type_code:'IMG_MCQ',q_type_label:'Image MCQ',sg_element:'reaction',sg_label_en:'Reaction',instruction:'How does Didi feel in this scene?',img:'OG0005_SC08_I.png',audio:'-',correct:'B',scoring:'fixed_option_score'},
     {q_id:'OG0005_Q05',q_number:5,q_type_code:'TEXT_MCQ',q_type_label:'Text MCQ',sg_element:'initiating_event',sg_label_en:'Initiating Event',instruction:'What does Didi want at the start of the story?',img:'-',audio:'-',correct:'A',scoring:'fixed_option_score'},
@@ -635,9 +635,9 @@ function downloadDevSpec() {
   XLSX.utils.book_append_sheet(wb,ws1,'QUESTIONS');
 
   const optRows=[['q_id','option_key','option_text','item_weight','score_value','is_correct','resource_file']];
-  [['SC01',2.0],['SC02',2.0],['SC05',1.5],['SC07',1.5],['SC12',2.5]].forEach(([sc,w],i)=>
+  [['SC02',2.5],['SC03',1.5],['SC05',1.5],['SC07',1.5],['SC12',2.5]].forEach(([sc,w],i)=>
     optRows.push(['OG0005_Q01',String(i+1),sc,w,'-','TRUE',`OG0005_${sc}_I.png`]));
-  [['A','OG0005_SC01_I.png'],['B','OG0005_SC02_I.png'],['C','OG0005_SC05_I.png'],['D','OG0005_SC09_I.png']].forEach(([k,res])=>
+  [['A','OG0005_SC03_I.png'],['B','OG0005_SC02_I.png'],['C','OG0005_SC05_I.png'],['D','OG0005_SC09_I.png']].forEach(([k,res])=>
     optRows.push(['OG0005_Q02',k,res,'-',QD.q02.opts[k]?.s??0,k===QD.q02.correct?'TRUE':'FALSE',res]));
   [['By',1.5],['trapping',2.5],['it,',1.0],['you',1.5],['extinguished',2.5],['its',1.5],['light.',2.0]].forEach(([w,wt],i)=>
     optRows.push(['OG0005_Q03',String(i+1),w,wt,'-','TRUE','-']));
@@ -927,10 +927,10 @@ function buildParentFeedback(def, score) {
   if(!log) return '문제를 완료하지 않았습니다.';
   if(def.type==='seq'){
     const correct=QD.q01.correct;
-    const names={SC01:'Podo·Didi 배경(SC01)',SC02:'무지개 구름 등장(SC02)',SC05:'구름 포획(SC05)',SC07:'구름 회색화(SC07)',SC12:'구름 해방(SC12)'};
+    const names={SC02:'무지개 구름 등장(SC02)',SC03:'구름 관찰(SC03)',SC05:'구름 포획(SC05)',SC07:'구름 회색화(SC07)',SC12:'구름 해방(SC12)'};
     const wrongs=[];
     Object.entries(log.seqSlots).forEach(([pos,sc])=>{ if(!sc) return; const cp=correct.indexOf(sc)+1; if(parseInt(pos)!==cp) wrongs.push(`${names[sc]}을 ${pos}번째 배치 → 정답 ${cp}번째`); });
-    return (wrongs.length?`오답: ${wrongs.join('; ')}. `:'')+(score<40?'이야기의 시작(SC01)과 해결(SC12)부터 고정 후 중간 사건 순서를 복습하세요.':'중간 사건들의 순서가 불안정합니다. 각 장면의 핵심 행동을 함께 확인해보세요.');
+    return (wrongs.length?`오답: ${wrongs.join('; ')}. `:'')+(score<40?'이야기의 시작(SC02)과 해결(SC12)부터 고정 후 중간 사건 순서를 복습하세요.':'중간 사건들의 순서가 불안정합니다. 각 장면의 핵심 행동을 함께 확인해보세요.');
   }
   if(def.type==='word'){
     const correct=QD.q03.correct;
@@ -952,7 +952,7 @@ function restartAll() {
   wordOrder=[];
   for(let p=1;p<=5;p++) renderSeqSlot(p);
   document.getElementById('seq-bank').innerHTML=
-    [['SC07','#CFD8DC','🌫️'],['SC01','#B2EBF2','🪐'],['SC12','#F3E5F5','🌈'],['SC02','#FFF9C4','✨'],['SC05','#FFCCBC','🥅']].map(([sc,bg,em])=>`
+    [['SC07','#CFD8DC','🌫️'],['SC03','#C8E6C9','🌟'],['SC12','#F3E5F5','🌈'],['SC02','#FFF9C4','✨'],['SC05','#FFCCBC','🥅']].map(([sc,bg,em])=>`
     <div class="seq-item" data-scene="${sc}" draggable="true" ondragstart="seqStart(event)" ondragend="seqEnd(event)">
       <img src="Image/OG0005_${sc}_I.png" alt="${sc}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="scene-ph" style="background:${bg};display:none">${em}</div>
