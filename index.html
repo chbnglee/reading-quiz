@@ -1,8 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=OG0021_ReadingQuiz.html">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'ABeeZee',sans-serif;background:linear-gradient(160deg,#F3EEFF,#EAF4FF,#FFF0F7);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(22px,5vw,32px);color:#7C3AED;margin-bottom:8px;text-align:center}
+p{color:#6B7280;font-size:14px;margin-bottom:32px;text-align:center}
+.grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:680px;width:100%}
+.card{background:white;border-radius:24px;box-shadow:0 8px 28px rgba(124,58,237,.12);padding:24px 20px;width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;text-decoration:none;transition:transform .2s,box-shadow .2s;border:2px solid #EDE9FE}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(124,58,237,.2)}
+.card-id{font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;color:#A78BFA;background:#F5F3FF;padding:4px 12px;border-radius:50px}
+.card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:17px;color:#374151;text-align:center}
+.card-level{font-size:12px;color:#9CA3AF}
+.card-btn{background:linear-gradient(135deg,#7C3AED,#A78BFA);color:white;border:none;border-radius:50px;padding:10px 28px;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;cursor:pointer;margin-top:4px}
+</style>
 </head>
-<body></body>
+<body>
+<h1>📚 Reading Quiz</h1>
+<p>Choose a story to start your quiz!</p>
+<div class="grid">
+  <a class="card" href="OG0021/OG0021_ReadingQuiz.html">
+    <span class="card-id">OG0021</span>
+    <div class="card-title">Milo and the Lost Color</div>
+    <div class="card-level">⭐ Level 1 · 6 Questions</div>
+    <div class="card-btn">Start Quiz →</div>
+  </a>
+  <a class="card" href="OG0005/OG0005_ReadingQuiz.html">
+    <span class="card-id">OG0005</span>
+    <div class="card-title">Podo and Didi</div>
+    <div class="card-level">⭐⭐ Level 2 · 6 Questions</div>
+    <div class="card-btn">Start Quiz →</div>
+  </a>
+</div>
+</body>
 </html>
