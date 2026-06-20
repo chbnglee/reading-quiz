@@ -69,12 +69,12 @@ for i, h in enumerate(cols, 1):
     header(ws, 2, i, h)
 ws.row_dimensions[2].height = 30
 rows = [
-    ["Q01", "Setting Builder", "Setting", "Build the story setting.", "label cards", "who=Milo / where=home / situation=has colors", 100, "setting", "Component Weight", "Q01_SETTING"],
+    ["Q01", "Setting Image Choice", "Setting", "Where does Milo go to look for his color?", "SC01/03/06/10 images", "Option B", 100, "setting", "Weighted MCQ", "Q01_SETTING"],
     ["Q02", "Listening Scene Match", "Initiating Event", "Listen. Which scene starts the problem?", "Audio + SC02/03/06/09", "Option A", 100, "initiating_event", "Weighted MCQ", "Q02_INIT_EVENT"],
-    ["Q03", "Scene-Anchored Unscramble", "Attempt", "Look at the scene. Build what Milo does.", "SC03 image", "Milo looks for his lost color.", 100, "attempt", "Weighted Unscramble", "Q03_ATTEMPT"],
-    ["Q04", "Feeling Match", "Reaction", "How does Milo react in this scene?", "SC06 image", "Option B", 100, "reaction", "Weighted MCQ", "Q04_REACTION"],
-    ["Q05", "Thought Bubble", "Internal Response", "Put Milo's thought in the bubble.", "SC06 image", "Option A", 100, "internal_response", "Weighted Thought Card", "Q05_INTERNAL"],
-    ["Q06", "Cause→Result Chain", "Consequence", "Make the cause and result chain.", "text cards", "cry → colors come back", 100, "consequence", "Component Weight", "Q06_CONSEQUENCE"],
+    ["Q03", "Scene-Anchored Unscramble", "Attempt", "Put the story words in order.", "SC03 image", "Milo walks into the forest.", 100, "attempt", "Weighted Unscramble", "Q03_ATTEMPT"],
+    ["Q04", "Feeling Match", "Reaction", "How does Milo feel here?", "SC06 image", "Option B", 100, "reaction", "Weighted MCQ", "Q04_REACTION"],
+    ["Q05", "Internal Response MCQ", "Internal Response", "What is Milo thinking?", "SC06 image", "Option A", 100, "internal_response", "Weighted MCQ", "Q05_INTERNAL"],
+    ["Q06", "Ending Scene Sequence", "Consequence", "Put the ending scenes in order.", "SC06/07/08/09 images", "SC06 → SC07 → SC08 → SC09", 100, "consequence", "Weighted Position", "Q06_CONSEQUENCE"],
     ["Q07", "Synthesis MCQ", "Synthesis", "What did Milo find out at the end?", "-", "Option C", 100, "synthesis", "Weighted MCQ", "Q07_SYNTHESIS"],
 ]
 for r, row in enumerate(rows, 3):
@@ -112,24 +112,26 @@ def make_option_sheet(title, sheet, question, options, lrs, resource="-"):
 
 # Q01 Setting
 ws = wb.create_sheet("Q01_SETTING")
-set_widths(ws, [8, 18, 24, 14, 20, 28, 28, 24, 22])
-merge_title(ws, "A1:I1", "Q01 — Setting Builder | Story Grammar: Setting")
+set_widths(ws, [8, 30, 12, 18, 18, 28, 30, 24, 22])
+merge_title(ws, "A1:I1", "Q01 — Setting Image Choice | Story Grammar: Setting")
 ws.row_dimensions[1].height = 26
 ws.merge_cells("A2:I2")
-style_cell(ws["A2"], C_YELLOW, True).value = "Question: Build the story setting by placing cards into Who / Where / At first slots."
-for i, h in enumerate(["Slot", "Correct Card", "SG Role", "Slot Weight", "Near-Miss Examples", "Weight Rationale", "Max Points", "Error Tag", "LRS"], 1):
+style_cell(ws["A2"], C_YELLOW, True).value = "Question: Where does Milo go to look for his color?"
+for i, h in enumerate(["Option", "Scene / Resource", "Correct?", "Score", "SG Role", "Distractor Rationale", "Student Weakness Signal", "Error Tag", "LRS"], 1):
     header(ws, 4, i, h)
 data = [
-    ["Who", "Milo", "Character in setting", 25, "butterfly", "Identifies the story focus before the problem begins.", "=D5/SUM($D$5:$D$7)*100", "setting_actor_confusion", "setting"],
-    ["Where", "his colorful home", "Place / initial world", 35, "blue pond", "Separates opening place from later consequence scene.", "=D6/SUM($D$5:$D$7)*100", "setting_place_shift", "setting"],
-    ["At first", "has many colors", "Initial situation", 40, "lost color", "Distinguishes normal beginning from initiating event.", "=D7/SUM($D$5:$D$7)*100", "initial_state_problem_confusion", "setting"],
+    ["A", "OG0021_SC01_I", "NO", 35, "Opening character", "인물 소개 장면과 실제 탐색 장소를 혼동함", "Opening/setting detail confusion", "setting_actor_scene", "setting"],
+    ["B", "OG0021_SC03_I", "YES", 100, "Place setting", "Milo walks into the forest.", "-", "correct_setting_place", "setting"],
+    ["C", "OG0021_SC06_I", "NO", 55, "Later place", "중요 장소인 연못을 탐색이 시작된 장소와 혼동함", "Later consequence place confusion", "setting_later_place", "setting"],
+    ["D", "OG0021_SC10_I", "NO", 20, "Ending place", "결말의 집 장면을 주요 탐색 장소로 혼동함", "Ending/opening place confusion", "setting_ending_place", "setting"],
 ]
 for r, row in enumerate(data, 5):
+    fill = option_fill(row[3])
     for c, v in enumerate(row, 1):
-        style_cell(ws.cell(r, c, v), C_YELLOW if r in (5, 7) else C_GREEN)
+        style_cell(ws.cell(r, c, v), fill if c in (1, 3, 4) else None, c in (1, 3, 4) and row[3] == 100, "FFFFFF" if fill == C_OK and c in (1, 3, 4) else "000000")
     ws.row_dimensions[r].height = 30
-for c, v in [(1, "TOTAL"), (4, "=SUM(D5:D7)"), (7, "=SUM(G5:G7)")]:
-    style_cell(ws.cell(8, c, v), C_ACCENT, True, "000000", 9, "center")
+ws.merge_cells("A11:I11")
+style_cell(ws["A11"], C_GREEN, True).value = 'LRS xAPI: verb="answered" | object="quiz_OG0021_v2_q01_setting" | result.sg_element="setting" | result.score_raw=<pts>'
 
 # Q02
 make_option_sheet(
@@ -151,71 +153,72 @@ ws = wb.create_sheet("Q03_ATTEMPT")
 set_widths(ws, [6, 18, 18, 14, 14, 16, 18, 24, 24])
 merge_title(ws, "A1:I1", "Q03 — Scene-Anchored Unscramble | Story Grammar: Attempt")
 ws.merge_cells("A2:I2")
-style_cell(ws["A2"], C_YELLOW, True).value = "Question: Look at SC03. Build what Milo does."
+style_cell(ws["A2"], C_YELLOW, True).value = "Question: Put the story words in order."
 ws.merge_cells("A3:I3")
-style_cell(ws["A3"], C_YELLOW).value = 'Correct sentence: "Milo looks for his lost color."'
+style_cell(ws["A3"], C_YELLOW).value = 'Correct sentence from SC03_ST01_N: "Milo walks into the forest."'
 ws.merge_cells("A4:I4")
-style_cell(ws["A4"], C_ACCENT).value = "Scrambled words: looks | color. | his | Milo | lost | for"
+style_cell(ws["A4"], C_ACCENT).value = "Scrambled words: walks | forest. | Milo | the | into"
 for i, h in enumerate(["Word", "Correct Pos", "Grammar Role", "Word Weight", "Weight Rationale", "Max Points", "Error Tag"], 1):
     header(ws, 6, i, h)
 words = [
     ["Milo", 1, "Subject", 1.5, "Identifies actor of attempt.", "=D7/SUM($D$7:$D$12)*100", "actor_order"],
-    ["looks", 2, "Action verb", 2.5, "Core attempt action; highest weight.", "=D8/SUM($D$7:$D$12)*100", "attempt_action"],
-    ["for", 3, "Preposition", 1.5, "Links action to goal.", "=D9/SUM($D$7:$D$12)*100", "goal_link"],
-    ["his", 4, "Possessive", 1.0, "Small syntax support.", "=D10/SUM($D$7:$D$12)*100", "possessive"],
-    ["lost", 5, "Goal state", 2.0, "Shows the problem he is trying to solve.", "=D11/SUM($D$7:$D$12)*100", "problem_state"],
-    ["color.", 6, "Goal noun", 2.5, "Core goal of the attempt.", "=D12/SUM($D$7:$D$12)*100", "attempt_goal"],
+    ["walks", 2, "Action verb", 2.5, "Core attempt action; highest weight.", "=D8/SUM($D$7:$D$11)*100", "attempt_action"],
+    ["into", 3, "Direction word", 1.5, "Connects action to place.", "=D9/SUM($D$7:$D$11)*100", "direction_word"],
+    ["the", 4, "Article", 1.0, "Small syntax support.", "=D10/SUM($D$7:$D$11)*100", "article"],
+    ["forest.", 5, "Place noun", 2.5, "Shows where the attempt begins.", "=D11/SUM($D$7:$D$11)*100", "attempt_place"],
 ]
 for r, row in enumerate(words, 7):
     for c, v in enumerate(row, 1):
         style_cell(ws.cell(r, c, v), C_GREEN if c == 6 else (C_YELLOW if c in (1, 3) else None), False, "000000", 9, "center" if c in (2, 4, 6) else "left")
     ws.row_dimensions[r].height = 30
-for c, v in [(1, "TOTAL"), (4, "=SUM(D7:D12)"), (6, "=SUM(F7:F12)")]:
-    style_cell(ws.cell(13, c, v), C_ACCENT, True, "000000", 9, "center")
+for c, v in [(1, "TOTAL"), (4, "=SUM(D7:D11)"), (6, "=SUM(F7:F11)")]:
+    style_cell(ws.cell(12, c, v), C_ACCENT, True, "000000", 9, "center")
 ws.merge_cells("A15:I15")
 header(ws, 15, 1, "SECTION B — Partial Score Examples")
 for i, h in enumerate(["Student Answer", "Score", "Interpretation", "Weakness Signal"], 1):
     header(ws, 16, i, h, C_ACCENT)
 examples = [
-    ["Milo looks for his lost color.", 100, "Attempt action and goal fully understood.", "-"],
-    ["Milo looks for lost his color.", 83, "Core attempt understood; small syntax issue.", "possessive placement"],
-    ["Milo color. lost his for looks", 14, "Goal words known but action chain is broken.", "attempt sequence weakness"],
+    ["Milo walks into the forest.", 100, "Exact story sentence restored.", "-"],
+    ["Milo walks the into forest.", 83, "Core attempt understood; small syntax issue.", "function word placement"],
+    ["forest. into the walks Milo", 17, "Place is known but action sequence is broken.", "attempt sequence weakness"],
 ]
 for r, row in enumerate(examples, 17):
     for c, v in enumerate(row, 1):
         style_cell(ws.cell(r, c, v), option_fill(v) if c == 2 else None)
 
 # Q04-Q07
-make_option_sheet("Q04 — Feeling Match | Story Grammar: Reaction", "Q04_REACTION", "How does Milo react in this scene?", [
+make_option_sheet("Q04 — Feeling Match | Story Grammar: Reaction", "Q04_REACTION", "How does Milo feel here?", [
     ["A", "Happy", "NO", 0, "Reaction", "Opposite emotion", "Confuses resolution emotion with sadness.", "Temporal emotion confusion", "reaction"],
     ["B", "Sad", "YES", 100, "Reaction", "Correct", "SC06 shows crying and sadness.", "-", "reaction"],
     ["C", "Angry", "NO", 40, "Reaction", "Adjacent negative emotion", "Recognizes negative feeling but labels it too strongly.", "Emotion differentiation", "reaction"],
     ["D", "Surprised", "NO", 20, "Reaction", "Early-event emotion", "Confuses surprise with later sadness.", "Scene emotion mapping", "reaction"],
 ], "reaction", "OG0021_SC06_I.png")
 
-make_option_sheet("Q05 — Thought Bubble | Story Grammar: Internal Response", "Q05_INTERNAL", "Put Milo's thought in the bubble.", [
-    ["A", "Everyone has a color but me.", "YES", 100, "Internal Response", "Correct", "Captures Milo's inner comparison and loneliness.", "-", "internal_response"],
-    ["B", "I want to play with butterflies.", "NO", 20, "Attempt detail", "Confuses action context with inner thought.", "Thought/action confusion", "attempt"],
-    ["C", "I am the fastest chameleon.", "NO", 0, "Unrelated self-belief", "Opposite of the vulnerable internal state.", "Guessing / no inference", "internal_response"],
-    ["D", "The pond is very blue.", "NO", 50, "Surface observation", "Sees visual detail but not internal state.", "Surface-level inference", "internal_response"],
+make_option_sheet("Q05 — Internal Response MCQ | Story Grammar: Internal Response", "Q05_INTERNAL", "What is Milo thinking?", [
+    ["A", "Everyone has their own color.", "YES", 100, "Internal Response", "Correct", "Uses the actual SC06 thought/sentence to infer Milo's inner state.", "-", "internal_response"],
+    ["B", "I want to fly with the butterfly.", "NO", 20, "Attempt detail", "Confuses earlier butterfly scene with Milo's thought.", "Thought/action confusion", "attempt"],
+    ["C", "The pond is very blue.", "NO", 45, "Surface observation", "Sees visual detail but not internal state.", "Surface-level inference", "internal_response"],
+    ["D", "I do not need my color.", "NO", 0, "Opposite motive", "Contradicts Milo's motivation to find his color.", "Motive inversion", "internal_response"],
 ], "internal_response", "OG0021_SC06_I.png")
 
 ws = wb.create_sheet("Q06_CONSEQUENCE")
-set_widths(ws, [8, 26, 20, 14, 24, 32, 20, 24])
-merge_title(ws, "A1:H1", "Q06 — Cause→Result Chain | Story Grammar: Consequence")
+set_widths(ws, [8, 20, 14, 14, 24, 32, 20, 24])
+merge_title(ws, "A1:H1", "Q06 — Ending Scene Sequence | Story Grammar: Consequence")
 ws.merge_cells("A2:H2")
-style_cell(ws["A2"], C_YELLOW, True).value = "Question: Make the cause and result chain."
-for i, h in enumerate(["Slot", "Correct Card", "Slot Weight", "Max Points", "Distractors", "Weight Rationale", "Error Tag", "LRS"], 1):
+style_cell(ws["A2"], C_YELLOW, True).value = "Question: Put the ending scenes in order."
+for i, h in enumerate(["Scene", "Resource", "Correct Pos", "Scene Weight", "SG Role", "Weight Rationale", "Error Tag", "LRS"], 1):
     header(ws, 4, i, h)
 rows = [
-    ["Cause", "Milo cries by the pond.", 45, "=C5/SUM($C$5:$C$6)*100", "The butterfly turns gray.", "Identifies the action/event that triggers the result.", "wrong_cause", "consequence"],
-    ["Result", "His colors come back.", 55, "=C6/SUM($C$5:$C$6)*100", "Milo stays gray forever.", "Result is the core consequence and receives slightly higher weight.", "wrong_result", "consequence"],
+    ["SC06", "OG0021_SC06_I", 1, 2.0, "Cause / low point", "Milo cries; this begins the ending chain.", "missed_cause_scene", "consequence"],
+    ["SC07", "OG0021_SC07_I", 2, 1.5, "Immediate result", "The pond shines after the tear falls.", "immediate_result_shift", "consequence"],
+    ["SC08", "OG0021_SC08_I", 3, 1.5, "Internal turn", "Milo realizes his color may be inside him.", "realization_order", "consequence"],
+    ["SC09", "OG0021_SC09_I", 4, 2.5, "Final consequence", "Milo's colors come back; final outcome receives high weight.", "final_result_order", "consequence"],
 ]
 for r, row in enumerate(rows, 5):
     for c, v in enumerate(row, 1):
-        style_cell(ws.cell(r, c, v), C_YELLOW if r == 5 else C_GREEN)
-for c, v in [(1, "TOTAL"), (3, "=SUM(C5:C6)"), (4, "=SUM(D5:D6)")]:
-    style_cell(ws.cell(7, c, v), C_ACCENT, True, "000000", 9, "center")
+        style_cell(ws.cell(r, c, v), C_YELLOW if row[3] >= 2.0 else C_GREEN)
+for c, v in [(1, "TOTAL"), (4, "=SUM(D5:D8)")]:
+    style_cell(ws.cell(9, c, v), C_ACCENT, True, "000000", 9, "center")
 
 make_option_sheet("Q07 — Synthesis MCQ | Main Idea / Whole Story Meaning", "Q07_SYNTHESIS", "What did Milo find out at the end?", [
     ["A", "Colors keep you safe.", "NO", 10, "Synthesis", "Fact distractor", "Treats an animal fact as the story meaning.", "Theme/detail confusion", "synthesis"],
@@ -231,12 +234,12 @@ merge_title(ws, "A1:G1", "Story Grammar Scoring Model — v2")
 for i, h in enumerate(["Axis", "Q_ID", "Score Source", "Calculation", "Interpretation", "Parent Report Use", "Weekly Rollup"], 1):
     header(ws, 3, i, h)
 axes = [
-    ["Setting", "Q01", "setting_score", "component weighted score", "Understands initial time/place/situation.", "Radar axis 1", "weighted average by story level"],
+    ["Setting", "Q01", "setting_score", "weighted option score", "Understands the key place/background for the story action.", "Radar axis 1", "weighted average by story level"],
     ["Initiating Event", "Q02", "initiating_event_score", "option score", "Understands what started the problem.", "Radar axis 2", "weighted average by story level"],
     ["Attempt", "Q03", "attempt_score", "weighted word sequence", "Understands what the character does to solve the problem.", "Radar axis 3", "weighted average by story level"],
     ["Reaction", "Q04", "reaction_score", "option score", "Understands visible feeling/response.", "Radar axis 4", "weighted average by story level"],
-    ["Internal Response", "Q05", "internal_response_score", "thought-card score", "Infers thoughts, motive, inner state.", "Radar axis 5", "weighted average by story level"],
-    ["Consequence", "Q06", "consequence_score", "cause/result component score", "Understands result and event development.", "Radar axis 6", "weighted average by story level"],
+    ["Internal Response", "Q05", "internal_response_score", "option score", "Infers thoughts, motive, inner state.", "Radar axis 5", "weighted average by story level"],
+    ["Consequence", "Q06", "consequence_score", "weighted scene position", "Understands result and event development.", "Radar axis 6", "weighted average by story level"],
     ["Synthesis", "Q07", "synthesis_score", "option score", "Synthesizes whole-story meaning.", "Separate card; not in radar", "20% of overall reading score"],
 ]
 for r, row in enumerate(axes, 4):
