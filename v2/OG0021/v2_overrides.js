@@ -2,23 +2,25 @@
 
 const V2_COUNT = 7;
 const V2_SG = [
-  { key: "setting", label: "Setting", kor: "배경 이해", q: 0 },
+  { key: "setting", label: "Setting", kor: "배경 이해", q: 5 },
   { key: "initiating_event", label: "Initiating Event", kor: "사건 시작", q: 1 },
   { key: "attempt", label: "Attempt", kor: "해결 행동", q: 2 },
   { key: "reaction", label: "Reaction", kor: "감정 반응", q: 3 },
   { key: "internal_response", label: "Internal Response", kor: "내면 추론", q: 4 },
-  { key: "consequence", label: "Consequence", kor: "결과 이해", q: 5 },
+  { key: "consequence", label: "Consequence", kor: "결과 이해", q: 0 },
 ];
 
 Object.assign(QD.q01, {
-  sg: "setting",
-  sgLabel: "Setting",
-  correct: "B",
-  opts: {
-    A: { s: 35, w: "인물 소개 장면(SC01)과 실제 탐색 장소(SC03)를 혼동함" },
-    B: { s: 100, w: null },
-    C: { s: 55, w: "중요 장면인 연못(SC06)을 장소 배경으로 보았지만 탐색이 시작된 장소와는 다름" },
-    D: { s: 20, w: "결말의 집 장면(SC10)을 이야기의 주요 장소로 혼동함" },
+  sg: "consequence",
+  sgLabel: "Consequence",
+  correct: ["SC01", "SC02", "SC03", "SC06", "SC09"],
+  weights: { SC01: 1.5, SC02: 2.5, SC03: 1.5, SC06: 1.5, SC09: 2.5 },
+  scenes: {
+    SC01: { text: "Milo has colors.", res: "OG0021_SC01_I.png" },
+    SC02: { text: "Milo wakes up gray.", res: "OG0021_SC02_I.png" },
+    SC03: { text: "Milo walks into the forest.", res: "OG0021_SC03_I.png" },
+    SC06: { text: "Milo cries by the pond.", res: "OG0021_SC06_I.png" },
+    SC09: { text: "Milo's colors come back.", res: "OG0021_SC09_I.png" },
   },
 });
 Object.assign(QD.q02, {
@@ -61,15 +63,14 @@ Object.assign(QD.q05, {
   correct: "A",
 });
 Object.assign(QD.q06, {
-  sg: "consequence",
-  sgLabel: "Consequence",
-  correct: ["SC06", "SC07", "SC08", "SC09"],
-  weights: { SC06: 2.0, SC07: 1.5, SC08: 1.5, SC09: 2.5 },
-  scenes: {
-    SC06: { text: "Milo cries.", res: "OG0021_SC06_I.png" },
-    SC07: { text: "The pond shines.", res: "OG0021_SC07_I.png" },
-    SC08: { text: "Milo laughs.", res: "OG0021_SC08_I.png" },
-    SC09: { text: "Colors come back.", res: "OG0021_SC09_I.png" },
+  sg: "setting",
+  sgLabel: "Setting",
+  correct: "B",
+  opts: {
+    A: { text: "a yellow butterfly", s: 25, w: "처음 만난 대상과 주인공의 정체를 혼동함" },
+    B: { text: "a little chameleon", s: 100, w: null },
+    C: { text: "a red flower", s: 15, w: "중간 장면의 대상을 주인공으로 혼동함" },
+    D: { text: "a blue pond", s: 0, w: "장소 정보를 인물 정보로 혼동함" },
   },
 });
 QD.q07 = {
@@ -105,7 +106,6 @@ function injectV2Style() {
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
     .setting-mcq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:10px}
-    .setting-mcq-grid .img-mcq-opt{aspect-ratio:16/10}
     .setting-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
     .setting-slot,.thought-drop,.chain-slot{min-height:76px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:800}
     .setting-slot.filled,.thought-drop.filled,.chain-slot.filled{border-style:solid;background:#EDE9FE}
@@ -113,22 +113,24 @@ function injectV2Style() {
     .card-bank,.thought-bank,.chain-bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
     .setting-card,.thought-card,.chain-card{background:white;border:2.5px solid #FCD34D;border-radius:18px;padding:11px 15px;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,.06);font-size:15px;text-align:center;line-height:1.35;transition:all .2s}
     .setting-card:hover,.thought-card:hover,.chain-card:hover{transform:translateY(-2px);border-color:#A78BFA}
-    .conseq-slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .conseq-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
     .conseq-slot{min-height:116px;border:2.5px dashed #F9A8D4;background:#FFF7FB;border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;color:#BE185D;font-family:'Nunito',sans-serif;font-weight:900}
     .conseq-slot.filled{border-style:solid;background:#FCE7F3}.conseq-slot img{width:100%;height:100%;object-fit:cover;pointer-events:none}.conseq-slot .pos-label{top:6px;left:6px;background:#BE185D}
-    .conseq-bank{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
+    .conseq-bank{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
     .conseq-card{aspect-ratio:16/10;border:2.5px solid #FCD34D;border-radius:18px;overflow:hidden;cursor:grab;background:white;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s}
     .conseq-card:hover{transform:translateY(-2px);border-color:#A78BFA}.conseq-card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
-    .report-grid{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:18px;align-items:start}
-    .radar-wrap{background:#F9FAFB;border:2px solid #EDE9FE;border-radius:24px;padding:16px;text-align:center}
+    .report-grid{display:grid;grid-template-columns:minmax(440px,500px) minmax(0,1fr);gap:18px;align-items:start}
+    .radar-wrap{background:#F9FAFB;border:2px solid #EDE9FE;border-radius:24px;padding:18px;text-align:center}
     .radar-title{font-family:'Nunito',sans-serif;font-weight:900;color:#7C3AED;margin-bottom:8px}
-    .radar-svg{width:100%;max-width:300px;height:auto}.axis-label{font-family:'ABeeZee',sans-serif;font-size:10px;fill:#4B5563}
-    .score-cards{display:grid;grid-template-columns:1fr;gap:10px}.sg-score-card,.synthesis-card{border-radius:18px;border:2px solid #E5E7EB;padding:12px;background:white}
+    .radar-svg{width:100%;max-width:450px;height:auto}.axis-label{font-family:'ABeeZee',sans-serif;font-size:10px;fill:#4B5563}.axis-hit{cursor:pointer}.axis-hit:hover text{fill:#7C3AED;font-weight:700}
+    .score-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sg-score-card,.synthesis-card{border-radius:18px;border:2px solid #E5E7EB;padding:12px;background:white;transition:background .15s,border-color .15s,transform .15s}
+    .sg-score-card.highlight,.synthesis-card.highlight{background:#F5F3FF;border-color:#7C3AED;transform:translateY(-1px)}
     .sg-score-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.sg-name{font-family:'Nunito',sans-serif;font-weight:900;color:#4C1D95;font-size:13px}.sg-score{font-family:'Nunito',sans-serif;font-weight:900;color:#7C3AED}.sg-note{font-size:12px;color:#6B7280;line-height:1.55;margin-top:6px}.synthesis-card{background:#FFF7ED;border-color:#FDBA74}
     .v2-report-section-title{font-family:'Nunito',sans-serif;font-weight:900;color:#92400E;font-size:15px;margin:4px 0 8px}
     .ox-grid{grid-template-columns:repeat(7,1fr);max-width:620px}.student-card{max-width:680px}.ox-cell{min-height:84px;justify-content:center}
-    .parent-card{max-width:920px}.parent-q-card{margin-bottom:0}.parent-risk{margin-top:6px}
-    @media(max-width:760px){.setting-mcq-grid,.setting-slots,.report-grid,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.ox-grid{grid-template-columns:repeat(4,1fr)}}
+    .parent-card{max-width:1200px}.parent-q-card{margin-bottom:0}.parent-risk{margin-top:6px}
+    @media(max-width:900px){.report-grid{grid-template-columns:1fr}.radar-svg{max-width:420px}}
+    @media(max-width:760px){.setting-mcq-grid,.setting-slots,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.ox-grid{grid-template-columns:repeat(4,1fr)}}
   `;
   document.head.appendChild(style);
 }
@@ -136,16 +138,18 @@ function injectV2Style() {
 function injectV2Dom() {
   document.querySelector(".cover-title").insertAdjacentHTML("afterend", '<div class="cover-version">Quiz v2 · Story Grammar + Synthesis</div>');
   document.getElementById("progress-bar").insertAdjacentHTML("beforeend", '<div class="dot" id="dot6" onclick="jumpTo(6)">7</div>');
-  document.querySelector("#screen-q0 .q-instruction").textContent = "Where does Milo go to look for his color?";
-  document.querySelector("#screen-q0 .q-type-tag").textContent = "Setting";
+  document.querySelector("#screen-q0 .q-instruction").textContent = "Put the story scenes in order.";
+  document.querySelector("#screen-q0 .q-type-tag").textContent = "Consequence";
   document.querySelector("#screen-q0 .seq-answer-zone").outerHTML = `
-    <div class="setting-mcq-grid" id="q1-setting-grid">
-      <div class="img-mcq-opt" data-opt="A" onclick="selectImgMCQ(0,'A')"><img src="Image/OG0021_SC01_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-ph" style="background:#B2EBF2;display:none">🦎</div></div>
-      <div class="img-mcq-opt" data-opt="B" onclick="selectImgMCQ(0,'B')"><img src="Image/OG0021_SC03_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-ph" style="background:#FFF9C4;display:none">🌳</div></div>
-      <div class="img-mcq-opt" data-opt="C" onclick="selectImgMCQ(0,'C')"><img src="Image/OG0021_SC06_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-ph" style="background:#B3E5FC;display:none">💧</div></div>
-      <div class="img-mcq-opt" data-opt="D" onclick="selectImgMCQ(0,'D')"><img src="Image/OG0021_SC10_I.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-ph" style="background:#FFF8E1;display:none">🪞</div></div>
+    <div class="conseq-slots" id="conseq-slots">
+      <div class="conseq-slot" data-pos="0" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">1</span>Drop here</div>
+      <div class="conseq-slot" data-pos="1" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">2</span>Drop here</div>
+      <div class="conseq-slot" data-pos="2" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">3</span>Drop here</div>
+      <div class="conseq-slot" data-pos="3" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">4</span>Drop here</div>
+      <div class="conseq-slot" data-pos="4" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">5</span>Drop here</div>
     </div>`;
-  document.getElementById("seq-bank").remove();
+  document.getElementById("seq-bank").outerHTML = `<div class="conseq-bank" id="conseq-bank"></div>`;
+  resetConseq();
 
   document.querySelector("#screen-q1 .q-instruction").textContent = "Listen. Which scene starts the problem?";
   document.querySelector("#screen-q1 .q-type-tag").textContent = "Initiating Event";
@@ -173,19 +177,17 @@ function injectV2Dom() {
     </div>`;
 
   const q6 = document.getElementById("screen-q5");
-  q6.querySelector(".q-instruction").textContent = "Put the ending scenes in order.";
-  q6.querySelector(".q-type-tag").textContent = "Consequence";
+  q6.querySelector(".q-instruction").textContent = "Who is Milo at the beginning?";
+  q6.querySelector(".q-type-tag").textContent = "Setting";
   q6.querySelector("#q6-opts").outerHTML = `
-    <div class="conseq-slots" id="conseq-slots">
-      <div class="conseq-slot" data-pos="0" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">1</span>Drop here</div>
-      <div class="conseq-slot" data-pos="1" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">2</span>Drop here</div>
-      <div class="conseq-slot" data-pos="2" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">3</span>Drop here</div>
-      <div class="conseq-slot" data-pos="3" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">4</span>Drop here</div>
-    </div>
-    <div class="conseq-bank" id="conseq-bank"></div>`;
+    <div class="text-mcq-list" id="q6-opts">
+      <div class="text-mcq-opt" data-opt="A" onclick="selectTextMCQ(5,'A')"><div class="opt-circle">A</div>a yellow butterfly</div>
+      <div class="text-mcq-opt" data-opt="B" onclick="selectTextMCQ(5,'B')"><div class="opt-circle">B</div>a little chameleon</div>
+      <div class="text-mcq-opt" data-opt="C" onclick="selectTextMCQ(5,'C')"><div class="opt-circle">C</div>a red flower</div>
+      <div class="text-mcq-opt" data-opt="D" onclick="selectTextMCQ(5,'D')"><div class="opt-circle">D</div>a blue pond</div>
+    </div>`;
   q6.querySelector("#nxt5").setAttribute("onclick", "goNext(5)");
   q6.querySelector("#nxt5").textContent = "Next →";
-  resetConseq();
 
   q6.insertAdjacentHTML("afterend", `
   <div id="screen-q6" class="screen q-screen" style="background:#FAE8FF">
@@ -388,7 +390,7 @@ function dropConseq(e) {
   renderConseqSlot(pos);
   v2ConseqDrag = null;
   v2ConseqFrom = null;
-  document.getElementById("chk5").disabled = v2ConseqOrder.filter(Boolean).length < QD.q06.correct.length;
+  document.getElementById("chk0").disabled = v2ConseqOrder.filter(Boolean).length < QD.q01.correct.length;
   const bank = document.getElementById("conseq-bank");
   bank.style.display = bank.children.length ? "" : "none";
 }
@@ -426,12 +428,12 @@ function returnConseqCard(pos) {
 }
 
 function resetConseq() {
-  v2ConseqOrder = Array(QD.q06.correct.length).fill(null);
-  for (let i = 0; i < QD.q06.correct.length; i++) renderConseqSlot(i);
+  v2ConseqOrder = Array(QD.q01.correct.length).fill(null);
+  for (let i = 0; i < QD.q01.correct.length; i++) renderConseqSlot(i);
   const bank = document.getElementById("conseq-bank");
   if (!bank) return;
   bank.style.display = "";
-  bank.innerHTML = ["SC08", "SC06", "SC09", "SC07"].map(scene =>
+  bank.innerHTML = ["SC06", "SC01", "SC09", "SC03", "SC02"].map(scene =>
     `<div class="conseq-card" draggable="true" data-scene="${scene}" ondragstart="startConseq(event)"><img src="Image/OG0021_${scene}_I.png" alt="${scene}"></div>`
   ).join("");
 }
@@ -454,7 +456,7 @@ selectImgMCQ = function(qIdx, opt) {
 
 selectTextMCQ = function(qIdx, opt) {
   if (answered[qIdx]) return;
-  const ids = { 3: "q4-opts", 4: "q5-opts", 6: "q7-opts" };
+  const ids = { 3: "q4-opts", 4: "q5-opts", 5: "q6-opts", 6: "q7-opts" };
   const id = ids[qIdx];
   document.querySelectorAll("#" + id + " .text-mcq-opt").forEach(el => el.classList.remove("selected"));
   document.querySelector("#" + id + ` [data-opt="${opt}"]`).classList.add("selected");
@@ -467,10 +469,21 @@ submitQ = function(qIdx) {
   document.getElementById("chk" + qIdx).disabled = true;
   let score = 0;
   if (qIdx === 0) {
-    const sel = mcqSel[0];
-    score = sel ? QD.q01.opts[sel].s : 0;
-    answerLog.q01 = { selected: sel, score };
-    markImage("q1-setting-grid", QD.q01.correct, sel);
+    const total = Object.values(QD.q01.weights).reduce((a, b) => a + b, 0);
+    let earned = 0;
+    v2ConseqOrder.forEach((scene, placedIdx) => {
+      const correctIdx = QD.q01.correct.indexOf(scene);
+      if (correctIdx < 0) return;
+      const distance = Math.abs(placedIdx - correctIdx);
+      earned += (QD.q01.weights[scene] || 0) * Math.max(0, 1 - distance * 0.5);
+    });
+    score = Math.round(earned / total * 100);
+    answerLog.q01 = { order: [...v2ConseqOrder], score };
+    document.querySelectorAll(".conseq-slot").forEach((slot, i) => {
+      const ok = v2ConseqOrder[i] === QD.q01.correct[i];
+      slot.style.borderColor = ok ? "#10B981" : "#EF4444";
+      slot.style.background = ok ? "#ECFDF5" : "#FEF2F2";
+    });
   } else if (qIdx === 1) {
     const sel = mcqSel[1];
     score = sel ? QD.q02.opts[sel].s : 0;
@@ -497,21 +510,10 @@ submitQ = function(qIdx) {
     answerLog.q05 = { selected: sel, score };
     markText("q5-opts", QD.q05.correct, sel);
   } else if (qIdx === 5) {
-    const total = Object.values(QD.q06.weights).reduce((a, b) => a + b, 0);
-    let earned = 0;
-    v2ConseqOrder.forEach((scene, placedIdx) => {
-      const correctIdx = QD.q06.correct.indexOf(scene);
-      if (correctIdx < 0) return;
-      const distance = Math.abs(placedIdx - correctIdx);
-      earned += (QD.q06.weights[scene] || 0) * Math.max(0, 1 - distance * 0.5);
-    });
-    score = Math.round(earned / total * 100);
-    answerLog.q06 = { order: [...v2ConseqOrder], score };
-    document.querySelectorAll(".conseq-slot").forEach((slot, i) => {
-      const ok = v2ConseqOrder[i] === QD.q06.correct[i];
-      slot.style.borderColor = ok ? "#10B981" : "#EF4444";
-      slot.style.background = ok ? "#ECFDF5" : "#FEF2F2";
-    });
+    const sel = mcqSel[5];
+    score = sel ? QD.q06.opts[sel].s : 0;
+    answerLog.q06 = { selected: sel, score };
+    markText("q6-opts", QD.q06.correct, sel);
   } else if (qIdx === 6) {
     const sel = mcqSel[6];
     score = sel ? QD.q07.opts[sel].s : 0;
@@ -559,26 +561,26 @@ retryQ = function(qIdx) {
   document.getElementById("nxt" + qIdx)?.classList.remove("show");
   const chk = document.getElementById("chk" + qIdx);
   if (chk) chk.disabled = true;
-  if (qIdx === 0) resetSetting();
+  if (qIdx === 0) resetConseq();
   else if (qIdx === 1) {
     document.querySelectorAll("#q2-grid .img-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
     resetPlayBtn();
   } else if (qIdx === 2) resetWord();
   else if (qIdx === 3) document.querySelectorAll("#q4-opts .text-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
   else if (qIdx === 4) document.querySelectorAll("#q5-opts .text-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
-  else if (qIdx === 5) resetConseq();
+  else if (qIdx === 5) document.querySelectorAll("#q6-opts .text-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
   else if (qIdx === 6) document.querySelectorAll("#q7-opts .text-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
   updateDots();
 };
 
 function sgScores() {
   return {
-    setting: scores[0] || 0,
+    setting: scores[5] || 0,
     initiating_event: scores[1] || 0,
     attempt: scores[2] || 0,
     reaction: scores[3] || 0,
     internal_response: scores[4] || 0,
-    consequence: scores[5] || 0,
+    consequence: scores[0] || 0,
   };
 }
 function storyGrammarAverage() {
@@ -616,18 +618,18 @@ showParentResults = function() {
   document.getElementById("radar-chart").innerHTML = renderRadar(sg);
 
   const defs = [
-    { qNum: "Q1", sg: "Setting", kor: "장소 배경 찾기", type: "mcq", logKey: "q01", qd: QD.q01 },
-    { qNum: "Q2", sg: "Initiating Event", kor: "사건 시작 장면", type: "mcq", logKey: "q02", qd: QD.q02 },
-    { qNum: "Q3", sg: "Attempt", kor: "행동 문장 만들기", type: "word", logKey: "q03" },
-    { qNum: "Q4", sg: "Reaction", kor: "감정 반응", type: "mcq", logKey: "q04", qd: QD.q04 },
-    { qNum: "Q5", sg: "Internal Response", kor: "생각/내면 추론", type: "mcq", logKey: "q05", qd: QD.q05 },
-    { qNum: "Q6", sg: "Consequence", kor: "결말 순서 배열", type: "sequence", logKey: "q06" },
-    { qNum: "Q7", sg: "Synthesis", kor: "전체 의미 종합", type: "mcq", logKey: "q07", qd: QD.q07 },
+    { qNum: "Q1", sg: "Consequence", key: "consequence", kor: "장면 순서 배열", type: "sequence", logKey: "q01" },
+    { qNum: "Q2", sg: "Initiating Event", key: "initiating_event", kor: "사건 시작 장면", type: "mcq", logKey: "q02", qd: QD.q02 },
+    { qNum: "Q3", sg: "Attempt", key: "attempt", kor: "행동 문장 만들기", type: "word", logKey: "q03" },
+    { qNum: "Q4", sg: "Reaction", key: "reaction", kor: "감정 반응", type: "mcq", logKey: "q04", qd: QD.q04 },
+    { qNum: "Q5", sg: "Internal Response", key: "internal_response", kor: "생각/내면 추론", type: "mcq", logKey: "q05", qd: QD.q05 },
+    { qNum: "Q6", sg: "Setting", key: "setting", kor: "인물/배경 이해", type: "mcq", logKey: "q06", qd: QD.q06 },
+    { qNum: "Q7", sg: "Synthesis", key: "synthesis", kor: "전체 의미 종합", type: "mcq", logKey: "q07", qd: QD.q07 },
   ];
   document.getElementById("sg-score-cards").innerHTML = defs.map((d, i) => {
     const s = scores[i] || 0;
     const pass = s >= 85;
-    return `<div class="sg-score-card ${pass ? "pass" : "fail"}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s} / 100</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
+    return `<div class="sg-score-card ${pass ? "pass" : "fail"}" data-sg="${d.key}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s} / 100</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
   }).join("");
   document.getElementById("synthesis-card").style.display = "none";
   document.getElementById("parent-q-list").innerHTML = "";
@@ -640,12 +642,23 @@ showParentResults = function() {
 
 function renderRadar(sg) {
   const vals = V2_SG.map(d => sg[d.key] || 0);
-  const cx = 150, cy = 150, maxR = 95;
+  const cx = 210, cy = 190, maxR = 130;
   const angles = [-90, -30, 30, 90, 150, 210].map(a => a * Math.PI / 180);
   const rings = [20, 40, 60, 80, 100].map(v => `<polygon points="${angles.map(a => `${cx + Math.cos(a) * maxR * v / 100},${cy + Math.sin(a) * maxR * v / 100}`).join(" ")}" fill="none" stroke="#E5E7EB" stroke-width="1"/>`).join("");
-  const axes = angles.map((a, i) => `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(a) * maxR}" y2="${cy + Math.sin(a) * maxR}" stroke="#E5E7EB"/><text class="axis-label" x="${cx + Math.cos(a) * (maxR + 28)}" y="${cy + Math.sin(a) * (maxR + 25)}" text-anchor="middle">${V2_SG[i].label.replace("Initiating Event", "Init. Event").replace("Internal Response", "Internal")}</text>`).join("");
+  const axes = angles.map((a, i) => {
+    const d = V2_SG[i];
+    const x = cx + Math.cos(a) * (maxR + 45);
+    const y = cy + Math.sin(a) * (maxR + 38);
+    const label = d.label === "Initiating Event" ? ["Initiating", "Event"] : d.label === "Internal Response" ? ["Internal", "Response"] : [d.label];
+    return `<g class="axis-hit" onmouseenter="highlightReport('${d.key}',true)" onmouseleave="highlightReport('${d.key}',false)"><line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(a) * maxR}" y2="${cy + Math.sin(a) * maxR}" stroke="#E5E7EB"/><circle cx="${cx + Math.cos(a) * maxR}" cy="${cy + Math.sin(a) * maxR}" r="5" fill="#7C3AED" opacity=".18"/>` +
+      `<text class="axis-label" x="${x}" y="${y}" text-anchor="middle">${label.map((t, j) => `<tspan x="${x}" dy="${j ? 12 : 0}">${t}</tspan>`).join("")}</text></g>`;
+  }).join("");
   const poly = angles.map((a, i) => `${cx + Math.cos(a) * maxR * vals[i] / 100},${cy + Math.sin(a) * maxR * vals[i] / 100}`).join(" ");
-  return `<svg viewBox="0 0 300 300" class="radar-svg">${rings}${axes}<polygon points="${poly}" fill="rgba(124,58,237,.28)" stroke="#7C3AED" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="3" fill="#7C3AED"/></svg>`;
+  return `<svg viewBox="0 0 420 390" class="radar-svg">${rings}${axes}<polygon points="${poly}" fill="rgba(124,58,237,.28)" stroke="#7C3AED" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="3" fill="#7C3AED"/></svg>`;
+}
+
+function highlightReport(key, on) {
+  document.querySelectorAll(`[data-sg="${key}"]`).forEach(el => el.classList.toggle("highlight", on));
 }
 
 function feedbackLine(key, s) {
@@ -663,27 +676,11 @@ function feedbackLine(key, s) {
 }
 
 function buildParentFeedbackV2(def, score) {
-  if (score >= 85) return "✅ " + feedbackLine(def.sg.toLowerCase().replaceAll(" ", "_"), score);
+  const key = def.key || def.sg.toLowerCase().replaceAll(" ", "_");
+  if (score >= 85) return "✅ " + feedbackLine(key, score);
   const log = answerLog[def.logKey];
-  if (!log) return "문제를 완료하지 않았습니다.";
-  if (def.type === "word") {
-    const wrongs = (log.wordOrder || []).map((w, i) => w !== QD.q03.correct[i] ? `${i + 1}번째 ${w}→${QD.q03.correct[i]}` : null).filter(Boolean);
-    return (wrongs.length ? `오답 위치: ${wrongs.join(", ")}. ` : "") + feedbackLine("attempt", score);
-  }
-  if (def.type === "thought") {
-    const sel = log.selected;
-    return `선택: ${QD.q05.opts[sel]?.text || "없음"} (${score}점). ` + (QD.q05.opts[sel]?.w || feedbackLine("internal_response", score));
-  }
-  if (def.type === "sequence") {
-    const order = (log.order || []).map(sc => `${sc} ${QD.q06.scenes[sc]?.text || ""}`).join(" → ");
-    return `배치: ${order || "없음"}. ${feedbackLine("consequence", score)}`;
-  }
-  if (def.type === "mcq") {
-    const sel = log.selected, qd = def.qd;
-    const map = { q01: "setting", q02: "initiating_event", q04: "reaction", q05: "internal_response", q07: "synthesis" };
-    return `선택: 옵션 ${sel || "없음"} (${score}점). ` + (qd.opts[sel]?.w || feedbackLine(map[def.logKey], score));
-  }
-  return "";
+  if (!log) return "문항을 완료하지 않아 이 영역은 아직 판단하기 어렵습니다.";
+  return feedbackLine(key, score);
 }
 
 downloadDevSpec = function() {
@@ -697,12 +694,12 @@ downloadDevSpec = function() {
     "report_bucket"
   ]];
   [
-    ["OG0021_V2_Q01", 1, "SETTING_IMAGE_MCQ", "Setting Image Choice", "setting", "Setting", "Where does Milo go to look for his color?", "OG0021_SC01_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC10_I.png", "-", QD.q01.correct, "fixed_option_score", 100, "radar"],
+    ["OG0021_V2_Q01", 1, "STORY_SEQUENCE_DRAG", "Story Scene Sequence", "consequence", "Consequence", "Put the story scenes in order.", "OG0021_SC01_I.png, OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", "-", QD.q01.correct.join(", "), "weighted_position", 100, "radar"],
     ["OG0021_V2_Q02", 2, "LISTEN_SCENE_MCQ", "Listening Scene Match", "initiating_event", "Initiating Event", "Listen. Which scene starts the problem?", "OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", QD.q02.audioSrc || "Audio/OG0021_SC02_ST01_N_A.mp3", QD.q02.correct, "fixed_option_score", 100, "radar"],
     ["OG0021_V2_Q03", 3, "SCENE_WORD_DRAG", "Scene-Anchored Unscramble", "attempt", "Attempt", "Put the story words in order.", "OG0021_SC03_I.png", "-", QD.q03.correct.join(" "), "weighted_word_position", 100, "radar"],
     ["OG0021_V2_Q04", 4, "EMOTION_MCQ", "Emotion Match", "reaction", "Reaction", "How does Milo feel here?", "OG0021_SC06_I.png", "-", QD.q04.correct, "fixed_option_score", 100, "radar"],
     ["OG0021_V2_Q05", 5, "INTERNAL_RESPONSE_MCQ", "Internal Response MCQ", "internal_response", "Internal Response", "What is Milo thinking?", "OG0021_SC06_I.png", "-", QD.q05.correct, "fixed_option_score", 100, "radar"],
-    ["OG0021_V2_Q06", 6, "ENDING_SEQUENCE_DRAG", "Ending Scene Sequence", "consequence", "Consequence", "Put the ending scenes in order.", "OG0021_SC06_I.png, OG0021_SC07_I.png, OG0021_SC08_I.png, OG0021_SC09_I.png", "-", QD.q06.correct.join(", "), "weighted_position", 100, "radar"],
+    ["OG0021_V2_Q06", 6, "SETTING_MCQ", "Setting MCQ", "setting", "Setting", "Who is Milo at the beginning?", "-", "-", QD.q06.correct, "fixed_option_score", 100, "radar"],
     ["OG0021_V2_Q07", 7, "SYNTHESIS_MCQ", "Synthesis MCQ", "synthesis", "Synthesis", "What did Milo find out at the end?", "-", "-", QD.q07.correct, "fixed_option_score", 100, "separate_synthesis"],
   ].forEach(row => questionRows.push([
     row[0], story, row[1], row[2], row[3], row[4], row[5], row[6],
@@ -721,9 +718,9 @@ downloadDevSpec = function() {
     "score_value", "is_correct", "resource_file", "diagnostic_code"
   ]];
 
-  [["A", "OG0021_SC01_I.png"], ["B", "OG0021_SC03_I.png"], ["C", "OG0021_SC06_I.png"], ["D", "OG0021_SC10_I.png"]].forEach(([key, res]) => {
-    const opt = QD.q01.opts[key];
-    optionRows.push(["OG0021_V2_Q01", key, res.replace(".png", ""), "", "", opt.s, key === QD.q01.correct ? "TRUE" : "FALSE", res, opt.w || ""]);
+  QD.q01.correct.forEach((scene, idx) => {
+    const item = QD.q01.scenes[scene];
+    optionRows.push(["OG0021_V2_Q01", scene, item.text, "position_" + (idx + 1), QD.q01.weights[scene], "", "TRUE", item.res, ""]);
   });
   [["A", "OG0021_SC02_I.png"], ["B", "OG0021_SC03_I.png"], ["C", "OG0021_SC06_I.png"], ["D", "OG0021_SC09_I.png"]].forEach(([key, res]) => {
     const opt = QD.q02.opts[key];
@@ -739,9 +736,8 @@ downloadDevSpec = function() {
   Object.entries(QD.q05.opts).forEach(([key, opt]) => {
     optionRows.push(["OG0021_V2_Q05", key, opt.text, "thought", "", opt.s, key === QD.q05.correct ? "TRUE" : "FALSE", "-", opt.w || ""]);
   });
-  QD.q06.correct.forEach((scene, idx) => {
-    const item = QD.q06.scenes[scene];
-    optionRows.push(["OG0021_V2_Q06", scene, item.text, "position_" + (idx + 1), QD.q06.weights[scene], "", "TRUE", item.res, ""]);
+  Object.entries(QD.q06.opts).forEach(([key, opt]) => {
+    optionRows.push(["OG0021_V2_Q06", key, opt.text, "", "", opt.s, key === QD.q06.correct ? "TRUE" : "FALSE", "-", opt.w || ""]);
   });
   const q07Text = {
     A: "Colors keep you safe.",
@@ -758,12 +754,12 @@ downloadDevSpec = function() {
 
   const scoringRows = [
     ["q_id", "scoring_type", "formula_pseudocode", "story_grammar_score_rule", "notes"],
-    ["OG0021_V2_Q01", "fixed_option_score", "score = opts[selected].score_value", "Setting = Q01 score", "장소 배경을 직접 이미지로 선택"],
+    ["OG0021_V2_Q01", "weighted_position", "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)", "Consequence = Q01 score", "이야기 전체 사건 전개를 대표 장면 순서로 배열"],
     ["OG0021_V2_Q02", "fixed_option_score", "score = opts[selected].score_value", "Initiating Event = Q02 score", "오답도 발단 장면과의 의미 거리로 부분 점수"],
     ["OG0021_V2_Q03", "weighted_word_position", "score = round(sum(weight[word] if word is in exact position) / sum(weights) * 100)", "Attempt = Q03 score", "원문 SC03_ST01_N 문장 그대로 사용"],
     ["OG0021_V2_Q04", "fixed_option_score", "score = opts[selected].score_value", "Reaction = Q04 score", "감정 라벨의 유사도에 따라 부분 점수"],
     ["OG0021_V2_Q05", "fixed_option_score", "score = opts[selected].score_value", "Internal Response = Q05 score", "보기형으로 내면 생각을 직접 선택"],
-    ["OG0021_V2_Q06", "weighted_position", "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)", "Consequence = Q06 score", "결말 장면의 전개 순서를 이미지로 배열"],
+    ["OG0021_V2_Q06", "fixed_option_score", "score = opts[selected].score_value", "Setting = Q06 score", "이야기 시작의 주인공 정보를 직접 확인"],
     ["OG0021_V2_Q07", "fixed_option_score", "score = opts[selected].score_value", "Synthesis = separate score; not in 6-axis radar", "전체 의미/주제는 별도 카드와 전체점수 20% 반영"],
     ["OVERALL", "composite", "overall = average(Setting..Consequence) * 0.8 + Synthesis * 0.2", "Parent report headline score", "6축 진단 안정성을 유지하면서 전체 의미 이해도 반영"],
   ];
