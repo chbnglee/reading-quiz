@@ -53,13 +53,14 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
 .insight{border-radius:16px;padding:13px 14px;border:2px solid #E5E7EB;background:#FFFFFF}
 .insight strong{font-family:'Nunito',sans-serif;color:#4C1D95;font-size:14px}
 .insight p{font-size:12px;line-height:1.55;color:#6B7280;margin-top:5px}
-.trend{height:180px;width:100%}
+.trend{height:210px;width:100%}
 .formula{margin-top:16px;background:#0F172A;color:white;border-radius:20px;padding:17px 18px}
 .formula h2{color:white;margin-bottom:10px}.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .formula-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px}
 .formula-card strong{display:block;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:5px;color:#EDE9FE}
 .formula-card code{font-family:Consolas,monospace;font-size:11px;line-height:1.45;color:#E0F2FE;white-space:normal}
 .next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.next-panel{margin-top:16px}
 .next-card{background:#FFF7ED;border:2px solid #FDBA74;border-radius:16px;padding:13px}
 .next-card strong{font-family:'Nunito',sans-serif;color:#9A3412;font-size:13px}.next-card p{font-size:12px;color:#6B7280;line-height:1.55;margin-top:5px}
 @media(max-width:940px){.top,.layout,.section-grid,.formula-grid,.next{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.period{min-width:0}.page{padding:20px 14px 36px}}
@@ -71,12 +72,11 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
   <header class="top">
     <div>
       <div class="eyebrow">Reading Comprehension Report · Sample</div>
-      <h1>기간 종합 리포트</h1>
-      <p class="lead">10권의 개별 퀴즈 결과를 모아 Story Grammar 이해도, 반복 약점, 최근 성장 추세를 보여주는 학부모용 예시 화면입니다.</p>
+      <h1>Quiz 종합 리포트</h1>
     </div>
     <aside class="period">
       <strong>2026.06.01 - 2026.06.21</strong>
-      <span>샘플 학생 · Level 1-2 · 10 stories</span>
+      <span>김아미 · Level 1-2 · 10 stories</span>
     </aside>
   </header>
 
@@ -91,29 +91,18 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
 
     <div>
       <section class="panel">
-        <h2>주요 해석</h2>
+        <h2>Learning Insights</h2>
         <div class="insights" id="insights"></div>
       </section>
       <section class="panel" style="margin-top:16px">
-        <h2>최근 변화</h2>
-        <svg class="trend" id="trend" viewBox="0 0 620 180" role="img" aria-label="최근 변화 그래프"></svg>
+        <h2>Learning Progress</h2>
+        <svg class="trend" id="trend" viewBox="0 0 620 210" role="img" aria-label="학습 날짜별 변화 그래프"></svg>
       </section>
-    </div>
-  </section>
-
-  <section class="section-grid">
-    <div class="panel">
-      <h2>읽은 이야기 10권</h2>
-      <div class="story-grid" id="story-list"></div>
-    </div>
-    <div class="panel">
-      <h2>다음 학습 제안</h2>
-      <div class="next" id="next-practice"></div>
     </div>
   </section>
 
   <section class="panel heatmap" style="margin-top:16px">
-    <h2>이야기별 Story Grammar 결과</h2>
+    <h2>Learning Details</h2>
     <table id="story-table"></table>
   </section>
 
@@ -127,6 +116,11 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
       <div class="formula-card"><strong>성장 추세</strong><code>trendDelta = avg(lastHalf.axis) - avg(firstHalf.axis)</code></div>
       <div class="formula-card"><strong>안정도</strong><code>stability = 100 - stdev(axisScores); low stability means uneven comprehension</code></div>
     </div>
+  </section>
+
+  <section class="panel next-panel">
+    <h2>Next Steps</h2>
+    <div class="next" id="next-practice"></div>
   </section>
 </main>
 
@@ -170,9 +164,9 @@ const weakest = AXES.slice().sort((a,b)=>(axisLowCount[b.key]-axisLowCount[a.key
 
 function renderSummary(){
   document.getElementById("summary").innerHTML = `
-    <div class="metric good"><div class="label">읽은 책</div><div class="value">${books.length}권</div><div class="sub">완료 퀴즈 ${books.length}개</div></div>
-    <div class="metric good"><div class="label">기간 종합점수</div><div class="value">${periodOverall}</div><div class="sub">SG 평균 80% + Synthesis 20%</div></div>
-    <div class="metric"><div class="label">가장 안정적인 항목</div><div class="value">${axisAvg[strongest.key]}</div><div class="sub">${strongest.en} · ${strongest.ko}</div></div>
+    <div class="metric"><div class="label">읽은 책</div><div class="value">${books.length}권</div><div class="sub">완료 퀴즈 ${books.length}개</div></div>
+    <div class="metric"><div class="label">기간 종합점수</div><div class="value">${periodOverall}</div><div class="sub">SG 평균 80% + Synthesis 20%</div></div>
+    <div class="metric good"><div class="label">가장 안정적인 항목</div><div class="value">${axisAvg[strongest.key]}</div><div class="sub">${strongest.en} · ${strongest.ko}</div></div>
     <div class="metric warn"><div class="label">집중 보완 항목</div><div class="value">${axisAvg[weakest.key]}</div><div class="sub">${weakest.en} · ${axisLowCount[weakest.key]}권에서 70점 미만</div></div>
   `;
 }
@@ -206,37 +200,26 @@ function renderProfile(){
 }
 
 function renderInsights(){
-  const weakBooks = books.filter(b => b[weakest.key] < 70).map(b => b.id).join(", ");
   const improved = AXES.slice().sort((a,b)=>axisTrend[b.key]-axisTrend[a.key])[0];
   const dipped = AXES.slice().sort((a,b)=>axisTrend[a.key]-axisTrend[b.key])[0];
   document.getElementById("insights").innerHTML = `
-    <div class="insight"><strong>반복 패턴</strong><p>${weakest.ko}(${weakest.en})는 ${axisLowCount[weakest.key]}권에서 70점 미만입니다. 특히 ${weakBooks}에서 흔들렸습니다.</p></div>
-    <div class="insight"><strong>강점</strong><p>${strongest.ko}는 ${axisStableCount[strongest.key]}권에서 85점 이상입니다. 이야기의 시작 정보와 기본 단서를 안정적으로 잡는 편입니다.</p></div>
-    <div class="insight"><strong>성장</strong><p>최근 5권에서는 ${improved.ko}가 이전 5권보다 ${axisTrend[improved.key] >= 0 ? "+" : ""}${axisTrend[improved.key]}점 변화했습니다. ${dipped.ko}는 계속 관찰이 필요합니다.</p></div>
+    <div class="insight"><strong>반복 취약 패턴</strong><p>내면 추론(Internal Response) 문항에서 일부 반복적인 어려움이 관찰되었습니다. 학습한 ${books.length}권의 도서 중 ${axisLowCount.internal}권에서 해당 영역의 점수가 70점 미만으로 나타났습니다.</p></div>
+    <div class="insight"><strong>강점</strong><p>${strongest.ko}(${strongest.en})은 ${axisStableCount[strongest.key]}권에서 85점 이상입니다. 이야기의 시작 단서와 문제 상황을 안정적으로 찾는 편입니다.</p></div>
+    <div class="insight"><strong>향상된 영역</strong><p>최근 5권에서는 ${improved.ko}(${improved.en}) 영역이 이전 5권보다 ${axisTrend[improved.key] >= 0 ? "+" : ""}${axisTrend[improved.key]}점 변화했습니다. ${dipped.ko}(${dipped.en}) 영역은 계속 관찰이 필요합니다.</p></div>
   `;
 }
 
 function renderTrend(){
   const svg=document.getElementById("trend");
-  const points=books.map((b,i)=>({x:42+i*60,y:150-bookOverall(b)*1.25, score:bookOverall(b), id:b.id}));
+  const points=books.map((b,i)=>({x:42+i*60,y:160-bookOverall(b)*1.2, score:bookOverall(b), id:b.id, date:b.date}));
   const line=points.map(p=>`${p.x},${p.y}`).join(" ");
   svg.innerHTML = `
-    <line x1="36" y1="25" x2="36" y2="155" stroke="#E5E7EB"/>
-    <line x1="36" y1="155" x2="590" y2="155" stroke="#E5E7EB"/>
+    <line x1="36" y1="25" x2="36" y2="162" stroke="#E5E7EB"/>
+    <line x1="36" y1="162" x2="590" y2="162" stroke="#E5E7EB"/>
     <polyline points="${line}" fill="none" stroke="#7C3AED" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     ${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#7C3AED"/><text x="${p.x}" y="${p.y-10}" text-anchor="middle" font-size="10" fill="#4B5563">${p.score}</text>`).join("")}
-    ${points.map((p,i)=>`<text x="${p.x}" y="172" text-anchor="middle" font-size="9" fill="#6B7280">${i+1}</text>`).join("")}
+    ${points.map(p=>`<rect x="${p.x-7}" y="172" width="14" height="11" rx="2" fill="#EDE9FE" stroke="#7C3AED"/><line x1="${p.x}" y1="173" x2="${p.x}" y2="182" stroke="#7C3AED"/><text x="${p.x}" y="199" text-anchor="middle" font-size="9" fill="#6B7280">${p.date}</text>`).join("")}
   `;
-}
-
-function renderStories(){
-  document.getElementById("story-list").innerHTML = books.map(b => `
-    <div class="story-card">
-      <div class="story-id">${b.id}</div>
-      <div class="story-title">${b.title}<br><span style="color:#9CA3AF">Level ${b.level} · ${b.date}</span></div>
-      <div class="story-score ${bookOverall(b) >= 85 ? "hi" : bookOverall(b) >= 70 ? "mid" : "low"} pill">${bookOverall(b)}</div>
-    </div>
-  `).join("");
 }
 
 function renderTable(){
@@ -263,7 +246,6 @@ renderSummary();
 renderProfile();
 renderInsights();
 renderTrend();
-renderStories();
 renderTable();
 renderNext();
 </script>
