@@ -114,7 +114,9 @@ function injectV2Style() {
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
     .q-screen{justify-content:flex-start;align-items:center;padding-left:16px;padding-right:16px;box-sizing:border-box}
-    .q-screen .q-card{width:min(100%,680px);max-width:680px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+    .screen.active.q-screen{display:flex;flex-direction:column;align-items:center}
+    .q-screen>.q-card{align-self:center;width:min(calc(100vw - 32px),680px);max-width:680px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+    #screen-q3>.q-card,#screen-q6>.q-card{align-self:center;width:min(calc(100vw - 32px),680px);max-width:680px;margin-left:auto;margin-right:auto}
     .setting-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
     .setting-slot{min-height:108px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
     .setting-slot.filled{border-style:solid;background:#EDE9FE}.setting-slot .slot-label{position:absolute;top:8px;left:10px;background:#7C3AED;color:white;border-radius:999px;padding:4px 10px;font-size:12px}
