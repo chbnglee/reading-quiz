@@ -147,8 +147,8 @@ for i, h in enumerate(cols, 1):
     header(ws, 2, i, h)
 ws.row_dimensions[2].height = 30
 rows = [
-    ["Q01", "Setting Slot Drag", "Setting", "Choose Who, Where, and What.", "Image-word cards", "who=chameleon / where=forest / what=color", 100, "setting", "Weighted Slot Match", "Q01_SETTING"],
-    ["Q02", "Story Scene Sequence", "Consequence", "Put the story scenes in order.", "SC01/02/03/06/09 images", "SC01 -> SC02 -> SC03 -> SC06 -> SC09", 100, "consequence", "Weighted Position", "Q02_CONSEQUENCE"],
+    ["Q01", "Story Scene Sequence", "Consequence", "Put the story scenes in order.", "SC01/02/03/06/09 images", "SC01 -> SC02 -> SC03 -> SC06 -> SC09", 100, "consequence", "Weighted Position", "Q01_CONSEQUENCE"],
+    ["Q02", "Setting Slot Drag", "Setting", "Look at the first scene. Fill in the boxes.", "SC01 image + word cards", "who=chameleon / where=forest / at_first=loves changing colors", 100, "setting", "Weighted Slot Match", "Q02_SETTING"],
     ["Q03", "Listening Scene Match", "Initiating Event", "Listen. Which scene starts the problem?", "Audio + SC02/03/06/09", "Option A", 100, "initiating_event", "Weighted MCQ", "Q03_INIT_EVENT"],
     ["Q04", "Scene-Anchored Unscramble", "Attempt", "Put the story words in order.", "SC03 image", "Milo walks into the forest.", 100, "attempt", "Weighted Unscramble", "Q04_ATTEMPT"],
     ["Q05", "Feeling Match", "Reaction", "How does Milo feel here?", "SC06 image", "Option B", 100, "reaction", "Weighted MCQ", "Q05_REACTION"],
@@ -165,38 +165,10 @@ style_cell(ws["A11"], C_GREEN, False, "000000", 9).value = (
     "Q07 Synthesis is reported separately and contributes to the overall score."
 )
 
-# Q01 Setting
-ws = wb.create_sheet("Q01_SETTING")
-set_widths(ws, [12, 18, 18, 20, 16, 14, 20, 34, 28])
-merge_title(ws, "A1:I1", "Q01 - Setting Slot Drag | Story Grammar: Setting")
-ws.merge_cells("A2:I2")
-style_cell(ws["A2"], C_YELLOW, True).value = "Question: Choose Who, Where, and What."
-for i, h in enumerate(["Card Key", "Text", "Slot", "Resource", "Correct?", "Slot Weight", "Credit Rule", "Distractor Rationale", "LRS"], 1):
-    header(ws, 4, i, h)
-setting_rows = [
-    ["chameleon", "chameleon", "Who?", "OG0021_SC01_I", "YES", 2.5, "100% if placed in Who", "Correct main character at the beginning.", "setting"],
-    ["butterfly", "butterfly", "Who?", "OG0021_SC03_I", "NO", 2.5, "35% slot credit if placed in Who", "Confuses first encountered character with Milo.", "setting"],
-    ["flower", "flower", "Who?", "OG0021_SC05_I", "NO", 2.5, "35% slot credit if placed in Who", "Chooses an object as the character.", "setting"],
-    ["forest", "forest", "Where?", "OG0021_SC03_I", "YES", 2.0, "100% if placed in Where", "Correct story place/background.", "setting"],
-    ["pond", "pond", "Where?", "OG0021_SC06_I", "NO", 2.0, "35% slot credit if placed in Where", "Uses a later important place as the opening place.", "setting"],
-    ["home", "home", "Where?", "OG0021_SC10_I", "NO", 2.0, "35% slot credit if placed in Where", "Confuses ending place with opening/background.", "setting"],
-    ["color", "color", "What?", "OG0021_SC01_I", "YES", 1.5, "100% if placed in What", "Correct key thing related to the story start/problem.", "setting"],
-    ["tear", "tear", "What?", "OG0021_SC06_I", "NO", 1.5, "35% slot credit if placed in What", "Uses a consequence clue as the starting clue.", "setting"],
-    ["mirror", "mirror", "What?", "OG0021_SC10_I", "NO", 1.5, "35% slot credit if placed in What", "Uses an ending object as the key starting clue.", "setting"],
-]
-for r, row in enumerate(setting_rows, 5):
-    fill = C_OK if row[4] == "YES" else C_LOW
-    for c, v in enumerate(row, 1):
-        bg = fill if c in (1, 5, 6) else None
-        style_cell(ws.cell(r, c, v), bg, row[4] == "YES" and c in (1, 5, 6), "FFFFFF" if bg == C_OK and c in (1, 5, 6) else "000000")
-    ws.row_dimensions[r].height = 30
-ws.merge_cells("A16:I16")
-style_cell(ws["A16"], C_GREEN, True).value = "Scoring: full slot weight for exact target; 35% of slot weight for same-category distractor; 0 for wrong category."
-
-# Q02 Consequence
+# Q01 Consequence
 make_sequence_sheet(
-    "Q02 - Story Scene Sequence | Story Grammar: Consequence",
-    "Q02_CONSEQUENCE",
+    "Q01 - Story Scene Sequence | Story Grammar: Consequence",
+    "Q01_CONSEQUENCE",
     "Put the story scenes in order.",
     [
         ["SC01", "OG0021_SC01_I", 1, 1.5, "Opening state", "Shows Milo before the problem begins; useful context but lower weight than problem/result.", "missed_opening_state", "consequence"],
@@ -207,6 +179,36 @@ make_sequence_sheet(
     ],
     "consequence",
 )
+
+# Q02 Setting
+ws = wb.create_sheet("Q02_SETTING")
+set_widths(ws, [12, 18, 18, 20, 16, 14, 20, 34, 28])
+merge_title(ws, "A1:I1", "Q02 - Setting Slot Drag | Story Grammar: Setting")
+ws.merge_cells("A2:I2")
+style_cell(ws["A2"], C_YELLOW, True).value = "Question: Look at the first scene. Fill in the boxes."
+ws.merge_cells("A3:I3")
+style_cell(ws["A3"], C_ACCENT, False).value = "Scene resource: OG0021_SC01_I.png"
+for i, h in enumerate(["Card Key", "Text", "Slot", "Resource", "Correct?", "Slot Weight", "Credit Rule", "Distractor Rationale", "LRS"], 1):
+    header(ws, 4, i, h)
+setting_rows = [
+    ["chameleon", "chameleon", "Who?", "OG0021_SC01_I", "YES", 2.5, "100% if placed in Who", "Correct main character at the beginning.", "setting"],
+    ["butterfly", "butterfly", "Who?", "OG0021_SC03_I", "NO", 2.5, "35% slot credit if placed in Who", "Confuses first encountered character with Milo.", "setting"],
+    ["flower", "flower", "Who?", "OG0021_SC05_I", "NO", 2.5, "35% slot credit if placed in Who", "Chooses an object as the character.", "setting"],
+    ["forest", "forest", "Where?", "OG0021_SC03_I", "YES", 2.0, "100% if placed in Where", "Correct story place/background.", "setting"],
+    ["pond", "pond", "Where?", "OG0021_SC06_I", "NO", 2.0, "35% slot credit if placed in Where", "Uses a later important place as the opening place.", "setting"],
+    ["home", "home", "Where?", "OG0021_SC10_I", "NO", 2.0, "35% slot credit if placed in Where", "Confuses ending place with opening/background.", "setting"],
+    ["loves_colors", "loves changing colors", "At first...", "OG0021_SC01_I", "YES", 1.5, "100% if placed in At first", "Correct verb phrase from the opening state.", "setting"],
+    ["loses_color", "loses his color", "At first...", "OG0021_SC02_I", "NO", 1.5, "35% slot credit if placed in At first", "Uses the problem event as the opening state.", "setting"],
+    ["cries_by_pond", "cries by the pond", "At first...", "OG0021_SC06_I", "NO", 1.5, "35% slot credit if placed in At first", "Uses a later reaction as the opening state.", "setting"],
+]
+for r, row in enumerate(setting_rows, 5):
+    fill = C_OK if row[4] == "YES" else C_LOW
+    for c, v in enumerate(row, 1):
+        bg = fill if c in (1, 5, 6) else None
+        style_cell(ws.cell(r, c, v), bg, row[4] == "YES" and c in (1, 5, 6), "FFFFFF" if bg == C_OK and c in (1, 5, 6) else "000000")
+    ws.row_dimensions[r].height = 30
+ws.merge_cells("A16:I16")
+style_cell(ws["A16"], C_GREEN, True).value = "Scoring: full slot weight for exact target; 35% of slot weight for same-category distractor; 0 for wrong category."
 
 # Q03
 make_option_sheet(
@@ -310,12 +312,12 @@ merge_title(ws, "A1:G1", "Story Grammar Scoring Model - v2")
 for i, h in enumerate(["Axis", "Q_ID", "Score Source", "Calculation", "Interpretation", "Parent Report Use", "Weekly Rollup"], 1):
     header(ws, 3, i, h)
 axes = [
-    ["Setting", "Q01", "setting_score", "weighted slot match", "Builds who/where/what at the story start.", "Radar axis", "weighted average by story level"],
+    ["Setting", "Q02", "setting_score", "weighted slot match", "Builds who/where/at-first information from the first scene.", "Radar axis", "weighted average by story level"],
     ["Initiating Event", "Q03", "initiating_event_score", "option score", "Understands what started the problem.", "Radar axis", "weighted average by story level"],
     ["Attempt", "Q04", "attempt_score", "weighted word sequence", "Understands what the character does to solve the problem.", "Radar axis", "weighted average by story level"],
     ["Reaction", "Q05", "reaction_score", "option score", "Understands visible feeling/response.", "Radar axis", "weighted average by story level"],
     ["Internal Response", "Q06", "internal_response_score", "option score", "Infers thoughts, motive, inner state.", "Radar axis", "weighted average by story level"],
-    ["Consequence", "Q02", "consequence_score", "weighted scene position", "Understands result and event development.", "Radar axis", "weighted average by story level"],
+    ["Consequence", "Q01", "consequence_score", "weighted scene position", "Understands result and event development.", "Radar axis", "weighted average by story level"],
     ["Synthesis", "Q07", "synthesis_score", "option score", "Synthesizes whole-story meaning.", "Separate card; not in radar", "20% of overall reading score"],
 ]
 for r, row in enumerate(axes, 4):
@@ -332,8 +334,8 @@ for i, h in enumerate(["Q_ID", "xAPI Verb", "xAPI Object", "result.sg_element", 
     header(ws, 2, i, h)
 for r, row in enumerate(
     [
-        ["Q01", "answered", "quiz_OG0021_v2_Q01_setting", "setting", "0-100", "partial", "slot_values, component_scores", "Setting gap if <70"],
-        ["Q02", "answered", "quiz_OG0021_v2_Q02_consequence", "consequence", "0-100", "partial", "scene_order, component_scores", "Consequence gap if <70"],
+        ["Q01", "answered", "quiz_OG0021_v2_Q01_consequence", "consequence", "0-100", "partial", "scene_order, component_scores", "Consequence gap if <70"],
+        ["Q02", "answered", "quiz_OG0021_v2_Q02_setting", "setting", "0-100", "partial", "slot_values, component_scores", "Setting gap if <70"],
         ["Q03", "answered", "quiz_OG0021_v2_Q03_initiating_event", "initiating_event", "0-100", "true/false", "option_selected, audio_src", "Initiating event gap if <70"],
         ["Q04", "answered", "quiz_OG0021_v2_Q04_attempt", "attempt", "0-100", "partial", "word_order, word_scores", "Attempt/action gap if <70"],
         ["Q05", "answered", "quiz_OG0021_v2_Q05_reaction", "reaction", "0-100", "true/false", "option_selected", "Reaction/emotion gap if <70"],

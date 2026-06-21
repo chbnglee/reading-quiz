@@ -2,12 +2,12 @@
 
 const V2_COUNT = 7;
 const V2_SG = [
-  { key: "setting", label: "Setting", kor: "배경 이해", q: 0 },
+  { key: "setting", label: "Setting", kor: "배경 이해", q: 1 },
   { key: "initiating_event", label: "Initiating Event", kor: "사건 시작", q: 2 },
   { key: "attempt", label: "Attempt", kor: "해결 행동", q: 3 },
   { key: "reaction", label: "Reaction", kor: "감정 반응", q: 4 },
   { key: "internal_response", label: "Internal Response", kor: "내면 추론", q: 5 },
-  { key: "consequence", label: "Consequence", kor: "결과 이해", q: 1 },
+  { key: "consequence", label: "Consequence", kor: "결과 이해", q: 0 },
 ];
 
 Object.assign(QD.q01, {
@@ -16,7 +16,7 @@ Object.assign(QD.q01, {
   slots: {
     who: { label: "Who?", correct: "chameleon", weight: 2.5 },
     where: { label: "Where?", correct: "forest", weight: 2.0 },
-    what: { label: "What?", correct: "color", weight: 1.5 },
+    what: { label: "At first...", correct: "loves_colors", weight: 1.5 },
   },
   cards: {
     chameleon: { text: "chameleon", slot: "who", res: "OG0021_SC01_I.png", w: null },
@@ -25,9 +25,9 @@ Object.assign(QD.q01, {
     forest: { text: "forest", slot: "where", res: "OG0021_SC03_I.png", w: null },
     pond: { text: "pond", slot: "where", res: "OG0021_SC06_I.png", w: "후반 핵심 장소를 이야기 시작 배경으로 혼동함" },
     home: { text: "home", slot: "where", res: "OG0021_SC10_I.png", w: "결말 장소와 이야기 배경을 혼동함" },
-    color: { text: "color", slot: "what", res: "OG0021_SC01_I.png", w: null },
-    tear: { text: "tear", slot: "what", res: "OG0021_SC06_I.png", w: "결과 장면의 단서를 처음 상황으로 혼동함" },
-    mirror: { text: "mirror", slot: "what", res: "OG0021_SC10_I.png", w: "결말 사물을 핵심 문제 정보로 혼동함" },
+    loves_colors: { text: "loves changing colors", slot: "what", res: "OG0021_SC01_I.png", w: null },
+    loses_color: { text: "loses his color", slot: "what", res: "OG0021_SC02_I.png", w: "문제 발생 장면을 처음 상황으로 혼동함" },
+    cries_by_pond: { text: "cries by the pond", slot: "what", res: "OG0021_SC06_I.png", w: "결과 장면의 행동을 처음 상황으로 혼동함" },
   },
 });
 
@@ -116,19 +116,18 @@ function injectV2Style() {
   const style = document.createElement("style");
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
-    .setting-board{display:grid;gap:12px}
-    .setting-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:stretch}
-    .setting-slot{min-height:132px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
+    .setting-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
+    .setting-slot{min-height:108px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
     .setting-slot.filled{border-style:solid;background:#EDE9FE}.setting-slot .slot-label{position:absolute;top:8px;left:10px;background:#7C3AED;color:white;border-radius:999px;padding:4px 10px;font-size:12px}
-    .setting-slot img{width:100%;height:86px;object-fit:cover;border-radius:14px;pointer-events:none;margin-top:16px}
-    .setting-row-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px;background:#FFFBEB;border-radius:22px;border:2px solid #FDE68A}
-    .setting-card{min-height:112px;background:white;border:2.5px solid #FCD34D;border-radius:20px;padding:9px;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s;display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center}
-    .setting-card:hover{transform:translateY(-2px);border-color:#A78BFA}.setting-card img{width:100%;height:74px;object-fit:cover;border-radius:14px;pointer-events:none}.setting-word{font-family:'ABeeZee',sans-serif;font-size:16px;color:#374151;text-align:center}
+    .setting-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px;background:#FFFBEB;border-radius:22px;border:2px solid #FDE68A}
+    .setting-card{min-height:52px;background:white;border:2.5px solid #FCD34D;border-radius:18px;padding:10px 12px;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s;display:flex;align-items:center;justify-content:center}
+    .setting-card:hover{transform:translateY(-2px);border-color:#A78BFA}.setting-word{font-family:'ABeeZee',sans-serif;font-size:16px;color:#374151;text-align:center}
     .conseq-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
     .conseq-slot{min-height:116px;border:2.5px dashed #F9A8D4;background:#FFF7FB;border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;color:#BE185D;font-family:'Nunito',sans-serif;font-weight:900}
     .conseq-slot.filled{border-style:solid;background:#FCE7F3}.conseq-slot img{width:100%;height:100%;object-fit:cover;pointer-events:none}.conseq-slot .pos-label{top:6px;left:6px;background:#BE185D}
-    .conseq-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px;margin-top:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
-    .conseq-card{aspect-ratio:16/10;border:2.5px solid #FCD34D;border-radius:18px;overflow:hidden;cursor:grab;background:white;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s}
+    .conseq-bank{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:14px;margin-top:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
+    .conseq-card{grid-column:span 2;aspect-ratio:16/10;border:2.5px solid #FCD34D;border-radius:18px;overflow:hidden;cursor:grab;background:white;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s}
+    .conseq-card:nth-child(4){grid-column:2 / span 2}.conseq-card:nth-child(5){grid-column:4 / span 2}
     .conseq-card:hover{transform:translateY(-2px);border-color:#A78BFA}.conseq-card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
     .report-grid{display:grid;grid-template-columns:minmax(440px,500px) minmax(0,1fr);gap:18px;align-items:stretch}
     .radar-wrap{background:#F9FAFB;border:2px solid #EDE9FE;border-radius:24px;padding:18px;text-align:center;height:100%;box-sizing:border-box}
@@ -136,17 +135,17 @@ function injectV2Style() {
     .radar-svg{width:100%;max-width:450px;height:auto}.axis-label{font-family:'ABeeZee',sans-serif;font-size:10px;fill:#4B5563}.axis-hit{cursor:pointer}.axis-hit:hover text{fill:#7C3AED;font-weight:700}
     .score-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sg-score-card,.synthesis-card{border-radius:18px;border:2px solid #E5E7EB;padding:12px;background:white;transition:background .15s,border-color .15s,transform .15s}
     .sg-score-card.highlight,.synthesis-card.highlight{background:#F5F3FF;border-color:#7C3AED;transform:translateY(-1px)}
-    .score-cards .parent-q-header{display:grid;grid-template-columns:42px auto minmax(90px,1fr) auto;align-items:center;gap:8px}
+    .score-cards .parent-q-header{display:grid;grid-template-columns:40px auto minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:6px}
     .score-cards .parent-q-num{width:40px;height:40px;font-size:12px}
     .score-cards .sg-label{display:inline-flex;width:auto;min-width:0;max-width:none;justify-self:start;font-size:10.5px;padding:5px 10px;white-space:nowrap}
-    .score-cards .parent-q-title{font-size:12.5px;white-space:normal;overflow:visible;text-overflow:clip;min-width:0;line-height:1.25}
-    .score-cards .parent-q-score{font-size:13px;padding:5px 9px;white-space:nowrap;min-width:30px;text-align:center}
+    .score-cards .parent-q-title{font-size:12px;white-space:normal;overflow:visible;text-overflow:clip;min-width:0;line-height:1.25}
+    .score-cards .parent-q-score{font-size:11px;padding:4px 7px;white-space:nowrap;min-width:42px;text-align:center}
     .sg-note{font-size:12px;color:#6B7280;line-height:1.55;margin-top:10px}.synthesis-card{background:#FFF7ED;border-color:#FDBA74}
     .v2-report-section-title{font-family:'Nunito',sans-serif;font-weight:900;color:#92400E;font-size:15px;margin:4px 0 8px}
     .ox-grid{grid-template-columns:repeat(7,1fr);max-width:620px}.student-card{max-width:680px}.ox-cell{min-height:84px;justify-content:center}
     .parent-card{max-width:1200px}.parent-q-card{margin-bottom:0}.parent-risk{margin-top:6px}
     @media(max-width:980px){.report-grid{grid-template-columns:1fr}.radar-svg{max-width:430px}}
-    @media(max-width:760px){.setting-row{grid-template-columns:1fr}.setting-row-bank,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.ox-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:760px){.setting-slots,.setting-bank,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.conseq-card,.conseq-card:nth-child(4),.conseq-card:nth-child(5){grid-column:auto}.ox-grid{grid-template-columns:repeat(4,1fr)}}
   `;
   document.head.appendChild(style);
 }
@@ -169,32 +168,25 @@ function injectV2Dom() {
   document.getElementById("progress-bar").insertAdjacentHTML("beforeend", '<div class="dot" id="dot6" onclick="jumpTo(6)">7</div>');
 
   document.querySelector("#screen-q0 .q-card").innerHTML = `
-    <div class="q-header"><div class="q-num-badge" style="background:#7C3AED">Q1</div><div class="q-instruction">Choose Who, Where, and What.</div><div class="q-type-tag" style="background:#7C3AED">Setting</div></div>
-    <div class="setting-board" id="setting-bank">
-      <div class="setting-row">
-        <div class="setting-slot" data-slot="who" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Who?</span>Drop here</div>
-        <div class="setting-row-bank" data-bank="who"></div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-slot" data-slot="where" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Where?</span>Drop here</div>
-        <div class="setting-row-bank" data-bank="where"></div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-slot" data-slot="what" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">What?</span>Drop here</div>
-        <div class="setting-row-bank" data-bank="what"></div>
-      </div>
-    </div>
-    ${nav(0)}`;
-  resetSetting();
-
-  document.querySelector("#screen-q1 .q-card").innerHTML = `
-    <div class="q-header"><div class="q-num-badge" style="background:#BE185D">Q2</div><div class="q-instruction">Put the story scenes in order.</div><div class="q-type-tag" style="background:#BE185D">Consequence</div></div>
+    <div class="q-header"><div class="q-num-badge" style="background:#BE185D">Q1</div><div class="q-instruction">Put the story scenes in order.</div><div class="q-type-tag" style="background:#BE185D">Consequence</div></div>
     <div class="conseq-slots" id="conseq-slots">
       ${[0, 1, 2, 3, 4].map(i => `<div class="conseq-slot" data-pos="${i}" ondragover="dragOver(event)" ondrop="dropConseq(event)"><span class="pos-label">${i + 1}</span>Drop here</div>`).join("")}
     </div>
     <div class="conseq-bank" id="conseq-bank"></div>
-    ${nav(1)}`;
+    ${nav(0)}`;
   resetConseq();
+
+  document.querySelector("#screen-q1 .q-card").innerHTML = `
+    <div class="q-header"><div class="q-num-badge" style="background:#7C3AED">Q2</div><div class="q-instruction">Look at the first scene. Fill in the boxes.</div><div class="q-type-tag" style="background:#7C3AED">Setting</div></div>
+    <div class="scene-strip"><div class="scene-thumb">${cardImg("OG0021_SC01_I.png", "SC01")}</div></div>
+    <div class="setting-slots">
+      <div class="setting-slot" data-slot="who" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Who?</span>Drop here</div>
+      <div class="setting-slot" data-slot="where" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Where?</span>Drop here</div>
+      <div class="setting-slot" data-slot="what" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">At first...</span>Drop here</div>
+    </div>
+    <div class="setting-bank" id="setting-bank"></div>
+    ${nav(1)}`;
+  resetSetting();
 
   document.querySelector("#screen-q2 .q-card").innerHTML = `
     <div class="q-header"><div class="q-num-badge" style="background:#2563EB">Q3</div><div class="q-instruction">Listen. Which scene starts the problem?</div><div class="q-type-tag" style="background:#2563EB">Initiating Event</div></div>
@@ -287,7 +279,7 @@ function dropSetting(e) {
   renderSettingSlot(slot);
   v2SettingDrag = null;
   v2SettingFrom = null;
-  document.getElementById("chk0").disabled = Object.values(v2SettingSlots).filter(Boolean).length < 3;
+  document.getElementById("chk1").disabled = Object.values(v2SettingSlots).filter(Boolean).length < 3;
   const bank = document.getElementById("setting-bank");
   bank.style.display = bank.children.length ? "" : "none";
 }
@@ -295,7 +287,7 @@ function dropSetting(e) {
 function settingCardHtml(key) {
   const card = QD.q01.cards[key];
   return `<div class="setting-card" draggable="true" data-key="${key}" ondragstart="startSetting(event)">
-    ${cardImg(card.res, card.text)}<div class="setting-word">${card.text}</div>
+    <div class="setting-word">${card.text}</div>
   </div>`;
 }
 
@@ -309,7 +301,7 @@ function renderSettingSlot(slot) {
     el.classList.add("filled");
     el.draggable = true;
     el.ondragstart = () => { v2SettingDrag = key; v2SettingFrom = slot; };
-    el.innerHTML = `<span class="slot-label">${label}</span>${cardImg(card.res, card.text)}<div class="setting-word">${card.text}</div>`;
+    el.innerHTML = `<span class="slot-label">${label}</span><div class="setting-word">${card.text}</div>`;
   } else {
     el.classList.remove("filled");
     el.draggable = false;
@@ -320,8 +312,9 @@ function renderSettingSlot(slot) {
 function returnSettingCard(slot) {
   const key = v2SettingSlots[slot];
   if (!key) return;
-  const card = QD.q01.cards[key];
-  document.querySelector(`#setting-bank [data-bank="${card.slot}"]`)?.insertAdjacentHTML("beforeend", settingCardHtml(key));
+  const bank = document.getElementById("setting-bank");
+  bank?.insertAdjacentHTML("beforeend", settingCardHtml(key));
+  if (bank) bank.style.display = "";
   v2SettingSlots[slot] = null;
 }
 
@@ -330,10 +323,10 @@ function resetSetting() {
   v2SettingFrom = null;
   v2SettingSlots = { who: null, where: null, what: null };
   Object.keys(v2SettingSlots).forEach(renderSettingSlot);
-  document.querySelectorAll("#setting-bank .setting-row-bank").forEach(bank => { bank.innerHTML = ""; });
-  ["chameleon", "butterfly", "flower"].forEach(key => document.querySelector('#setting-bank [data-bank="who"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
-  ["forest", "pond", "home"].forEach(key => document.querySelector('#setting-bank [data-bank="where"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
-  ["color", "tear", "mirror"].forEach(key => document.querySelector('#setting-bank [data-bank="what"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
+  const bank = document.getElementById("setting-bank");
+  if (!bank) return;
+  bank.style.display = "";
+  bank.innerHTML = ["chameleon", "forest", "loves_colors", "butterfly", "pond", "loses_color", "flower", "home", "cries_by_pond"].map(settingCardHtml).join("");
 }
 
 function startConseq(e) {
@@ -356,7 +349,7 @@ function dropConseq(e) {
   renderConseqSlot(pos);
   v2ConseqDrag = null;
   v2ConseqFrom = null;
-  document.getElementById("chk1").disabled = v2ConseqOrder.filter(Boolean).length < QD.q02.correct.length;
+  document.getElementById("chk0").disabled = v2ConseqOrder.filter(Boolean).length < QD.q02.correct.length;
   const bank = document.getElementById("conseq-bank");
   bank.style.display = bank.children.length ? "" : "none";
 }
@@ -481,23 +474,6 @@ submitQ = function(qIdx) {
   document.getElementById("chk" + qIdx).disabled = true;
   let score = 0;
   if (qIdx === 0) {
-    const total = Object.values(QD.q01.slots).reduce((a, b) => a + b.weight, 0);
-    let earned = 0;
-    Object.entries(QD.q01.slots).forEach(([slot, meta]) => {
-      const placed = v2SettingSlots[slot];
-      const card = QD.q01.cards[placed];
-      if (placed === meta.correct) earned += meta.weight;
-      else if (card?.slot === slot) earned += meta.weight * 0.35;
-    });
-    score = Math.round(earned / total * 100);
-    answerLog.q01 = { slots: { ...v2SettingSlots }, score };
-    document.querySelectorAll(".setting-slot").forEach(slotEl => {
-      const slot = slotEl.dataset.slot;
-      const ok = v2SettingSlots[slot] === QD.q01.slots[slot].correct;
-      slotEl.style.borderColor = ok ? "#10B981" : "#EF4444";
-      slotEl.style.background = ok ? "#ECFDF5" : "#FEF2F2";
-    });
-  } else if (qIdx === 1) {
     const total = Object.values(QD.q02.weights).reduce((a, b) => a + b, 0);
     let earned = 0;
     v2ConseqOrder.forEach((scene, placedIdx) => {
@@ -507,11 +483,28 @@ submitQ = function(qIdx) {
       earned += (QD.q02.weights[scene] || 0) * Math.max(0, 1 - distance * 0.5);
     });
     score = Math.round(earned / total * 100);
-    answerLog.q02 = { order: [...v2ConseqOrder], score };
+    answerLog.q01 = { order: [...v2ConseqOrder], score };
     document.querySelectorAll(".conseq-slot").forEach((slot, i) => {
       const ok = v2ConseqOrder[i] === QD.q02.correct[i];
       slot.style.borderColor = ok ? "#10B981" : "#EF4444";
       slot.style.background = ok ? "#ECFDF5" : "#FEF2F2";
+    });
+  } else if (qIdx === 1) {
+    const total = Object.values(QD.q01.slots).reduce((a, b) => a + b.weight, 0);
+    let earned = 0;
+    Object.entries(QD.q01.slots).forEach(([slot, meta]) => {
+      const placed = v2SettingSlots[slot];
+      const card = QD.q01.cards[placed];
+      if (placed === meta.correct) earned += meta.weight;
+      else if (card?.slot === slot) earned += meta.weight * 0.35;
+    });
+    score = Math.round(earned / total * 100);
+    answerLog.q02 = { slots: { ...v2SettingSlots }, score };
+    document.querySelectorAll(".setting-slot").forEach(slotEl => {
+      const slot = slotEl.dataset.slot;
+      const ok = v2SettingSlots[slot] === QD.q01.slots[slot].correct;
+      slotEl.style.borderColor = ok ? "#10B981" : "#EF4444";
+      slotEl.style.background = ok ? "#ECFDF5" : "#FEF2F2";
     });
   } else if (qIdx === 2) {
     const sel = mcqSel[2];
@@ -585,8 +578,8 @@ retryQ = function(qIdx) {
   document.getElementById("nxt" + qIdx)?.classList.remove("show");
   const chk = document.getElementById("chk" + qIdx);
   if (chk) chk.disabled = true;
-  if (qIdx === 0) resetSetting();
-  else if (qIdx === 1) resetConseq();
+  if (qIdx === 0) resetConseq();
+  else if (qIdx === 1) resetSetting();
   else if (qIdx === 2) {
     document.querySelectorAll("#q3-grid .img-mcq-opt").forEach(el => el.classList.remove("selected", "correct-ans", "wrong-ans"));
     resetPlayBtn();
@@ -599,12 +592,12 @@ retryQ = function(qIdx) {
 
 function sgScores() {
   return {
-    setting: scores[0] || 0,
+    setting: scores[1] || 0,
     initiating_event: scores[2] || 0,
     attempt: scores[3] || 0,
     reaction: scores[4] || 0,
     internal_response: scores[5] || 0,
-    consequence: scores[1] || 0,
+    consequence: scores[0] || 0,
   };
 }
 function storyGrammarAverage() {
@@ -642,8 +635,8 @@ showParentResults = function() {
   document.getElementById("radar-chart").innerHTML = renderRadar(sg);
 
   const defs = [
-    { qNum: "Q1", sg: "Setting", key: "setting", kor: "배경 구성", logKey: "q01" },
-    { qNum: "Q2", sg: "Consequence", key: "consequence", kor: "장면 순서 배열", logKey: "q02" },
+    { qNum: "Q1", sg: "Consequence", key: "consequence", kor: "장면 순서 배열", logKey: "q01" },
+    { qNum: "Q2", sg: "Setting", key: "setting", kor: "배경 구성", logKey: "q02" },
     { qNum: "Q3", sg: "Initiating Event", key: "initiating_event", kor: "사건 시작 장면", logKey: "q03" },
     { qNum: "Q4", sg: "Attempt", key: "attempt", kor: "행동 문장 만들기", logKey: "q04" },
     { qNum: "Q5", sg: "Reaction", key: "reaction", kor: "감정 반응", logKey: "q05" },
@@ -653,7 +646,7 @@ showParentResults = function() {
   document.getElementById("sg-score-cards").innerHTML = defs.map((d, i) => {
     const s = scores[i] || 0;
     const pass = s >= 85;
-    return `<div class="sg-score-card ${pass ? "pass" : "fail"}" data-sg="${d.key}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s}</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
+    return `<div class="sg-score-card ${pass ? "pass" : "fail"}" data-sg="${d.key}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s} / 100</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
   }).join("");
   document.getElementById("parent-q-list").innerHTML = "";
   document.getElementById("parent-q-list").style.display = "none";
@@ -716,8 +709,8 @@ downloadDevSpec = function() {
     "report_bucket"
   ]];
   [
-    ["OG0021_V2_Q01", 1, "SETTING_SLOT_DRAG", "Setting Slot Drag", "setting", "Setting", "Choose Who, Where, and What.", "OG0021_SC01_I.png, OG0021_SC03_I.png, OG0021_SC05_I.png, OG0021_SC06_I.png, OG0021_SC10_I.png", "-", "who=chameleon, where=forest, what=color", "weighted_slot_match", 100, "radar"],
-    ["OG0021_V2_Q02", 2, "STORY_SEQUENCE_DRAG", "Story Scene Sequence", "consequence", "Consequence", "Put the story scenes in order.", "OG0021_SC01_I.png, OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", "-", QD.q02.correct.join(", "), "weighted_position", 100, "radar"],
+    ["OG0021_V2_Q01", 1, "STORY_SEQUENCE_DRAG", "Story Scene Sequence", "consequence", "Consequence", "Put the story scenes in order.", "OG0021_SC01_I.png, OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", "-", QD.q02.correct.join(", "), "weighted_position", 100, "radar"],
+    ["OG0021_V2_Q02", 2, "SETTING_SLOT_DRAG", "Setting Slot Drag", "setting", "Setting", "Look at the first scene. Fill in the boxes.", "OG0021_SC01_I.png", "-", "who=chameleon, where=forest, at_first=loves changing colors", "weighted_slot_match", 100, "radar"],
     ["OG0021_V2_Q03", 3, "LISTEN_SCENE_MCQ", "Listening Scene Match", "initiating_event", "Initiating Event", "Listen. Which scene starts the problem?", "OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", QD.q03.audioSrc, QD.q03.correct, "fixed_option_score", 100, "radar"],
     ["OG0021_V2_Q04", 4, "SCENE_WORD_DRAG", "Scene-Anchored Unscramble", "attempt", "Attempt", "Put the story words in order.", "OG0021_SC03_I.png", "-", QD.q04.correct.join(" "), "weighted_word_position", 100, "radar"],
     ["OG0021_V2_Q05", 5, "EMOTION_MCQ", "Emotion Match", "reaction", "Reaction", "How does Milo feel here?", "OG0021_SC06_I.png", "-", QD.q05.correct, "fixed_option_score", 100, "radar"],
@@ -732,8 +725,8 @@ downloadDevSpec = function() {
   XLSX.utils.book_append_sheet(wb, wsQ, "QUESTIONS");
 
   const optionRows = [["q_id", "option_key", "option_text", "slot_key", "item_weight", "score_value", "is_correct", "resource_file", "diagnostic_code"]];
-  Object.entries(QD.q01.cards).forEach(([key, card]) => optionRows.push(["OG0021_V2_Q01", key, card.text, card.slot, QD.q01.slots[card.slot]?.weight || "", "", key === QD.q01.slots[card.slot]?.correct ? "TRUE" : "FALSE", card.res, card.w || ""]));
-  QD.q02.correct.forEach((scene, idx) => optionRows.push(["OG0021_V2_Q02", scene, QD.q02.scenes[scene].text, "position_" + (idx + 1), QD.q02.weights[scene], "", "TRUE", QD.q02.scenes[scene].res, ""]));
+  QD.q02.correct.forEach((scene, idx) => optionRows.push(["OG0021_V2_Q01", scene, QD.q02.scenes[scene].text, "position_" + (idx + 1), QD.q02.weights[scene], "", "TRUE", QD.q02.scenes[scene].res, ""]));
+  Object.entries(QD.q01.cards).forEach(([key, card]) => optionRows.push(["OG0021_V2_Q02", key, card.text, card.slot === "what" ? "at_first" : card.slot, QD.q01.slots[card.slot]?.weight || "", "", key === QD.q01.slots[card.slot]?.correct ? "TRUE" : "FALSE", "-", card.w || ""]));
   [["A", "OG0021_SC02_I.png"], ["B", "OG0021_SC03_I.png"], ["C", "OG0021_SC06_I.png"], ["D", "OG0021_SC09_I.png"]].forEach(([key, res]) => {
     const opt = QD.q03.opts[key];
     optionRows.push(["OG0021_V2_Q03", key, res.replace(".png", ""), "", "", opt.s, key === QD.q03.correct ? "TRUE" : "FALSE", res, opt.w || ""]);
@@ -750,8 +743,8 @@ downloadDevSpec = function() {
 
   const scoringRows = [
     ["q_id", "scoring_type", "formula_pseudocode", "story_grammar_score_rule", "notes"],
-    ["OG0021_V2_Q01", "weighted_slot_match", "full credit if card matches slot target; 35% slot credit if same category but wrong card", "Setting = Q01 score", "Who/Where/What으로 이야기 시작 정보를 구성"],
-    ["OG0021_V2_Q02", "weighted_position", "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)", "Consequence = Q02 score", "이야기 전체 사건 전개를 대표 장면 순서로 배열"],
+    ["OG0021_V2_Q01", "weighted_position", "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)", "Consequence = Q01 score", "이야기 전체 사건 전개를 대표 장면 순서로 배열"],
+    ["OG0021_V2_Q02", "weighted_slot_match", "full credit if card matches slot target; 35% slot credit if same category but wrong card", "Setting = Q02 score", "첫 장면을 보고 Who/Where/At first를 구성"],
     ["OG0021_V2_Q03", "fixed_option_score", "score = opts[selected].score_value", "Initiating Event = Q03 score", "오답도 발단 장면과의 의미 거리로 부분 점수"],
     ["OG0021_V2_Q04", "weighted_word_position", "score = round(sum(weight[word] if word is in exact position) / sum(weights) * 100)", "Attempt = Q04 score", "원문 SC03_ST01_N 문장 그대로 사용"],
     ["OG0021_V2_Q05", "fixed_option_score", "score = opts[selected].score_value", "Reaction = Q05 score", "감정 라벨의 유사도에 따라 부분 점수"],
