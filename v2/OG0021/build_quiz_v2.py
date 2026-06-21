@@ -191,15 +191,12 @@ style_cell(ws["A3"], C_ACCENT, False).value = "Scene resource: OG0021_SC01_I.png
 for i, h in enumerate(["Card Key", "Text", "Slot", "Resource", "Correct?", "Slot Weight", "Credit Rule", "Distractor Rationale", "LRS"], 1):
     header(ws, 4, i, h)
 setting_rows = [
-    ["chameleon", "chameleon", "Who?", "OG0021_SC01_I", "YES", 2.5, "100% if placed in Who", "Correct main character at the beginning.", "setting"],
-    ["butterfly", "butterfly", "Who?", "OG0021_SC03_I", "NO", 2.5, "35% slot credit if placed in Who", "Confuses first encountered character with Milo.", "setting"],
-    ["flower", "flower", "Who?", "OG0021_SC05_I", "NO", 2.5, "35% slot credit if placed in Who", "Chooses an object as the character.", "setting"],
-    ["forest", "forest", "Where?", "OG0021_SC03_I", "YES", 2.0, "100% if placed in Where", "Correct story place/background.", "setting"],
     ["pond", "pond", "Where?", "OG0021_SC06_I", "NO", 2.0, "35% slot credit if placed in Where", "Uses a later important place as the opening place.", "setting"],
-    ["home", "home", "Where?", "OG0021_SC10_I", "NO", 2.0, "35% slot credit if placed in Where", "Confuses ending place with opening/background.", "setting"],
-    ["loves_colors", "loves changing colors", "At first...", "OG0021_SC01_I", "YES", 1.5, "100% if placed in At first", "Correct verb phrase from the opening state.", "setting"],
+    ["chameleon", "chameleon", "Who?", "OG0021_SC01_I", "YES", 2.5, "100% if placed in Who", "Correct main character at the beginning.", "setting"],
     ["loses_color", "loses his color", "At first...", "OG0021_SC02_I", "NO", 1.5, "35% slot credit if placed in At first", "Uses the problem event as the opening state.", "setting"],
-    ["cries_by_pond", "cries by the pond", "At first...", "OG0021_SC06_I", "NO", 1.5, "35% slot credit if placed in At first", "Uses a later reaction as the opening state.", "setting"],
+    ["forest", "forest", "Where?", "OG0021_SC03_I", "YES", 2.0, "100% if placed in Where", "Correct story place/background.", "setting"],
+    ["loves_colors", "loves changing colors", "At first...", "OG0021_SC01_I", "YES", 1.5, "100% if placed in At first", "Correct verb phrase from the opening state.", "setting"],
+    ["butterfly", "butterfly", "Who?", "OG0021_SC03_I", "NO", 2.5, "35% slot credit if placed in Who", "Confuses first encountered character with Milo.", "setting"],
 ]
 for r, row in enumerate(setting_rows, 5):
     fill = C_OK if row[4] == "YES" else C_LOW
@@ -207,8 +204,8 @@ for r, row in enumerate(setting_rows, 5):
         bg = fill if c in (1, 5, 6) else None
         style_cell(ws.cell(r, c, v), bg, row[4] == "YES" and c in (1, 5, 6), "FFFFFF" if bg == C_OK and c in (1, 5, 6) else "000000")
     ws.row_dimensions[r].height = 30
-ws.merge_cells("A16:I16")
-style_cell(ws["A16"], C_GREEN, True).value = "Scoring: full slot weight for exact target; 35% of slot weight for same-category distractor; 0 for wrong category."
+ws.merge_cells("A13:I13")
+style_cell(ws["A13"], C_GREEN, True).value = "Scoring: full slot weight for exact target; 35% of slot weight for same-category distractor; 0 for wrong category."
 
 # Q03
 make_option_sheet(

@@ -21,13 +21,10 @@ Object.assign(QD.q01, {
   cards: {
     chameleon: { text: "chameleon", slot: "who", res: "OG0021_SC01_I.png", w: null },
     butterfly: { text: "butterfly", slot: "who", res: "OG0021_SC03_I.png", w: "처음 만난 대상과 주인공 정보를 혼동함" },
-    flower: { text: "flower", slot: "who", res: "OG0021_SC05_I.png", w: "이야기 속 사물을 주인공 정보로 혼동함" },
     forest: { text: "forest", slot: "where", res: "OG0021_SC03_I.png", w: null },
     pond: { text: "pond", slot: "where", res: "OG0021_SC06_I.png", w: "후반 핵심 장소를 이야기 시작 배경으로 혼동함" },
-    home: { text: "home", slot: "where", res: "OG0021_SC10_I.png", w: "결말 장소와 이야기 배경을 혼동함" },
     loves_colors: { text: "loves changing colors", slot: "what", res: "OG0021_SC01_I.png", w: null },
     loses_color: { text: "loses his color", slot: "what", res: "OG0021_SC02_I.png", w: "문제 발생 장면을 처음 상황으로 혼동함" },
-    cries_by_pond: { text: "cries by the pond", slot: "what", res: "OG0021_SC06_I.png", w: "결과 장면의 행동을 처음 상황으로 혼동함" },
   },
 });
 
@@ -116,6 +113,8 @@ function injectV2Style() {
   const style = document.createElement("style");
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
+    .q-screen{display:flex;justify-content:flex-start;align-items:center;padding-left:16px;padding-right:16px;box-sizing:border-box}
+    .q-screen .q-card{width:min(100%,680px);max-width:680px;margin-left:auto;margin-right:auto;box-sizing:border-box}
     .setting-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
     .setting-slot{min-height:108px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
     .setting-slot.filled{border-style:solid;background:#EDE9FE}.setting-slot .slot-label{position:absolute;top:8px;left:10px;background:#7C3AED;color:white;border-radius:999px;padding:4px 10px;font-size:12px}
@@ -326,7 +325,7 @@ function resetSetting() {
   const bank = document.getElementById("setting-bank");
   if (!bank) return;
   bank.style.display = "";
-  bank.innerHTML = ["chameleon", "forest", "loves_colors", "butterfly", "pond", "loses_color", "flower", "home", "cries_by_pond"].map(settingCardHtml).join("");
+  bank.innerHTML = ["pond", "chameleon", "loses_color", "forest", "loves_colors", "butterfly"].map(settingCardHtml).join("");
 }
 
 function startConseq(e) {
@@ -637,7 +636,7 @@ showParentResults = function() {
   const defs = [
     { qNum: "Q1", sg: "Consequence", key: "consequence", kor: "장면 순서 배열", logKey: "q01" },
     { qNum: "Q2", sg: "Setting", key: "setting", kor: "배경 구성", logKey: "q02" },
-    { qNum: "Q3", sg: "Initiating Event", key: "initiating_event", kor: "사건 시작 장면", logKey: "q03" },
+    { qNum: "Q3", sg: "Initiating Event", key: "initiating_event", kor: "사건 시작<br>장면", logKey: "q03" },
     { qNum: "Q4", sg: "Attempt", key: "attempt", kor: "행동 문장 만들기", logKey: "q04" },
     { qNum: "Q5", sg: "Reaction", key: "reaction", kor: "감정 반응", logKey: "q05" },
     { qNum: "Q6", sg: "Internal Response", key: "internal_response", kor: "생각/내면 추론", logKey: "q06" },
