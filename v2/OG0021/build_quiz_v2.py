@@ -97,7 +97,7 @@ def make_option_sheet(title, sheet, question, options, lrs, resource="-"):
 
 def make_sequence_sheet(title, sheet, question, rows, lrs):
     ws = wb.create_sheet(sheet)
-    set_widths(ws, [8, 20, 14, 14, 24, 36, 24, 24])
+    set_widths(ws, [18, 20, 14, 14, 24, 36, 24, 24])
     merge_title(ws, "A1:H1", title)
     ws.row_dimensions[1].height = 26
     ws.merge_cells("A2:H2")
@@ -115,7 +115,41 @@ def make_sequence_sheet(title, sheet, question, rows, lrs):
     total_row = 5 + len(rows)
     for c, v in [(1, "TOTAL"), (4, f"=SUM(D5:D{total_row - 1})")]:
         style_cell(ws.cell(total_row, c, v), C_ACCENT, True, "000000", 9, "center")
-    foot = total_row + 2
+
+    matrix_title = total_row + 2
+    ws.merge_cells(start_row=matrix_title, start_column=1, end_row=matrix_title, end_column=8)
+    header(ws, matrix_title, 1, "SECTION B - Score Matrix: Points per (Scene, Submitted Position)")
+    matrix_header = matrix_title + 1
+    header(ws, matrix_header, 1, "Scene \\ Submitted Pos", C_ACCENT)
+    for pos in range(1, 6):
+        header(ws, matrix_header, pos + 1, f"Pos {pos}", C_SUB)
+    for idx, row in enumerate(rows):
+        source_row = 5 + idx
+        out_row = matrix_header + 1 + idx
+        correct_pos = int(row[2])
+        style_cell(ws.cell(out_row, 1, row[0]), C_ACCENT, True, "000000", 9, "center")
+        for pos in range(1, 6):
+            distance = abs(pos - correct_pos)
+            fill = C_OK if distance == 0 else C_PART if distance == 1 else C_BAD
+            font_color = "FFFFFF" if distance == 0 else "000000"
+            formula = f"=ROUND($D${source_row}/SUM($D$5:$D${total_row - 1})*100*MAX(0,1-ABS({pos}-$C${source_row})*0.5),1)"
+            style_cell(ws.cell(out_row, pos + 1, formula), fill, distance == 0, font_color, 9, "center")
+
+    example_title = matrix_header + len(rows) + 3
+    ws.merge_cells(start_row=example_title, start_column=1, end_row=example_title, end_column=8)
+    header(ws, example_title, 1, "SECTION C - Example Answer Scores")
+    for i, h in enumerate(["Example Student Answer", "Submitted Order", "Score", "Interpretation"], 1):
+        header(ws, example_title + 1, i, h, C_ACCENT)
+    examples = [
+        ["Perfect", "SC01-SC02-SC03-SC06-SC09", 100, "Full story arc understood."],
+        ["Middle scenes swapped", "SC01-SC02-SC06-SC03-SC09", 84, "Core anchors are intact; attempt/reaction order is unstable."],
+        ["Problem/result misplaced", "SC02-SC01-SC03-SC09-SC06", 47, "Key consequence positions are confused."],
+    ]
+    for r, row in enumerate(examples, example_title + 2):
+        for c, v in enumerate(row, 1):
+            style_cell(ws.cell(r, c, v), option_fill(v) if c == 3 else None)
+
+    foot = example_title + len(examples) + 3
     ws.merge_cells(start_row=foot, start_column=1, end_row=foot, end_column=8)
     style_cell(ws.cell(foot, 1), C_GREEN, True).value = (
         f'LRS xAPI: verb="answered" | object="quiz_OG0021_{sheet.lower()}" '
@@ -248,17 +282,34 @@ for r, row in enumerate(words, 7):
 for c, v in [(1, "TOTAL"), (4, "=SUM(D7:D11)"), (6, "=SUM(F7:F11)")]:
     style_cell(ws.cell(12, c, v), C_ACCENT, True, "000000", 9, "center")
 ws.merge_cells("A15:I15")
-header(ws, 15, 1, "SECTION B - Partial Score Examples")
+header(ws, 15, 1, "SECTION B - Word Position Score Matrix")
+for i, h in enumerate(["Word \\ Submitted Pos", "Pos 1", "Pos 2", "Pos 3", "Pos 4", "Pos 5"], 1):
+    header(ws, 16, i, h, C_ACCENT if i == 1 else C_SUB)
+for idx, word in enumerate(words):
+    source_row = 7 + idx
+    out_row = 17 + idx
+    correct_pos = int(word[1])
+    style_cell(ws.cell(out_row, 1, word[0]), C_ACCENT, True, "000000", 9, "center")
+    for pos in range(1, 6):
+        fill = C_OK if pos == correct_pos else C_BAD
+        font_color = "FFFFFF" if pos == correct_pos else "000000"
+        formula = f"=IF({pos}=$B${source_row},ROUND($D${source_row}/SUM($D$7:$D$11)*100,1),0)"
+        style_cell(ws.cell(out_row, pos + 1, formula), fill, pos == correct_pos, font_color, 9, "center")
+
+ws.merge_cells("A24:I24")
+header(ws, 24, 1, "SECTION C - Partial Score Examples")
 for i, h in enumerate(["Student Answer", "Score", "Interpretation", "Weakness Signal"], 1):
-    header(ws, 16, i, h, C_ACCENT)
+    header(ws, 25, i, h, C_ACCENT)
 examples = [
     ["Milo walks into the forest.", 100, "Exact story sentence restored.", "-"],
     ["Milo walks the into forest.", 83, "Core attempt understood; small syntax issue.", "function word placement"],
     ["forest. into the walks Milo", 17, "Place is known but action sequence is broken.", "attempt sequence weakness"],
 ]
-for r, row in enumerate(examples, 17):
+for r, row in enumerate(examples, 26):
     for c, v in enumerate(row, 1):
         style_cell(ws.cell(r, c, v), option_fill(v) if c == 2 else None)
+ws.merge_cells("A31:I31")
+style_cell(ws["A31"], C_GREEN, True).value = 'LRS xAPI: verb="answered" | object="quiz_OG0021_q04_attempt" | result.sg_element="attempt" | result.word_order_submitted=[] | result.score_raw=<n> | result.word_scores={}'
 
 # Q05-Q07
 make_option_sheet(
