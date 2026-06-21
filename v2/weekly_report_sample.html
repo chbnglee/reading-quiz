@@ -53,7 +53,7 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
 .insight{border-radius:16px;padding:13px 14px;border:2px solid #E5E7EB;background:#FFFFFF}
 .insight strong{font-family:'Nunito',sans-serif;color:#4C1D95;font-size:14px}
 .insight p{font-size:12px;line-height:1.55;color:#6B7280;margin-top:5px}
-.trend{height:182px;width:100%}
+.trend{height:144px;width:100%}
 .formula{margin-top:16px;background:#F8FAFC;color:#475569;border:1px solid #E5E7EB;border-radius:18px;padding:14px 16px}
 .formula h2{color:#64748B;margin-bottom:10px;font-size:15px}.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .formula-card{background:white;border:1px solid #E5E7EB;border-radius:14px;padding:11px}
@@ -96,7 +96,7 @@ td:first-child,th:first-child{text-align:left;min-width:170px}
       </section>
       <section class="panel" style="margin-top:16px">
         <h2>Learning Progress</h2>
-        <svg class="trend" id="trend" viewBox="0 0 620 182" role="img" aria-label="학습 날짜별 변화 그래프"></svg>
+        <svg class="trend" id="trend" viewBox="0 0 620 150" role="img" aria-label="학습 날짜별 변화 그래프"></svg>
       </section>
     </div>
   </section>
@@ -211,14 +211,14 @@ function renderInsights(){
 
 function renderTrend(){
   const svg=document.getElementById("trend");
-  const points=books.map((b,i)=>({x:42+i*60,y:142-bookOverall(b)*1.05, score:bookOverall(b), id:b.id, date:b.date}));
+  const points=books.map((b,i)=>({x:42+i*60,y:118-bookOverall(b)*0.9, score:bookOverall(b), id:b.id, date:b.date}));
   const line=points.map(p=>`${p.x},${p.y}`).join(" ");
   svg.innerHTML = `
-    <line x1="36" y1="25" x2="36" y2="142" stroke="#E5E7EB"/>
-    <line x1="36" y1="142" x2="590" y2="142" stroke="#E5E7EB"/>
+    <line x1="36" y1="22" x2="36" y2="118" stroke="#E5E7EB"/>
+    <line x1="36" y1="118" x2="590" y2="118" stroke="#E5E7EB"/>
     <polyline points="${line}" fill="none" stroke="#7C3AED" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     ${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#7C3AED"/><text x="${p.x}" y="${p.y-10}" text-anchor="middle" font-size="10" fill="#4B5563">${p.score}</text>`).join("")}
-    ${points.map(p=>`<rect x="${p.x-7}" y="151" width="14" height="11" rx="2" fill="#EDE9FE" stroke="#7C3AED"/><line x1="${p.x}" y1="152" x2="${p.x}" y2="161" stroke="#7C3AED"/><text x="${p.x}" y="177" text-anchor="middle" font-size="9" fill="#6B7280">${p.date}</text>`).join("")}
+    ${points.map(p=>`<rect x="${p.x-7}" y="128" width="14" height="10" rx="2" fill="#EDE9FE" stroke="#7C3AED"/><line x1="${p.x}" y1="129" x2="${p.x}" y2="137" stroke="#7C3AED"/><text x="${p.x}" y="148" text-anchor="middle" font-size="9" fill="#6B7280">${p.date}</text>`).join("")}
   `;
 }
 
