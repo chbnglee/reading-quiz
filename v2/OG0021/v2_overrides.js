@@ -449,6 +449,29 @@ updateDots = function() {
   }
 };
 
+showScreen = function(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  target.classList.add("active");
+  const inQuiz = id.startsWith("screen-q");
+  document.getElementById("progress-bar")?.classList.toggle("show", inQuiz);
+  window.scrollTo(0, 0);
+};
+
+jumpTo = function(idx) {
+  const target = document.getElementById("screen-q" + idx);
+  if (!target) return;
+  currentQ = idx;
+  showScreen("screen-q" + idx);
+  updateDots();
+};
+
+goNext = function(qIdx) {
+  const next = Math.min(qIdx + 1, V2_COUNT - 1);
+  jumpTo(next);
+};
+
 selectImgMCQ = function(qIdx, opt) {
   if (answered[qIdx]) return;
   const gridId = { 2: "q3-grid" }[qIdx];
