@@ -147,7 +147,7 @@ for i, h in enumerate(cols, 1):
     header(ws, 2, i, h)
 ws.row_dimensions[2].height = 30
 rows = [
-    ["Q01", "Setting Slot Drag", "Setting", "Choose the story start.", "Image-word cards", "who=chameleon / where=forest / what=color", 100, "setting", "Weighted Slot Match", "Q01_SETTING"],
+    ["Q01", "Setting Slot Drag", "Setting", "Choose Who, Where, and What.", "Image-word cards", "who=chameleon / where=forest / what=color", 100, "setting", "Weighted Slot Match", "Q01_SETTING"],
     ["Q02", "Story Scene Sequence", "Consequence", "Put the story scenes in order.", "SC01/02/03/06/09 images", "SC01 -> SC02 -> SC03 -> SC06 -> SC09", 100, "consequence", "Weighted Position", "Q02_CONSEQUENCE"],
     ["Q03", "Listening Scene Match", "Initiating Event", "Listen. Which scene starts the problem?", "Audio + SC02/03/06/09", "Option A", 100, "initiating_event", "Weighted MCQ", "Q03_INIT_EVENT"],
     ["Q04", "Scene-Anchored Unscramble", "Attempt", "Put the story words in order.", "SC03 image", "Milo walks into the forest.", 100, "attempt", "Weighted Unscramble", "Q04_ATTEMPT"],
@@ -170,7 +170,7 @@ ws = wb.create_sheet("Q01_SETTING")
 set_widths(ws, [12, 18, 18, 20, 16, 14, 20, 34, 28])
 merge_title(ws, "A1:I1", "Q01 - Setting Slot Drag | Story Grammar: Setting")
 ws.merge_cells("A2:I2")
-style_cell(ws["A2"], C_YELLOW, True).value = "Question: Choose the story start."
+style_cell(ws["A2"], C_YELLOW, True).value = "Question: Choose Who, Where, and What."
 for i, h in enumerate(["Card Key", "Text", "Slot", "Resource", "Correct?", "Slot Weight", "Credit Rule", "Distractor Rationale", "LRS"], 1):
     header(ws, 4, i, h)
 setting_rows = [

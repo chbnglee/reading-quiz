@@ -116,17 +116,18 @@ function injectV2Style() {
   const style = document.createElement("style");
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
-    .setting-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
-    .setting-slot{min-height:150px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
+    .setting-board{display:grid;gap:12px}
+    .setting-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:stretch}
+    .setting-slot{min-height:132px;border:2.5px dashed #C4B5FD;background:#F8F7FF;border-radius:22px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:10px;color:#7C3AED;font-family:'Nunito',sans-serif;font-weight:900;position:relative;overflow:hidden}
     .setting-slot.filled{border-style:solid;background:#EDE9FE}.setting-slot .slot-label{position:absolute;top:8px;left:10px;background:#7C3AED;color:white;border-radius:999px;padding:4px 10px;font-size:12px}
     .setting-slot img{width:100%;height:86px;object-fit:cover;border-radius:14px;pointer-events:none;margin-top:16px}
-    .setting-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px;background:#FFFBEB;border-radius:22px;border:2px solid #FDE68A}
-    .setting-card{min-height:122px;background:white;border:2.5px solid #FCD34D;border-radius:20px;padding:9px;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s;display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center}
+    .setting-row-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px;background:#FFFBEB;border-radius:22px;border:2px solid #FDE68A}
+    .setting-card{min-height:112px;background:white;border:2.5px solid #FCD34D;border-radius:20px;padding:9px;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s;display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center}
     .setting-card:hover{transform:translateY(-2px);border-color:#A78BFA}.setting-card img{width:100%;height:74px;object-fit:cover;border-radius:14px;pointer-events:none}.setting-word{font-family:'ABeeZee',sans-serif;font-size:16px;color:#374151;text-align:center}
     .conseq-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
     .conseq-slot{min-height:116px;border:2.5px dashed #F9A8D4;background:#FFF7FB;border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;color:#BE185D;font-family:'Nunito',sans-serif;font-weight:900}
     .conseq-slot.filled{border-style:solid;background:#FCE7F3}.conseq-slot img{width:100%;height:100%;object-fit:cover;pointer-events:none}.conseq-slot .pos-label{top:6px;left:6px;background:#BE185D}
-    .conseq-bank{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:14px;margin-top:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
+    .conseq-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px;margin-top:14px;background:#FFFBEB;border-radius:20px;border:2px solid #FDE68A}
     .conseq-card{aspect-ratio:16/10;border:2.5px solid #FCD34D;border-radius:18px;overflow:hidden;cursor:grab;background:white;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .2s}
     .conseq-card:hover{transform:translateY(-2px);border-color:#A78BFA}.conseq-card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
     .report-grid{display:grid;grid-template-columns:minmax(440px,500px) minmax(0,1fr);gap:18px;align-items:stretch}
@@ -135,17 +136,17 @@ function injectV2Style() {
     .radar-svg{width:100%;max-width:450px;height:auto}.axis-label{font-family:'ABeeZee',sans-serif;font-size:10px;fill:#4B5563}.axis-hit{cursor:pointer}.axis-hit:hover text{fill:#7C3AED;font-weight:700}
     .score-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sg-score-card,.synthesis-card{border-radius:18px;border:2px solid #E5E7EB;padding:12px;background:white;transition:background .15s,border-color .15s,transform .15s}
     .sg-score-card.highlight,.synthesis-card.highlight{background:#F5F3FF;border-color:#7C3AED;transform:translateY(-1px)}
-    .score-cards .parent-q-header{display:grid;grid-template-columns:46px minmax(84px,max-content) minmax(76px,1fr) auto;align-items:center;gap:8px}
+    .score-cards .parent-q-header{display:grid;grid-template-columns:42px auto minmax(90px,1fr) auto;align-items:center;gap:8px}
     .score-cards .parent-q-num{width:40px;height:40px;font-size:12px}
-    .score-cards .sg-label{font-size:10.5px;padding:5px 9px;white-space:nowrap}
-    .score-cards .parent-q-title{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-    .score-cards .parent-q-score{font-size:14px;padding:6px 10px;white-space:nowrap}
+    .score-cards .sg-label{display:inline-flex;width:auto;min-width:0;max-width:none;justify-self:start;font-size:10.5px;padding:5px 10px;white-space:nowrap}
+    .score-cards .parent-q-title{font-size:12.5px;white-space:normal;overflow:visible;text-overflow:clip;min-width:0;line-height:1.25}
+    .score-cards .parent-q-score{font-size:13px;padding:5px 9px;white-space:nowrap;min-width:30px;text-align:center}
     .sg-note{font-size:12px;color:#6B7280;line-height:1.55;margin-top:10px}.synthesis-card{background:#FFF7ED;border-color:#FDBA74}
     .v2-report-section-title{font-family:'Nunito',sans-serif;font-weight:900;color:#92400E;font-size:15px;margin:4px 0 8px}
     .ox-grid{grid-template-columns:repeat(7,1fr);max-width:620px}.student-card{max-width:680px}.ox-cell{min-height:84px;justify-content:center}
     .parent-card{max-width:1200px}.parent-q-card{margin-bottom:0}.parent-risk{margin-top:6px}
     @media(max-width:980px){.report-grid{grid-template-columns:1fr}.radar-svg{max-width:430px}}
-    @media(max-width:760px){.setting-bank,.setting-slots,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.ox-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:760px){.setting-row{grid-template-columns:1fr}.setting-row-bank,.score-cards,.conseq-slots,.conseq-bank{grid-template-columns:1fr}.ox-grid{grid-template-columns:repeat(4,1fr)}}
   `;
   document.head.appendChild(style);
 }
@@ -168,13 +169,21 @@ function injectV2Dom() {
   document.getElementById("progress-bar").insertAdjacentHTML("beforeend", '<div class="dot" id="dot6" onclick="jumpTo(6)">7</div>');
 
   document.querySelector("#screen-q0 .q-card").innerHTML = `
-    <div class="q-header"><div class="q-num-badge" style="background:#7C3AED">Q1</div><div class="q-instruction">Choose the story start.</div><div class="q-type-tag" style="background:#7C3AED">Setting</div></div>
-    <div class="setting-slots" id="setting-slots">
-      <div class="setting-slot" data-slot="who" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Who?</span>Drop here</div>
-      <div class="setting-slot" data-slot="where" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Where?</span>Drop here</div>
-      <div class="setting-slot" data-slot="what" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">What?</span>Drop here</div>
+    <div class="q-header"><div class="q-num-badge" style="background:#7C3AED">Q1</div><div class="q-instruction">Choose Who, Where, and What.</div><div class="q-type-tag" style="background:#7C3AED">Setting</div></div>
+    <div class="setting-board" id="setting-bank">
+      <div class="setting-row">
+        <div class="setting-slot" data-slot="who" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Who?</span>Drop here</div>
+        <div class="setting-row-bank" data-bank="who"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-slot" data-slot="where" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">Where?</span>Drop here</div>
+        <div class="setting-row-bank" data-bank="where"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-slot" data-slot="what" ondragover="dragOver(event)" ondrop="dropSetting(event)"><span class="slot-label">What?</span>Drop here</div>
+        <div class="setting-row-bank" data-bank="what"></div>
+      </div>
     </div>
-    <div class="setting-bank" id="setting-bank"></div>
     ${nav(0)}`;
   resetSetting();
 
@@ -311,8 +320,8 @@ function renderSettingSlot(slot) {
 function returnSettingCard(slot) {
   const key = v2SettingSlots[slot];
   if (!key) return;
-  document.getElementById("setting-bank").insertAdjacentHTML("beforeend", settingCardHtml(key));
-  document.getElementById("setting-bank").style.display = "";
+  const card = QD.q01.cards[key];
+  document.querySelector(`#setting-bank [data-bank="${card.slot}"]`)?.insertAdjacentHTML("beforeend", settingCardHtml(key));
   v2SettingSlots[slot] = null;
 }
 
@@ -321,10 +330,10 @@ function resetSetting() {
   v2SettingFrom = null;
   v2SettingSlots = { who: null, where: null, what: null };
   Object.keys(v2SettingSlots).forEach(renderSettingSlot);
-  const bank = document.getElementById("setting-bank");
-  if (!bank) return;
-  bank.style.display = "";
-  bank.innerHTML = ["butterfly", "forest", "tear", "chameleon", "pond", "color", "flower", "home", "mirror"].map(settingCardHtml).join("");
+  document.querySelectorAll("#setting-bank .setting-row-bank").forEach(bank => { bank.innerHTML = ""; });
+  ["chameleon", "butterfly", "flower"].forEach(key => document.querySelector('#setting-bank [data-bank="who"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
+  ["forest", "pond", "home"].forEach(key => document.querySelector('#setting-bank [data-bank="where"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
+  ["color", "tear", "mirror"].forEach(key => document.querySelector('#setting-bank [data-bank="what"]')?.insertAdjacentHTML("beforeend", settingCardHtml(key)));
 }
 
 function startConseq(e) {
@@ -644,7 +653,7 @@ showParentResults = function() {
   document.getElementById("sg-score-cards").innerHTML = defs.map((d, i) => {
     const s = scores[i] || 0;
     const pass = s >= 85;
-    return `<div class="sg-score-card ${pass ? "pass" : "fail"}" data-sg="${d.key}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s} / 100</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
+    return `<div class="sg-score-card ${pass ? "pass" : "fail"}" data-sg="${d.key}"><div class="parent-q-header"><div class="parent-q-num">${d.qNum}</div><span class="sg-label">${d.sg}</span><div class="parent-q-title">${d.kor}</div><div class="parent-q-score">${s}</div></div><div class="sg-note">${buildParentFeedbackV2(d, s)}</div></div>`;
   }).join("");
   document.getElementById("parent-q-list").innerHTML = "";
   document.getElementById("parent-q-list").style.display = "none";
@@ -707,7 +716,7 @@ downloadDevSpec = function() {
     "report_bucket"
   ]];
   [
-    ["OG0021_V2_Q01", 1, "SETTING_SLOT_DRAG", "Setting Slot Drag", "setting", "Setting", "Choose the story start.", "OG0021_SC01_I.png, OG0021_SC03_I.png, OG0021_SC05_I.png, OG0021_SC06_I.png, OG0021_SC10_I.png", "-", "who=chameleon, where=forest, what=color", "weighted_slot_match", 100, "radar"],
+    ["OG0021_V2_Q01", 1, "SETTING_SLOT_DRAG", "Setting Slot Drag", "setting", "Setting", "Choose Who, Where, and What.", "OG0021_SC01_I.png, OG0021_SC03_I.png, OG0021_SC05_I.png, OG0021_SC06_I.png, OG0021_SC10_I.png", "-", "who=chameleon, where=forest, what=color", "weighted_slot_match", 100, "radar"],
     ["OG0021_V2_Q02", 2, "STORY_SEQUENCE_DRAG", "Story Scene Sequence", "consequence", "Consequence", "Put the story scenes in order.", "OG0021_SC01_I.png, OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", "-", QD.q02.correct.join(", "), "weighted_position", 100, "radar"],
     ["OG0021_V2_Q03", 3, "LISTEN_SCENE_MCQ", "Listening Scene Match", "initiating_event", "Initiating Event", "Listen. Which scene starts the problem?", "OG0021_SC02_I.png, OG0021_SC03_I.png, OG0021_SC06_I.png, OG0021_SC09_I.png", QD.q03.audioSrc, QD.q03.correct, "fixed_option_score", 100, "radar"],
     ["OG0021_V2_Q04", 4, "SCENE_WORD_DRAG", "Scene-Anchored Unscramble", "attempt", "Attempt", "Put the story words in order.", "OG0021_SC03_I.png", "-", QD.q04.correct.join(" "), "weighted_word_position", 100, "radar"],
