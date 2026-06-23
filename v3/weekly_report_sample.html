@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Comprehension Report Sample</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'ABeeZee','Malgun Gothic',sans-serif;background:#F8FAFC;color:#374151;min-height:100vh}
+button{font-family:inherit}
+.page{max-width:1180px;margin:0 auto;padding:28px 22px 46px}
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin-bottom:18px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#EDE9FE;color:#6D28D9;border-radius:999px;padding:7px 14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;margin-bottom:10px}
+h1{font-family:'Nunito',sans-serif;font-size:34px;line-height:1.12;color:#4C1D95;margin-bottom:8px}
+.lead{font-size:14px;line-height:1.65;color:#6B7280;max-width:680px}
+.period{background:white;border:2px solid #EDE9FE;border-radius:20px;padding:16px 18px;min-width:220px;box-shadow:0 10px 28px rgba(124,58,237,.09)}
+.period strong{display:block;font-family:'Nunito',sans-serif;color:#7C3AED;font-size:16px;margin-bottom:4px}
+.period span{font-size:12px;color:#6B7280}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.metric{background:white;border:2px solid #E5E7EB;border-radius:18px;padding:16px;min-height:112px}
+.metric .label{font-size:12px;color:#6B7280;margin-bottom:10px}
+.metric .value{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900;color:#111827}
+.metric .sub{font-size:12px;color:#6B7280;line-height:1.4;margin-top:6px}
+.metric.good{border-color:#A7F3D0;background:#F0FDF4}.metric.good .value{color:#047857}
+.metric.warn{border-color:#FDE68A;background:#FFFBEB}.metric.warn .value{color:#B45309}
+.layout{display:grid;grid-template-columns:420px minmax(0,1fr);gap:16px;align-items:start}
+.panel{background:white;border:2px solid #E5E7EB;border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(15,23,42,.05)}
+.panel h2{font-family:'Nunito',sans-serif;font-size:19px;color:#4C1D95;margin-bottom:12px}
+.radar-wrap{text-align:center;background:#F9FAFB;border-radius:20px;padding:12px;border:1px solid #EDE9FE}
+.radar{width:100%;max-width:360px;height:auto}
+.axis-label{font-size:10px;fill:#4B5563}
+.profile-list{display:grid;gap:8px;margin-top:12px}
+.axis-row{display:grid;grid-template-columns:138px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:12px}
+.axis-name{font-family:'Nunito',sans-serif;font-weight:900;color:#4C1D95}
+.bar{height:10px;border-radius:999px;background:#E5E7EB;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#7C3AED,#38BDF8)}
+.axis-score{font-family:'Nunito',sans-serif;font-weight:900;text-align:right;color:#111827}
+.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.story-grid{display:grid;gap:8px}
+.story-card{display:grid;grid-template-columns:72px minmax(0,1fr) 54px;gap:10px;align-items:center;border:1px solid #E5E7EB;border-radius:14px;padding:10px;background:#FFFFFF}
+.story-id{font-family:'Nunito',sans-serif;font-weight:900;color:#7C3AED;background:#F5F3FF;border-radius:999px;text-align:center;padding:5px 0;font-size:11px}
+.story-title{font-size:12px;color:#374151;line-height:1.35}
+.story-score{font-family:'Nunito',sans-serif;font-weight:900;text-align:right}
+.heatmap{overflow:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:12px;table-layout:fixed}
+th,td{padding:9px 6px;text-align:center;border-bottom:1px solid #E5E7EB}
+th{font-family:'Nunito',sans-serif;font-weight:900;color:#4C1D95;background:#F5F3FF;position:sticky;top:0}
+td:first-child,th:first-child{text-align:left;width:210px}
+.story-cell{display:flex;align-items:center;gap:8px;min-width:0}
+.book-icon{position:relative;display:inline-block;width:15px;height:11px;border:1.5px solid #7C3AED;border-radius:3px;background:#EDE9FE;flex-shrink:0}
+.book-icon::after{content:"";position:absolute;left:6px;top:1px;width:1.5px;height:7px;background:#7C3AED;border-radius:999px}
+.story-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{display:inline-flex;min-width:38px;justify-content:center;border-radius:999px;padding:4px 8px;font-family:'Nunito',sans-serif;font-weight:900}
+.hi{background:#DCFCE7;color:#047857}.mid{background:#FEF3C7;color:#B45309}.low{background:#FEE2E2;color:#B91C1C}
+.insights{display:grid;gap:10px}
+.insight{border-radius:16px;padding:13px 14px;border:2px solid #E5E7EB;background:#FFFFFF}
+.insight strong{font-family:'Nunito',sans-serif;color:#4C1D95;font-size:14px}
+.insight p{font-size:12px;line-height:1.55;color:#6B7280;margin-top:5px}
+.trend{height:146px;width:100%}
+.formula{margin-top:16px;background:#F8FAFC;color:#475569;border:1px solid #E5E7EB;border-radius:18px;padding:14px 16px}
+.formula h2{color:#64748B;margin-bottom:10px;font-size:15px}.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.formula-card{background:white;border:1px solid #E5E7EB;border-radius:14px;padding:11px}
+.formula-card strong{display:block;font-family:'Nunito',sans-serif;font-size:12px;margin-bottom:5px;color:#64748B}
+.formula-card code{font-family:Consolas,monospace;font-size:10.5px;line-height:1.45;color:#475569;white-space:normal}
+.next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.next-panel{margin-top:16px}
+.next-card{background:#FFF7ED;border:2px solid #FDBA74;border-radius:16px;padding:13px}
+.next-card strong{font-family:'Nunito',sans-serif;color:#9A3412;font-size:13px}.next-card p{font-size:12px;color:#6B7280;line-height:1.55;margin-top:5px}
+@media(max-width:940px){.top,.layout,.section-grid,.formula-grid,.next{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.period{min-width:0}.page{padding:20px 14px 36px}}
+@media(max-width:560px){.summary{grid-template-columns:1fr}h1{font-size:28px}.metric{min-height:0}}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Reading Comprehension Report · Sample</div>
+      <h1>Quiz 종합 리포트</h1>
+    </div>
+    <aside class="period">
+      <strong>2026.06.01 - 2026.06.21</strong>
+      <span>김아미 · Level 1-2 · 10 stories</span>
+    </aside>
+  </header>
+
+  <section class="summary" id="summary"></section>
+
+  <section class="layout">
+    <div class="panel">
+      <h2>Story Grammar Profile</h2>
+      <div class="radar-wrap" id="radar"></div>
+      <div class="profile-list" id="axis-list"></div>
+    </div>
+
+    <div>
+      <section class="panel">
+        <h2>Learning Insights</h2>
+        <div class="insights" id="insights"></div>
+      </section>
+      <section class="panel" style="margin-top:16px">
+        <h2>Learning Progress</h2>
+        <svg class="trend" id="trend" viewBox="0 0 620 150" role="img" aria-label="학습 날짜별 변화 그래프"></svg>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel heatmap" style="margin-top:16px">
+    <h2>Learning Details</h2>
+    <table id="story-table"></table>
+  </section>
+
+  <section class="panel next-panel">
+    <h2>Next Steps</h2>
+    <div class="next" id="next-practice"></div>
+  </section>
+
+  <section class="formula">
+    <h2>실제 구현용 계산식</h2>
+    <div class="formula-grid">
+      <div class="formula-card"><strong>항목 평균</strong><code>axisAvg = round(sum(book.axisScore) / bookCount)</code></div>
+      <div class="formula-card"><strong>책별 종합점수</strong><code>bookOverall = round(avg(6 SG axes))</code></div>
+      <div class="formula-card"><strong>기간 종합점수</strong><code>periodOverall = round(avg(bookOverall over completed books))</code></div>
+      <div class="formula-card"><strong>반복 약점</strong><code>weakCount(axis) = count(axisScore &lt; 70); priority = lowAvg + highWeakCount</code></div>
+      <div class="formula-card"><strong>성장 추세</strong><code>trendDelta = avg(lastHalf.axis) - avg(firstHalf.axis)</code></div>
+      <div class="formula-card"><strong>안정도</strong><code>stability = 100 - stdev(axisScores); low stability means uneven comprehension</code></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const AXES = [
+  {key:"setting", en:"Setting", ko:"배경 이해"},
+  {key:"initiating", en:"Initiating Event", ko:"사건 시작"},
+  {key:"attempt", en:"Attempt", ko:"해결 행동"},
+  {key:"reaction", en:"Reaction", ko:"감정 반응"},
+  {key:"internal", en:"Internal Response", ko:"내면 추론"},
+  {key:"consequence", en:"Consequence", ko:"결과 이해"}
+];
+
+const books = [
+  {id:"OG0021", title:"Milo and the Lost Color", level:1, date:"06.01", setting:92, initiating:100, attempt:83, reaction:100, internal:88, consequence:76},
+  {id:"OG0005", title:"Podo and Didi", level:2, date:"06.03", setting:86, initiating:95, attempt:72, reaction:78, internal:64, consequence:68},
+  {id:"OG0012", title:"The Moon Seed", level:1, date:"06.05", setting:100, initiating:90, attempt:66, reaction:84, internal:58, consequence:62},
+  {id:"OG0018", title:"Nina's Little Boat", level:1, date:"06.07", setting:88, initiating:100, attempt:74, reaction:92, internal:70, consequence:65},
+  {id:"OG0030", title:"The Sleepy Star", level:2, date:"06.09", setting:94, initiating:86, attempt:69, reaction:76, internal:62, consequence:70},
+  {id:"OG0024", title:"Benny Finds a Door", level:1, date:"06.11", setting:96, initiating:100, attempt:82, reaction:88, internal:76, consequence:74},
+  {id:"OG0033", title:"The Quiet Robot", level:2, date:"06.13", setting:90, initiating:92, attempt:78, reaction:82, internal:72, consequence:80},
+  {id:"OG0041", title:"Lulu and the Blue Kite", level:1, date:"06.15", setting:100, initiating:96, attempt:84, reaction:90, internal:80, consequence:82},
+  {id:"OG0047", title:"The Warm Snow", level:2, date:"06.18", setting:92, initiating:94, attempt:86, reaction:86, internal:78, consequence:84},
+  {id:"OG0052", title:"A Garden for Pip", level:2, date:"06.20", setting:98, initiating:100, attempt:88, reaction:94, internal:84, consequence:86}
+];
+
+const avg = arr => Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+const scoreClass = s => s >= 85 ? "hi" : s >= 70 ? "mid" : "low";
+const sgAvg = book => avg(AXES.map(a => book[a.key]));
+const bookOverall = book => sgAvg(book);
+const axisAvg = Object.fromEntries(AXES.map(axis => [axis.key, avg(books.map(b => b[axis.key]))]));
+const axisLowCount = Object.fromEntries(AXES.map(axis => [axis.key, books.filter(b => b[axis.key] < 70).length]));
+const axisStableCount = Object.fromEntries(AXES.map(axis => [axis.key, books.filter(b => b[axis.key] >= 85).length]));
+const periodOverall = avg(books.map(bookOverall));
+const firstHalf = books.slice(0, Math.ceil(books.length/2));
+const lastHalf = books.slice(Math.ceil(books.length/2));
+const axisTrend = Object.fromEntries(AXES.map(axis => [axis.key, avg(lastHalf.map(b=>b[axis.key])) - avg(firstHalf.map(b=>b[axis.key]))]));
+const strongest = AXES.slice().sort((a,b)=>axisAvg[b.key]-axisAvg[a.key])[0];
+const weakest = AXES.slice().sort((a,b)=>(axisLowCount[b.key]-axisLowCount[a.key]) || (axisAvg[a.key]-axisAvg[b.key]))[0];
+
+function renderSummary(){
+  document.getElementById("summary").innerHTML = `
+    <div class="metric"><div class="label">읽은 책</div><div class="value">${books.length}권</div><div class="sub">완료 퀴즈 ${books.length}개</div></div>
+    <div class="metric"><div class="label">기간 종합점수</div><div class="value">${periodOverall}</div><div class="sub">Story Grammar 6축 평균</div></div>
+    <div class="metric good"><div class="label">가장 안정적인 항목</div><div class="value">${axisAvg[strongest.key]}</div><div class="sub">${strongest.en} · ${strongest.ko}</div></div>
+    <div class="metric warn"><div class="label">집중 보완 항목</div><div class="value">${axisAvg[weakest.key]}</div><div class="sub">${weakest.en} · ${axisLowCount[weakest.key]}권에서 70점 미만</div></div>
+  `;
+}
+
+function radarSvg(){
+  const cx=180, cy=178, r=112;
+  const angles=[-90,-30,30,90,150,210].map(d=>d*Math.PI/180);
+  const rings=[20,40,60,80,100].map(v=>`<polygon points="${angles.map(a=>`${cx+Math.cos(a)*r*v/100},${cy+Math.sin(a)*r*v/100}`).join(" ")}" fill="none" stroke="#E5E7EB"/>`).join("");
+  const axes=angles.map((a,i)=>{
+    const axis=AXES[i], x=cx+Math.cos(a)*(r+44), y=cy+Math.sin(a)*(r+32);
+    const words=axis.en==="Initiating Event"?["Initiating","Event"]:axis.en==="Internal Response"?["Internal","Response"]:[axis.en];
+    return `<line x1="${cx}" y1="${cy}" x2="${cx+Math.cos(a)*r}" y2="${cy+Math.sin(a)*r}" stroke="#E5E7EB"/>
+      <text class="axis-label" x="${x}" y="${y}" text-anchor="middle">${words.map((w,j)=>`<tspan x="${x}" dy="${j?12:0}">${w}</tspan>`).join("")}</text>`;
+  }).join("");
+  const poly=angles.map((a,i)=>{
+    const s=axisAvg[AXES[i].key];
+    return `${cx+Math.cos(a)*r*s/100},${cy+Math.sin(a)*r*s/100}`;
+  }).join(" ");
+  return `<svg class="radar" viewBox="0 0 360 350">${rings}${axes}<polygon points="${poly}" fill="rgba(124,58,237,.28)" stroke="#7C3AED" stroke-width="3"/></svg>`;
+}
+
+function renderProfile(){
+  document.getElementById("radar").innerHTML = radarSvg();
+  document.getElementById("axis-list").innerHTML = AXES.map(axis => `
+    <div class="axis-row">
+      <div class="axis-name">${axis.en}</div>
+      <div class="bar"><span style="width:${axisAvg[axis.key]}%"></span></div>
+      <div class="axis-score">${axisAvg[axis.key]}</div>
+    </div>
+  `).join("");
+}
+
+function renderInsights(){
+  const improved = AXES.slice().sort((a,b)=>axisTrend[b.key]-axisTrend[a.key])[0];
+  const dipped = AXES.slice().sort((a,b)=>axisTrend[a.key]-axisTrend[b.key])[0];
+  document.getElementById("insights").innerHTML = `
+    <div class="insight"><strong>반복 취약 패턴</strong><p>내면 추론(Internal Response) 문항에서 일부 반복적인 어려움이 관찰되었습니다. 학습한 ${books.length}권의 도서 중 ${axisLowCount.internal}권에서 해당 영역의 점수가 70점 미만으로 나타났습니다.</p></div>
+    <div class="insight"><strong>강점</strong><p>${strongest.ko}(${strongest.en})은 ${axisStableCount[strongest.key]}권에서 85점 이상입니다. 이야기의 시작 단서와 문제 상황을 안정적으로 찾습니다.</p></div>
+    <div class="insight"><strong>향상된 영역</strong><p>최근 5권에서는 ${improved.ko}(${improved.en}) 영역이 이전 5권보다 ${axisTrend[improved.key] >= 0 ? "+" : ""}${axisTrend[improved.key]}점 변화했습니다. ${dipped.ko}(${dipped.en}) 영역은 계속 관찰이 필요합니다.</p></div>
+  `;
+}
+
+function renderTrend(){
+  const svg=document.getElementById("trend");
+  const points=books.map((b,i)=>({x:42+i*60,y:118-bookOverall(b)*0.9, score:bookOverall(b), id:b.id, date:b.date}));
+  const line=points.map(p=>`${p.x},${p.y}`).join(" ");
+  svg.innerHTML = `
+    <line x1="36" y1="22" x2="36" y2="118" stroke="#E5E7EB"/>
+    <line x1="36" y1="118" x2="590" y2="118" stroke="#E5E7EB"/>
+    <polyline points="${line}" fill="none" stroke="#7C3AED" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    ${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#7C3AED"/><text x="${p.x}" y="${p.y-10}" text-anchor="middle" font-size="10" fill="#4B5563">${p.score}</text>`).join("")}
+    ${points.map(p=>`<rect x="${p.x-7}" y="128" width="14" height="10" rx="2" fill="#EDE9FE" stroke="#7C3AED"/><line x1="${p.x}" y1="129" x2="${p.x}" y2="137" stroke="#7C3AED"/><text x="${p.x}" y="148" text-anchor="middle" font-size="9" fill="#6B7280">${p.date}</text>`).join("")}
+  `;
+}
+
+function renderTable(){
+  const head = `<tr><th>Story</th>${AXES.map(a=>`<th>${a.en}</th>`).join("")}<th>Overall</th></tr>`;
+  const rows = books.map(b => `<tr>
+    <td><span class="story-cell"><span class="book-icon" title="${b.id}" aria-label="${b.id}"></span><span class="story-name">${b.title}</span></span></td>
+    ${AXES.map(a=>`<td><span class="pill ${scoreClass(b[a.key])}">${b[a.key]}</span></td>`).join("")}
+    <td><span class="pill ${scoreClass(bookOverall(b))}">${bookOverall(b)}</span></td>
+  </tr>`).join("");
+  document.getElementById("story-table").innerHTML = head + rows;
+}
+
+function renderNext(){
+  const next = [
+    {title:"원인→결과 말하기", body:"읽은 뒤 ‘무엇 때문에 일이 시작됐고, 그래서 어떻게 되었는지’를 2문장으로 말하게 합니다."},
+    {title:"속마음 근거 찾기", body:"인물이 한 말/표정/행동 중 하나를 골라 ‘왜 그렇게 느꼈을까?’를 연결합니다."},
+    {title:"3장면 요약", body:"처음-문제-결과 장면만 골라 짧게 순서대로 놓는 활동이 Consequence 보완에 좋습니다."}
+  ];
+  document.getElementById("next-practice").innerHTML = next.map(n=>`<div class="next-card"><strong>${n.title}</strong><p>${n.body}</p></div>`).join("");
+}
+
+renderSummary();
+renderProfile();
+renderInsights();
+renderTrend();
+renderTable();
+renderNext();
+</script>
+</body>
+</html>
