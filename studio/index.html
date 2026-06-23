@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/studio.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <div class="eyebrow">BookyTalky Authoring</div>
+    <h1>Quiz Studio</h1>
+  </div>
+  <div class="top-actions">
+    <button class="ghost-btn" id="load-sample-btn">OG0021 샘플</button>
+    <label class="ghost-btn file-label">
+      JSON 불러오기
+      <input type="file" id="json-file" accept=".json,application/json">
+    </label>
+  </div>
+</header>
+
+<main class="studio-grid">
+  <aside class="panel input-panel">
+    <div class="panel-head">
+      <h2>Story Input</h2>
+      <span class="pill">Draft</span>
+    </div>
+
+    <label class="field">
+      <span>Story ID</span>
+      <input id="story-id" value="OG0000" placeholder="OG0000">
+    </label>
+
+    <label class="field">
+      <span>Title</span>
+      <input id="story-title" placeholder="Story title">
+    </label>
+
+    <label class="field">
+      <span>Level</span>
+      <input id="story-level" value="Level 1">
+    </label>
+
+    <label class="field">
+      <span>Story Text</span>
+      <textarea id="story-text" placeholder="SC01_ST01_N = ..."></textarea>
+    </label>
+
+    <label class="field">
+      <span>AI Provider</span>
+      <select id="ai-provider">
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Gemini</option>
+      </select>
+    </label>
+
+    <div class="button-stack">
+      <button class="primary-btn" id="generate-rule-btn">규칙 기반 초안 생성</button>
+      <button class="secondary-btn" id="generate-ai-btn">AI 초안 생성</button>
+    </div>
+
+    <div class="note-box">
+      <strong>권장 흐름</strong>
+      <p>스토리 전문과 리소스를 준비한 뒤 초안을 만들고, 오른쪽 패널에서 문항·가중치·힌트를 검수한 후 엑셀과 미리보기 HTML을 내보냅니다.</p>
+    </div>
+  </aside>
+
+  <section class="panel preview-panel">
+    <div class="panel-head">
+      <h2>Preview</h2>
+      <div class="preview-nav" id="preview-nav"></div>
+    </div>
+    <div id="preview-stage" class="preview-stage"></div>
+  </section>
+
+  <aside class="panel editor-panel">
+    <div class="panel-head">
+      <h2>Quiz Editor</h2>
+      <span class="pill" id="schema-pill">quiz-v3.0</span>
+    </div>
+
+    <label class="field">
+      <span>Question</span>
+      <select id="question-select"></select>
+    </label>
+
+    <label class="field">
+      <span>Story Grammar</span>
+      <select id="sg-select">
+        <option value="setting">Setting</option>
+        <option value="initiating_event">Initiating Event</option>
+        <option value="attempt">Attempt</option>
+        <option value="reaction">Reaction</option>
+        <option value="internal_response">Internal Response</option>
+        <option value="consequence">Consequence</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Question Type</span>
+      <select id="type-select">
+        <option value="story_sequence_drag">story_sequence_drag</option>
+        <option value="setting_slot_drag">setting_slot_drag</option>
+        <option value="listen_scene_mcq">listen_scene_mcq</option>
+        <option value="scene_word_unscramble">scene_word_unscramble</option>
+        <option value="emotion_mcq">emotion_mcq</option>
+        <option value="internal_response_mcq">internal_response_mcq</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Instruction</span>
+      <input id="instruction-input">
+    </label>
+
+    <label class="field">
+      <span>Hint</span>
+      <input id="hint-input">
+    </label>
+
+    <label class="field">
+      <span>Resources JSON</span>
+      <textarea class="json-area" id="resources-json"></textarea>
+    </label>
+
+    <label class="field">
+      <span>Interaction JSON</span>
+      <textarea class="json-area" id="interaction-json"></textarea>
+    </label>
+
+    <label class="field">
+      <span>Scoring JSON</span>
+      <textarea class="json-area" id="scoring-json"></textarea>
+    </label>
+
+    <label class="field">
+      <span>Diagnostics JSON</span>
+      <textarea class="json-area short" id="diagnostics-json"></textarea>
+    </label>
+
+    <button class="primary-btn" id="apply-btn">변경 반영</button>
+
+    <div class="export-box">
+      <h3>Export</h3>
+      <button class="export-btn" id="export-json-btn">Quiz JSON</button>
+      <button class="export-btn" id="export-reading-btn">Reading Quiz XLSX</button>
+      <button class="export-btn" id="export-dev-btn">Dev Spec XLSX</button>
+      <button class="export-btn" id="export-html-btn">Preview HTML</button>
+    </div>
+  </aside>
+</main>
+
+<div id="toast" class="toast" role="status"></div>
+<script src="static/studio.js"></script>
+</body>
+</html>

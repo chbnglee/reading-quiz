@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bookytalky.local/schemas/reading-quiz-v3.schema.json",
+  "title": "Reading Quiz Studio v3 Quiz JSON",
+  "type": "object",
+  "required": ["schemaVersion", "story", "assets", "storyGrammarAxes", "questions", "reporting"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "quiz-v3.0"
+    },
+    "story": {
+      "type": "object",
+      "required": ["storyId", "title", "level", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "storyId": { "type": "string", "pattern": "^[A-Z]{2}[0-9]{4}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "level": { "type": "string" },
+        "text": { "type": "string" },
+        "scenes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scene" }
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "required": ["imageBasePath", "audioBasePath", "coverBasePath", "backgroundImage", "hintCharacter"],
+      "additionalProperties": false,
+      "properties": {
+        "imageBasePath": { "type": "string" },
+        "audioBasePath": { "type": "string" },
+        "coverBasePath": { "type": "string" },
+        "backgroundImage": { "type": "string" },
+        "hintCharacter": { "type": "string" }
+      }
+    },
+    "storyGrammarAxes": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/storyGrammarAxis" }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/question" }
+    },
+    "reporting": {
+      "type": "object",
+      "required": ["overallFormula", "masteryBands", "parentFeedback"],
+      "additionalProperties": false,
+      "properties": {
+        "overallFormula": {
+          "type": "string",
+          "const": "overall = average(setting, initiating_event, attempt, reaction, internal_response, consequence)"
+        },
+        "masteryBands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/masteryBand" }
+        },
+        "parentFeedback": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["stable", "developing", "shaky", "focus"],
+            "additionalProperties": false,
+            "properties": {
+              "stable": { "type": "string" },
+              "developing": { "type": "string" },
+              "shaky": { "type": "string" },
+              "focus": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "type": "string", "enum": ["manual", "rule_based", "openai", "gemini"] },
+        "model": { "type": "string" },
+        "promptVersion": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "scene": {
+      "type": "object",
+      "required": ["sceneId", "sentences"],
+      "additionalProperties": false,
+      "properties": {
+        "sceneId": { "type": "string", "pattern": "^SC[0-9]{2}$" },
+        "sentences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sentenceId", "text"],
+            "additionalProperties": false,
+            "properties": {
+              "sentenceId": { "type": "string" },
+              "text": { "type": "string" }
+            }
+          }
+        },
+        "emotion": { "type": "string" }
+      }
+    },
+    "storyGrammarAxis": {
+      "type": "object",
+      "required": ["key", "labelEn", "labelKo", "descriptionKo"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": ["setting", "initiating_event", "attempt", "reaction", "internal_response", "consequence"]
+        },
+        "labelEn": { "type": "string" },
+        "labelKo": { "type": "string" },
+        "descriptionKo": { "type": "string" }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": [
+        "qId",
+        "number",
+        "type",
+        "storyGrammar",
+        "instruction",
+        "hint",
+        "resources",
+        "interaction",
+        "scoring",
+        "diagnostics",
+        "lrs"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "qId": { "type": "string" },
+        "number": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "story_sequence_drag",
+            "setting_slot_drag",
+            "listen_scene_mcq",
+            "scene_word_unscramble",
+            "emotion_mcq",
+            "internal_response_mcq"
+          ]
+        },
+        "storyGrammar": {
+          "type": "string",
+          "enum": ["setting", "initiating_event", "attempt", "reaction", "internal_response", "consequence"]
+        },
+        "instruction": { "type": "string" },
+        "hint": { "type": "string" },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "images": { "type": "array", "items": { "$ref": "#/$defs/resource" } },
+            "audio": { "$ref": "#/$defs/resource" },
+            "scene": { "type": "string" },
+            "sentenceId": { "type": "string" }
+          }
+        },
+        "interaction": {
+          "type": "object",
+          "required": ["promptMode"],
+          "additionalProperties": true,
+          "properties": {
+            "promptMode": { "type": "string" },
+            "items": { "type": "array" },
+            "slots": { "type": "array" },
+            "options": { "type": "array", "items": { "$ref": "#/$defs/option" } },
+            "correct": {}
+          }
+        },
+        "scoring": {
+          "type": "object",
+          "required": ["type", "maxScore", "formula", "components"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "type": "string" },
+            "maxScore": { "type": "number", "const": 100 },
+            "formula": { "type": "string" },
+            "components": { "type": "array", "items": { "$ref": "#/$defs/scoringComponent" } }
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/diagnostic" }
+        },
+        "lrs": {
+          "type": "object",
+          "required": ["verb", "objectId", "resultFields"],
+          "additionalProperties": false,
+          "properties": {
+            "verb": { "type": "string", "const": "answered" },
+            "objectId": { "type": "string" },
+            "resultFields": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["id", "path", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "path": { "type": "string" },
+        "kind": { "type": "string", "enum": ["image", "audio", "cover", "background"] },
+        "sceneId": { "type": "string" },
+        "sentenceId": { "type": "string" }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": ["key", "text", "score", "isCorrect"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "text": { "type": "string" },
+        "resource": { "$ref": "#/$defs/resource" },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "isCorrect": { "type": "boolean" },
+        "diagnostic": { "type": "string" }
+      }
+    },
+    "scoringComponent": {
+      "type": "object",
+      "required": ["key", "weight", "rule"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "weight": { "type": "number" },
+        "rule": { "type": "string" },
+        "correctValue": {},
+        "partialCredit": { "type": "number" },
+        "rationale": { "type": "string" }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["code", "messageKo"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string" },
+        "messageKo": { "type": "string" },
+        "relatedOption": { "type": "string" },
+        "threshold": { "type": "number" }
+      }
+    },
+    "masteryBand": {
+      "type": "object",
+      "required": ["key", "min", "max", "labelKo"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "labelKo": { "type": "string" }
+      }
+    }
+  }
+}
