@@ -211,9 +211,9 @@ body { font-family: 'ABeeZee', sans-serif; background: #F5F3FF; min-height: 100v
 .parent-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
 .bookey-hint{position:fixed;left:18px;bottom:18px;z-index:950;display:none;align-items:flex-end;gap:10px}
 .bookey-hint.show{display:flex}
-.bookey-btn{width:58px;height:58px;border:none;border-radius:50%;background:white;box-shadow:0 8px 24px rgba(124,58,237,.18);cursor:pointer;padding:4px;border:2px solid #EDE9FE;transition:transform .15s}
+.bookey-btn{width:58px;height:58px;border:none;border-radius:50%;background:white;box-shadow:0 8px 24px rgba(124,58,237,.18);cursor:pointer;padding:0;border:2px solid #EDE9FE;transition:transform .15s;overflow:hidden}
 .bookey-btn:hover{transform:translateY(-2px) scale(1.03)}
-.bookey-btn img{width:100%;height:100%;object-fit:contain;display:block}
+.bookey-btn img{width:112%;height:112%;object-fit:cover;object-position:center;display:block;transform:translate(-5%,-3%)}
 .hint-bubble{display:none;max-width:260px;background:white;border:2px solid #C4B5FD;border-radius:20px 20px 20px 6px;padding:12px 14px;color:#374151;font-family:'ABeeZee',sans-serif;font-size:14px;line-height:1.45;box-shadow:0 10px 26px rgba(124,58,237,.14)}
 .bookey-hint.open .hint-bubble{display:block}
 </style>

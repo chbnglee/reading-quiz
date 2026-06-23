@@ -182,10 +182,10 @@ for i, h in enumerate(cols, 1):
     header(ws, 2, i, h)
 ws.row_dimensions[2].height = 30
 rows = [
-    ["Q01", "Story Scene Sequence", "Consequence", "Put the story scenes in order.", "SC01/02/03/06/09 images", "SC01 -> SC02 -> SC03 -> SC06 -> SC09", 100, "consequence", "Weighted Position", "Q01_CONSEQUENCE", "Milo loses his color. Put the scenes from first to last."],
-    ["Q02", "Setting Slot Drag", "Setting", "Look at the first scene. Fill in the boxes.", "SC01 image + word cards", "who=chameleon / where=forest / at_first=loves changing colors", 100, "setting", "Weighted Slot Match", "Q02_SETTING", "Look at the first picture. Who is there? Where is he?"],
-    ["Q03", "Listening Scene Match", "Initiating Event", "Listen. Which scene starts the problem?", "Audio + SC02/03/06/09", "Option A", 100, "initiating_event", "Weighted MCQ", "Q03_INIT_EVENT", "Listen for the problem. What starts the story?"],
-    ["Q04", "Scene-Anchored Unscramble", "Attempt", "Put the story words in order.", "SC03 image", "Milo walks into the forest.", 100, "attempt", "Weighted Unscramble", "Q04_ATTEMPT", "Milo goes to find his color. Build the same sentence."],
+    ["Q01", "Story Scene Sequence", "Consequence", "Put the story scenes in order.", "SC01/02/03/06/09 images", "SC01 -> SC02 -> SC03 -> SC06 -> SC09", 100, "consequence", "Weighted Position", "Q01_CONSEQUENCE", "Think about the story. Milo loses his color and tries to find it."],
+    ["Q02", "Setting Slot Drag", "Setting", "Look at the first scene. Fill in the boxes.", "SC01 image + word cards", "who=chameleon / where=forest / at_first=loves changing colors", 100, "setting", "Weighted Slot Match", "Q02_SETTING", "Look at the picture. Who is there? Where is he?"],
+    ["Q03", "Listening Scene Match", "Initiating Event", "Listen. Which scene starts the problem?", "Audio + SC02/03/06/09", "Option A", 100, "initiating_event", "Weighted MCQ", "Q03_INIT_EVENT", "A problem is a bad change. Listen for Milo's bad change."],
+    ["Q04", "Scene-Anchored Unscramble", "Attempt", "Put the story words in order.", "SC03 image", "Milo walks into the forest.", 100, "attempt", "Weighted Unscramble", "Q04_ATTEMPT", "Start with who. Then put the action. Then put the place."],
     ["Q05", "Feeling Match", "Reaction", "How does Milo feel here?", "SC06 image", "Option B", 100, "reaction", "Weighted MCQ", "Q05_REACTION", "Look at Milo's face. How does he feel?"],
     ["Q06", "Internal Response MCQ", "Internal Response", "What is Milo thinking?", "SC06 image", "Option A", 100, "internal_response", "Weighted MCQ", "Q06_INTERNAL", "Think about Milo's heart. What does he learn?"],
 ]

@@ -11,10 +11,10 @@ const V3_SG = [
 ];
 
 const V3_HINTS = [
-  "Milo loses his color. Put the scenes from first to last.",
-  "Look at the first picture. Who is there? Where is he?",
-  "Listen for the problem. What starts the story?",
-  "Milo goes to find his color. Build the same sentence.",
+  "Think about the story. Milo loses his color and tries to find it.",
+  "Look at the picture. Who is there? Where is he?",
+  "A problem is a bad change. Listen for Milo's bad change.",
+  "Start with who. Then put the action. Then put the place.",
   "Look at Milo's face. How does he feel?",
   "Think about Milo's heart. What does he learn?",
 ];
@@ -113,7 +113,7 @@ function injectV2Style() {
   const style = document.createElement("style");
   style.textContent = `
     .cover-version{font-family:'Nunito',sans-serif;font-weight:800;background:white;color:#7C3AED;border:2px solid #EDE9FE;border-radius:999px;padding:7px 18px}
-    .q-screen{justify-content:flex-start;align-items:center;padding-left:16px;padding-right:16px;box-sizing:border-box}
+    .q-screen{justify-content:flex-start;align-items:center;padding-left:16px;padding-right:16px;box-sizing:border-box;background-image:linear-gradient(rgba(255,255,255,.62),rgba(245,243,255,.72)),url("Image/OG0021_Talking_BG_I.png")!important;background-size:cover!important;background-position:center!important;background-attachment:fixed}
     .screen.active.q-screen{display:flex;flex-direction:column;align-items:center}
     .q-screen>.q-card{align-self:center;width:min(calc(100vw - 32px),680px);max-width:680px;margin-left:auto;margin-right:auto;box-sizing:border-box}
     #screen-q3>.q-card{align-self:center;width:min(calc(100vw - 32px),680px);max-width:680px;margin-left:auto;margin-right:auto}
@@ -131,22 +131,23 @@ function injectV2Style() {
     .conseq-card:nth-child(4){grid-column:2 / span 2}.conseq-card:nth-child(5){grid-column:4 / span 2}
     .conseq-card:hover{transform:translateY(-2px);border-color:#A78BFA}.conseq-card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
     .report-grid{display:grid;grid-template-columns:minmax(440px,500px) minmax(0,1fr);gap:18px;align-items:stretch}
-    .radar-wrap{background:#F9FAFB;border:2px solid #EDE9FE;border-radius:24px;padding:18px;text-align:center;height:100%;box-sizing:border-box}
+    .report-grid>div:last-child{display:flex;flex-direction:column;min-height:100%}
+    .radar-wrap{background:#F9FAFB;border:2px solid #EDE9FE;border-radius:24px;padding:14px 18px;text-align:center;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
     .radar-title{font-family:'Nunito',sans-serif;font-weight:900;color:#7C3AED;margin-bottom:8px}
     .radar-svg{width:100%;max-width:450px;height:auto}.axis-label{font-family:'ABeeZee',sans-serif;font-size:10px;fill:#4B5563}.axis-hit{cursor:pointer}.axis-hit:hover text{fill:#7C3AED;font-weight:700}
-    .score-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sg-score-card{border-radius:18px;border:2px solid #E5E7EB;padding:12px;background:white;transition:background .15s,border-color .15s,transform .15s}
+    .score-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(118px,1fr));gap:10px;flex:1}.sg-score-card{border-radius:18px;border:2px solid #E5E7EB;padding:14px 12px;background:white;transition:background .15s,border-color .15s,transform .15s;display:flex;flex-direction:column}
     .sg-score-card.highlight{background:#F5F3FF;border-color:#7C3AED;transform:translateY(-1px)}
     .score-cards .parent-q-header{display:grid;grid-template-columns:40px auto minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:6px}
     .score-cards .parent-q-num{width:40px;height:40px;font-size:12px}
     .score-cards .sg-label{display:inline-flex;width:auto;min-width:0;max-width:none;justify-self:start;font-size:10.5px;padding:5px 10px;white-space:nowrap}
     .score-cards .parent-q-title{font-size:12px;white-space:normal;overflow:visible;text-overflow:clip;min-width:0;line-height:1.25}
     .score-cards .parent-q-score{font-size:11px;padding:4px 7px;white-space:nowrap;min-width:42px;text-align:center}
-    .sg-note{font-size:12px;color:#6B7280;line-height:1.55;margin-top:10px}
+    .sg-note{font-size:12px;color:#6B7280;line-height:1.55;margin-top:10px;flex:1;display:flex;align-items:center}
     .bookey-hint{position:fixed;left:18px;bottom:18px;z-index:950;display:none;align-items:flex-end;gap:10px}
     .bookey-hint.show{display:flex}
-    .bookey-btn{width:58px;height:58px;border:none;border-radius:50%;background:white;box-shadow:0 8px 24px rgba(124,58,237,.18);cursor:pointer;padding:4px;border:2px solid #EDE9FE;transition:transform .15s}
+    .bookey-btn{width:58px;height:58px;border:none;border-radius:50%;background:white;box-shadow:0 8px 24px rgba(124,58,237,.18);cursor:pointer;padding:0;border:2px solid #EDE9FE;transition:transform .15s;overflow:hidden}
     .bookey-btn:hover{transform:translateY(-2px) scale(1.03)}
-    .bookey-btn img{width:100%;height:100%;object-fit:contain;display:block}
+    .bookey-btn img{width:112%;height:112%;object-fit:cover;object-position:center;display:block;transform:translate(-5%,-3%)}
     .hint-bubble{display:none;max-width:260px;background:white;border:2px solid #C4B5FD;border-radius:20px 20px 20px 6px;padding:12px 14px;color:#374151;font-family:'ABeeZee',sans-serif;font-size:14px;line-height:1.45;box-shadow:0 10px 26px rgba(124,58,237,.14)}
     .bookey-hint.open .hint-bubble{display:block}
     .v2-report-section-title{font-family:'Nunito',sans-serif;font-weight:900;color:#92400E;font-size:15px;margin:4px 0 8px}
