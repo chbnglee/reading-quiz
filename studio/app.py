@@ -264,8 +264,8 @@ def extract_json(text: str) -> dict:
     return json.loads(stripped)
 
 
-def call_openai(prompt: str, user_payload: dict) -> dict:
-    api_key = os.environ.get("OPENAI_API_KEY")
+def call_openai(prompt: str, user_payload: dict, api_key_override: str | None = None) -> dict:
+    api_key = api_key_override or os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is not set.")
     model = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
@@ -296,8 +296,8 @@ def call_openai(prompt: str, user_payload: dict) -> dict:
     return extract_json(text)
 
 
-def call_gemini(prompt: str, user_payload: dict) -> dict:
-    api_key = os.environ.get("GEMINI_API_KEY")
+def call_gemini(prompt: str, user_payload: dict, api_key_override: str | None = None) -> dict:
+    api_key = api_key_override or os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not set.")
     model = os.environ.get("GEMINI_MODEL", "gemini-1.5-pro")
@@ -341,7 +341,8 @@ class Handler(SimpleHTTPRequestHandler):
                 prompt = PROMPT_PATH.read_text(encoding="utf-8")
                 provider = (payload.get("provider") or os.environ.get("DEFAULT_AI_PROVIDER") or "openai").lower()
                 user_payload = payload.get("input") or payload
-                quiz = call_gemini(prompt, user_payload) if provider == "gemini" else call_openai(prompt, user_payload)
+                api_key_override = payload.get("apiKey") or None
+                quiz = call_gemini(prompt, user_payload, api_key_override) if provider == "gemini" else call_openai(prompt, user_payload, api_key_override)
                 json_response(self, 200, {"quiz": quiz, "provider": provider})
                 return
             json_response(self, 404, {"error": "Unknown endpoint."})

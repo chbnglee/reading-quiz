@@ -129,7 +129,7 @@ function renderPreview() {
   parts.push(`<article class="quiz-card">`);
   parts.push(`<div class="quiz-meta"><span class="q-badge">Q${q.number || currentQuestionIndex + 1}</span><span class="sg-tag">${escapeHtml(SG_LABELS[q.storyGrammar] || q.storyGrammar)}</span></div>`);
   parts.push(`<div class="instruction">${escapeHtml(q.instruction || '')}</div>`);
-  parts.push(`<div class="hint-row"><img class="hint-avatar" src="${escapeAttr(hintAvatar)}" alt="Bookey"><span>${escapeHtml(q.hint || '')}</span></div>`);
+  const hintHtml = `<div class="hint-row"><img class="hint-avatar" src="${escapeAttr(hintAvatar)}" alt="Bookey"><span>${escapeHtml(q.hint || '')}</span></div>`;
 
   if (q.type === 'story_sequence_drag') {
     parts.push(`<div class="scene-grid">${images.map(img => imageHtml(img)).join('')}</div>`);
@@ -150,6 +150,7 @@ function renderPreview() {
     parts.push(`<div class="option-grid">${(q.interaction?.options || []).map(opt => `<div class="option-chip">${escapeHtml(opt.text || opt.key)} <small>(${opt.score ?? 0})</small></div>`).join('')}</div>`);
   }
 
+  parts.push(hintHtml);
   parts.push(`</article>`);
   stage.innerHTML = parts.join('');
 }
@@ -225,6 +226,12 @@ async function generateRuleDraft() {
 
 async function generateAiDraft() {
   updateStoryFromInputs();
+  const apiKey = $('api-key').value.trim();
+  const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+  if (apiKey && !isLocal) {
+    toast('API Key는 로컬 서버에서만 보낼 수 있습니다.');
+    return;
+  }
   const payload = {
     provider: $('ai-provider').value,
     input: {
@@ -238,6 +245,7 @@ async function generateAiDraft() {
       }
     }
   };
+  if (apiKey) payload.apiKey = apiKey;
   try {
     const res = await fetch('/api/generate-ai', {
       method: 'POST',

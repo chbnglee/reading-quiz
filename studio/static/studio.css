@@ -112,6 +112,13 @@ h3{font-size:16px;color:var(--purple-dark);margin-bottom:10px}
   font-size:13px;
   font-weight:900;
 }
+.field-note{
+  display:block;
+  margin-top:6px;
+  color:#9CA3AF;
+  font-size:11px;
+  line-height:1.35;
+}
 input,textarea,select{
   width:100%;
   border:2px solid #EEE7FF;
@@ -224,7 +231,7 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   width:42px;height:42px;border-radius:50%;
   background:white;
   border:2px solid #FDE68A;
-  object-fit:cover;
+  object-fit:contain;
 }
 .scene-grid{
   display:grid;

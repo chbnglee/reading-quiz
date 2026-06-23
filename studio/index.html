@@ -11,7 +11,7 @@
 <body>
 <header class="topbar">
   <div>
-    <div class="eyebrow">BookyTalky Authoring</div>
+    <div class="eyebrow">BookeyTalkey</div>
     <h1>Quiz Studio</h1>
   </div>
   <div class="top-actions">
@@ -27,7 +27,6 @@
   <aside class="panel input-panel">
     <div class="panel-head">
       <h2>Story Input</h2>
-      <span class="pill">Draft</span>
     </div>
 
     <label class="field">
@@ -56,6 +55,12 @@
         <option value="openai">OpenAI</option>
         <option value="gemini">Gemini</option>
       </select>
+    </label>
+
+    <label class="field">
+      <span>API Key</span>
+      <input id="api-key" type="password" placeholder="Local server only">
+      <small class="field-note">로컬 서버에서만 사용하고 저장하지 않습니다.</small>
     </label>
 
     <div class="button-stack">
