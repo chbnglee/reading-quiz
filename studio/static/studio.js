@@ -2,6 +2,8 @@ let quiz = null;
 let currentQuestionIndex = 0;
 let batchItems = [];
 let currentBatchIndex = -1;
+let assetFiles = new Map();
+let assetObjectUrls = [];
 
 const SG_LABELS = {
   setting: 'Setting',
@@ -123,9 +125,28 @@ function renderQuestionSelect() {
 
 function assetUrl(path, kind = 'image') {
   if (!quiz || !path) return '';
+  const localAsset = findLocalAssetUrl(path);
+  if (localAsset) return localAsset;
   if (/^(https?:|data:|blob:|\/)/.test(path)) return path;
   const base = kind === 'audio' ? quiz.assets.audioBasePath : quiz.assets.imageBasePath;
-  return `${base || ''}${path}`;
+  const joined = `${base || ''}${path}`;
+  return findLocalAssetUrl(joined) || joined;
+}
+
+function basename(pathValue) {
+  return String(pathValue || '').split(/[\\/]/).pop().toLowerCase();
+}
+
+function findLocalAssetUrl(pathValue) {
+  if (!pathValue || !assetFiles.size) return '';
+  const normalized = String(pathValue).replace(/\\/g, '/').toLowerCase();
+  const name = basename(normalized);
+  if (assetFiles.has(normalized)) return assetFiles.get(normalized).url;
+  if (assetFiles.has(name)) return assetFiles.get(name).url;
+  for (const [key, value] of assetFiles.entries()) {
+    if (key.endsWith('/' + name) || normalized.endsWith('/' + key)) return value.url;
+  }
+  return '';
 }
 
 function imageHtml(resource, className = '') {
@@ -140,10 +161,12 @@ function imageHtml(resource, className = '') {
 function renderPreview() {
   const stage = $('preview-stage');
   const bg = quiz.assets?.backgroundImage;
-  stage.style.setProperty('--preview-bg', bg ? `url("${bg}")` : 'linear-gradient(140deg,#F7F4FF,#EBF7FF)');
+  const bgUrl = findLocalAssetUrl(bg) || bg;
+  stage.style.setProperty('--preview-bg', bgUrl ? `url("${bgUrl}")` : 'linear-gradient(140deg,#F7F4FF,#EBF7FF)');
   const q = quiz.questions[currentQuestionIndex];
   const images = q.resources?.images || [];
-  const hintAvatar = quiz.assets?.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
+  const hintAvatarPath = quiz.assets?.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
+  const hintAvatar = findLocalAssetUrl(hintAvatarPath) || hintAvatarPath;
   const parts = [];
   parts.push(`<article class="quiz-card">`);
   parts.push(`<div class="quiz-meta"><span class="q-badge">Q${q.number || currentQuestionIndex + 1}</span><span class="sg-tag">${escapeHtml(SG_LABELS[q.storyGrammar] || q.storyGrammar)}</span></div>`);
@@ -259,8 +282,8 @@ async function generateAiDraft() {
   updateStoryFromInputs();
   const apiKey = $('api-key').value.trim();
   const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
-  if (apiKey && !isLocal) {
-    toast('API Key는 로컬 서버에서만 보낼 수 있습니다.');
+  if (!isLocal) {
+    toast('AI 생성은 로컬 서버에서 실행해 주세요.');
     return;
   }
   const payload = {
@@ -575,6 +598,56 @@ function generateBatchDrafts() {
   toast(`${batchItems.length}개 스토리 초안을 생성했습니다.`);
 }
 
+function loadAssetFolder(files) {
+  assetObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  assetObjectUrls = [];
+  assetFiles = new Map();
+  Array.from(files || []).forEach(file => {
+    const url = URL.createObjectURL(file);
+    assetObjectUrls.push(url);
+    const relative = (file.webkitRelativePath || file.name).replace(/\\/g, '/').toLowerCase();
+    const name = file.name.toLowerCase();
+    assetFiles.set(relative, { file, url });
+    assetFiles.set(name, { file, url });
+  });
+  const status = $('asset-status');
+  if (status) status.textContent = assetFiles.size ? `${Math.floor(assetFiles.size / 2)} asset files loaded for preview/export.` : 'No asset folder loaded.';
+  renderPreview();
+  toast(`${Math.floor(assetFiles.size / 2)}개 에셋 파일을 연결했습니다.`);
+}
+
+async function generateBatchAiDrafts() {
+  if (!batchItems.length) {
+    toast('먼저 Batch XLSX/JSON을 불러와 주세요.');
+    return;
+  }
+  const apiKey = $('api-key').value.trim();
+  const provider = $('ai-provider').value;
+  const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+  if (!isLocal) {
+    toast('AI Batch는 로컬 서버에서 실행해 주세요.');
+    return;
+  }
+  syncCurrentBatchItem();
+  try {
+    const res = await fetch('/api/generate-batch-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider,
+        apiKey,
+        stories: batchItems.map(item => item.row)
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'AI batch generation failed.');
+    loadBatchBundle(data);
+    toast(`${provider}로 ${batchItems.length}개 초안을 생성했습니다.`);
+  } catch (error) {
+    toast(`AI Batch 실패: ${error.message}`);
+  }
+}
+
 function renderBatchList() {
   const list = $('batch-list');
   const count = $('batch-count');
@@ -661,7 +734,7 @@ function loadBatchBundle(parsed) {
     if (qz) {
       item.quiz = qz;
       item.status = normalizeStatus(entry.status || row.status || 'Generated');
-      item.issues = validateQuizDraft(qz, row);
+      item.issues = [...(entry.issues || []), ...validateQuizDraft(qz, row)];
     }
     return item;
   });
@@ -769,6 +842,29 @@ function previewHtmlForQuiz(sourceQuiz) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Preview</title><style>body{font-family:Arial,sans-serif;background:#f7f4ff;margin:0;padding:24px;color:#263148}.wrap{max-width:900px;margin:auto}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}img{max-width:160px;border-radius:14px;margin:6px}.pill{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold}</style></head><body><main class="wrap"><h1>${escapeHtml(sourceQuiz.story.title)}</h1><div id="app"></div></main><script>const quiz=${data};const app=document.getElementById('app');const asset=(p)=>/^(https?:|data:|\\/)/.test(p)?p:(quiz.assets.imageBasePath+p);app.innerHTML=quiz.questions.map(q=>'<section class="card"><span class="pill">Q'+q.number+' '+q.storyGrammar+'</span><h2>'+q.instruction+'</h2><p>'+q.hint+'</p><div>'+((q.resources.images||[]).map(i=>'<img src="'+asset(i.path)+'" alt="'+(i.sceneId||i.id)+'">').join(''))+'</div><pre>'+JSON.stringify(q.interaction,null,2)+'</pre></section>').join('');</script></body></html>`;
 }
 
+function collectQuizAssetPaths(sourceQuiz) {
+  const paths = new Set();
+  if (sourceQuiz.assets?.backgroundImage) paths.add(sourceQuiz.assets.backgroundImage);
+  if (sourceQuiz.assets?.hintCharacter) paths.add(sourceQuiz.assets.hintCharacter);
+  (sourceQuiz.questions || []).forEach(q => {
+    (q.resources?.images || []).forEach(img => img.path && paths.add(img.path));
+    if (q.resources?.audio?.path) paths.add(q.resources.audio.path);
+  });
+  return [...paths];
+}
+
+function findLocalAssetFile(pathValue) {
+  if (!pathValue || !assetFiles.size) return null;
+  const normalized = String(pathValue).replace(/\\/g, '/').toLowerCase();
+  const name = basename(normalized);
+  if (assetFiles.has(normalized)) return assetFiles.get(normalized).file;
+  if (assetFiles.has(name)) return assetFiles.get(name).file;
+  for (const [key, value] of assetFiles.entries()) {
+    if (key.endsWith('/' + name) || normalized.endsWith('/' + key)) return value.file;
+  }
+  return null;
+}
+
 async function exportApprovedZip() {
   syncCurrentBatchItem();
   if (!window.XLSX) {
@@ -793,6 +889,11 @@ async function exportApprovedZip() {
     folder.file(`${storyId}_Preview.html`, previewHtmlForQuiz(item.quiz));
     folder.file(`${storyId}_ReadingQuiz.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'reading'), { bookType: 'xlsx', type: 'array' }));
     folder.file(`${storyId}_DevSpec.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'dev'), { bookType: 'xlsx', type: 'array' }));
+    const assetFolder = folder.folder('Assets');
+    collectQuizAssetPaths(item.quiz).forEach(assetPath => {
+      const file = findLocalAssetFile(assetPath);
+      if (file) assetFolder.file(file.name, file);
+    });
   });
   const blob = await zip.generateAsync({ type: 'blob' });
   downloadBlob('Approved_Quiz_Exports.zip', 'application/zip', blob);
@@ -945,11 +1046,11 @@ function bindEvents() {
   $('load-sample-btn').onclick = loadSample;
   $('json-file').onchange = e => loadJsonFile(e.target.files[0]);
   $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);
+  $('asset-folder').onchange = e => loadAssetFolder(e.target.files);
   $('batch-template-btn').onclick = downloadBatchTemplate;
-  $('batch-generate-btn').onclick = generateBatchDrafts;
+  $('batch-ai-generate-btn').onclick = generateBatchAiDrafts;
   $('batch-export-json-btn').onclick = exportBatchJson;
   $('batch-export-zip-btn').onclick = exportApprovedZip;
-  $('generate-rule-btn').onclick = generateRuleDraft;
   $('generate-ai-btn').onclick = generateAiDraft;
   $('apply-btn').onclick = applyEditorChanges;
   $('mark-review-btn').onclick = () => setCurrentBatchStatus('Needs Review');

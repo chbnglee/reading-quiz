@@ -26,71 +26,76 @@
 
 <main class="studio-grid">
   <aside class="panel input-panel">
-    <div class="panel-head">
-      <h2>Story Input</h2>
-    </div>
+    <section class="batch-box">
+      <div class="panel-head compact">
+        <h2>Story Batch</h2>
+        <span class="pill" id="batch-count">0 stories</span>
+      </div>
+      <div class="mini-actions">
+        <button class="icon-btn" id="batch-template-btn" title="Download batch template">📄 <span>Format</span></button>
+        <label class="icon-btn file-label centered" title="Load batch XLSX or JSON">
+          📂 <span>Load</span>
+          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv,.json,application/json">
+        </label>
+        <label class="icon-btn file-label centered" title="Load image/audio folders for preview">
+          🖼️ <span>Assets</span>
+          <input type="file" id="asset-folder" multiple webkitdirectory directory>
+        </label>
+        <button class="icon-btn" id="batch-export-json-btn" title="Download batch JSON">⬇️ <span>JSON</span></button>
+        <button class="icon-btn" id="batch-export-zip-btn" title="Export approved quizzes">📦 <span>Export</span></button>
+      </div>
 
-    <label class="field">
-      <span>Story ID</span>
-      <input id="story-id" value="OG0000" placeholder="OG0000">
-    </label>
+      <label class="field compact-field">
+        <span>AI Provider</span>
+        <select id="ai-provider">
+          <option value="openai">OpenAI</option>
+          <option value="gemini">Gemini</option>
+        </select>
+      </label>
 
-    <label class="field">
-      <span>Title</span>
-      <input id="story-title" placeholder="Story title">
-    </label>
+      <label class="field compact-field">
+        <span>API Key</span>
+        <input id="api-key" type="password" placeholder="Local server only">
+        <small class="field-note">로컬 서버에서만 사용하고 저장하지 않습니다.</small>
+      </label>
 
-    <label class="field">
-      <span>Level</span>
-      <input id="story-level" value="Level 1">
-    </label>
+      <button class="primary-btn compact-primary" id="batch-ai-generate-btn">✨ AI Batch Generate</button>
+      <div class="asset-status" id="asset-status">No asset folder loaded.</div>
+      <div class="batch-list" id="batch-list"></div>
+    </section>
 
-    <label class="field">
-      <span>Story Text</span>
-      <textarea id="story-text" placeholder="SC01_ST01_N = ..."></textarea>
-    </label>
+    <section class="story-detail-box">
+      <div class="panel-head compact">
+        <h2>Selected Story</h2>
+      </div>
 
-    <label class="field">
-      <span>AI Provider</span>
-      <select id="ai-provider">
-        <option value="openai">OpenAI</option>
-        <option value="gemini">Gemini</option>
-      </select>
-    </label>
+      <label class="field">
+        <span>Story ID</span>
+        <input id="story-id" value="OG0000" placeholder="OG0000">
+      </label>
 
-    <label class="field">
-      <span>API Key</span>
-      <input id="api-key" type="password" placeholder="Local server only">
-      <small class="field-note">로컬 서버에서만 사용하고 저장하지 않습니다.</small>
-    </label>
+      <label class="field">
+        <span>Title</span>
+        <input id="story-title" placeholder="Story title">
+      </label>
 
-    <div class="button-stack">
-      <button class="primary-btn" id="generate-rule-btn">규칙 기반 초안 생성</button>
-      <button class="secondary-btn" id="generate-ai-btn">AI 초안 생성</button>
-    </div>
+      <label class="field">
+        <span>Level</span>
+        <input id="story-level" value="Level 1">
+      </label>
+
+      <label class="field">
+        <span>Story Text</span>
+        <textarea id="story-text" placeholder="SC01_ST01_N = ..."></textarea>
+      </label>
+
+      <button class="secondary-btn" id="generate-ai-btn">✨ AI Generate Selected</button>
+    </section>
 
     <div class="note-box">
       <strong>권장 흐름</strong>
-      <p>스토리 전문과 리소스를 준비한 뒤 초안을 만들고, 오른쪽 패널에서 문항·가중치·힌트를 검수한 후 엑셀과 미리보기 HTML을 내보냅니다.</p>
+      <p>Batch XLSX와 에셋 폴더를 불러온 뒤 AI Batch Generate로 초안을 만들고, 목록에서 항목을 골라 Preview와 Editor에서 검수합니다.</p>
     </div>
-
-    <section class="batch-box">
-      <div class="panel-head compact">
-        <h2>Batch Queue</h2>
-        <span class="pill" id="batch-count">0 stories</span>
-      </div>
-      <div class="button-stack">
-        <button class="secondary-btn" id="batch-template-btn">Batch Template XLSX</button>
-        <label class="secondary-btn file-label centered">
-          Batch XLSX/JSON 불러오기
-          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv,.json,application/json">
-        </label>
-        <button class="primary-btn" id="batch-generate-btn">Batch 초안 생성</button>
-        <button class="secondary-btn" id="batch-export-json-btn">Batch JSON 내보내기</button>
-        <button class="secondary-btn" id="batch-export-zip-btn">Approved ZIP 내보내기</button>
-      </div>
-      <div class="batch-list" id="batch-list"></div>
-    </section>
   </aside>
 
   <section class="panel preview-panel">

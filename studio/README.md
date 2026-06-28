@@ -5,9 +5,9 @@ Quiz Studio is a local/static authoring surface for Story Grammar reading quizze
 ## What it does now
 
 - Loads the canonical OG0021 Quiz v3 JSON sample.
-- Lets you paste a new story and generate a rule-based draft.
 - Lets you load a batch XLSX/JSON file with many stories.
-- Generates rule-based draft quiz JSON for each batch row.
+- Generates AI draft quiz JSON for each batch row through the local server.
+- Lets you load local image/audio folders so previews can show real assets by filename.
 - Lets reviewers move through a batch queue, edit one quiz at a time, and mark items `Needs Review` or `Approved`.
 - Lets you edit instructions, hints, interactions, scoring, diagnostics, and assets.
 - Exports:
@@ -21,7 +21,9 @@ Quiz Studio is a local/static authoring surface for Story Grammar reading quizze
 ## Static use
 
 Open `index.html` from the `studio` folder, or open it through GitHub Pages.
-Static mode supports sample loading, batch input loading, manual editing, rule-based draft generation, review status updates, and exports.
+Static mode supports sample loading, batch input loading, manual editing, review status updates, local asset preview mapping, and exports.
+
+AI batch generation requires the local server because API keys should not be sent from a public GitHub Pages page.
 
 ## Batch input format
 
@@ -42,6 +44,10 @@ The `INPUT` sheet supports these columns:
 - `notes`
 
 Each row becomes one quiz draft. The Studio keeps JSON as the working source of truth, then exports the required XLSX files from that JSON.
+
+Asset path columns are used for exported metadata. They do not grant browser access to local files by themselves.
+For visual preview in Studio, use the `Assets` button and select the folder that contains images/audio.
+Studio matches files by filename, for example `OG0021_SC01_I.png` or `OG0021_SC02_ST01_N_A.mp3`.
 
 ## Local AI use
 

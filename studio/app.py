@@ -300,7 +300,7 @@ def call_gemini(prompt: str, user_payload: dict, api_key_override: str | None = 
     api_key = api_key_override or os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not set.")
-    model = os.environ.get("GEMINI_MODEL", "gemini-1.5-pro")
+    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model)}:generateContent?key={urllib.parse.quote(api_key)}"
     body = {
         "contents": [{
@@ -314,6 +314,42 @@ def call_gemini(prompt: str, user_payload: dict, api_key_override: str | None = 
         data = json.loads(res.read().decode("utf-8"))
     text = data["candidates"][0]["content"]["parts"][0]["text"]
     return extract_json(text)
+
+
+def story_payload_from_row(row: dict, index: int) -> dict:
+    story_id = row.get("story_id") or row.get("storyId") or f"STORY_{index + 1:03d}"
+    return {
+        "storyId": story_id,
+        "title": row.get("title") or row.get("Title") or "Untitled Story",
+        "level": row.get("level") or row.get("Level") or "Draft Level",
+        "storyText": row.get("story_text") or row.get("storyText") or row.get("Story Text") or "",
+        "assetNaming": {
+            "image": "{storyId}_SC##_I.png",
+            "audio": "{storyId}_SC##_ST##_N_A.mp3"
+        },
+        "assets": {
+            "imageBasePath": row.get("image_base_path") or "",
+            "audioBasePath": row.get("audio_base_path") or "",
+            "coverBasePath": row.get("cover_base_path") or "",
+            "backgroundImage": row.get("background_image") or "",
+            "hintCharacter": row.get("hint_character") or ""
+        }
+    }
+
+
+def apply_row_assets(quiz: dict, row: dict) -> dict:
+    assets = quiz.setdefault("assets", {})
+    if row.get("image_base_path"):
+        assets["imageBasePath"] = row["image_base_path"]
+    if row.get("audio_base_path"):
+        assets["audioBasePath"] = row["audio_base_path"]
+    if row.get("cover_base_path"):
+        assets["coverBasePath"] = row["cover_base_path"]
+    if row.get("background_image"):
+        assets["backgroundImage"] = row["background_image"]
+    if row.get("hint_character"):
+        assets["hintCharacter"] = row["hint_character"]
+    return quiz
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -341,25 +377,34 @@ class Handler(SimpleHTTPRequestHandler):
                 stories = payload.get("stories") or payload.get("rows") or []
                 items = []
                 for index, row in enumerate(stories):
-                    story_payload = {
-                        "storyId": row.get("story_id") or row.get("storyId") or f"STORY_{index + 1:03d}",
-                        "title": row.get("title") or row.get("Title") or "Untitled Story",
-                        "level": row.get("level") or row.get("Level") or "Draft Level",
-                        "storyText": row.get("story_text") or row.get("storyText") or row.get("Story Text") or ""
-                    }
+                    story_payload = story_payload_from_row(row, index)
                     quiz = rule_based_quiz(story_payload)
-                    if row.get("image_base_path"):
-                        quiz["assets"]["imageBasePath"] = row["image_base_path"]
-                    if row.get("audio_base_path"):
-                        quiz["assets"]["audioBasePath"] = row["audio_base_path"]
-                    if row.get("cover_base_path"):
-                        quiz["assets"]["coverBasePath"] = row["cover_base_path"]
-                    if row.get("background_image"):
-                        quiz["assets"]["backgroundImage"] = row["background_image"]
-                    if row.get("hint_character"):
-                        quiz["assets"]["hintCharacter"] = row["hint_character"]
+                    apply_row_assets(quiz, row)
                     items.append({"row": row, "status": "Generated", "quiz": quiz})
                 json_response(self, 200, {"schemaVersion": "quiz-batch-v1.0", "items": items})
+                return
+            if self.path == "/api/generate-batch-ai":
+                prompt = PROMPT_PATH.read_text(encoding="utf-8")
+                provider = (payload.get("provider") or os.environ.get("DEFAULT_AI_PROVIDER") or "openai").lower()
+                api_key_override = payload.get("apiKey") or None
+                stories = payload.get("stories") or payload.get("rows") or []
+                items = []
+                for index, row in enumerate(stories):
+                    try:
+                        user_payload = story_payload_from_row(row, index)
+                        quiz = call_gemini(prompt, user_payload, api_key_override) if provider == "gemini" else call_openai(prompt, user_payload, api_key_override)
+                        apply_row_assets(quiz, row)
+                        items.append({"row": row, "status": "Generated", "issues": [], "quiz": quiz})
+                    except Exception as story_exc:
+                        fallback = rule_based_quiz(story_payload_from_row(row, index))
+                        apply_row_assets(fallback, row)
+                        items.append({
+                            "row": row,
+                            "status": "Needs Review",
+                            "issues": [f"AI generation failed: {story_exc}"],
+                            "quiz": fallback
+                        })
+                json_response(self, 200, {"schemaVersion": "quiz-batch-v1.0", "provider": provider, "items": items})
                 return
             if self.path == "/api/generate-ai":
                 prompt = PROMPT_PATH.read_text(encoding="utf-8")
