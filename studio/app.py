@@ -337,6 +337,30 @@ class Handler(SimpleHTTPRequestHandler):
             if self.path == "/api/generate-rule-based":
                 json_response(self, 200, {"quiz": rule_based_quiz(payload)})
                 return
+            if self.path == "/api/generate-batch-rule-based":
+                stories = payload.get("stories") or payload.get("rows") or []
+                items = []
+                for index, row in enumerate(stories):
+                    story_payload = {
+                        "storyId": row.get("story_id") or row.get("storyId") or f"STORY_{index + 1:03d}",
+                        "title": row.get("title") or row.get("Title") or "Untitled Story",
+                        "level": row.get("level") or row.get("Level") or "Draft Level",
+                        "storyText": row.get("story_text") or row.get("storyText") or row.get("Story Text") or ""
+                    }
+                    quiz = rule_based_quiz(story_payload)
+                    if row.get("image_base_path"):
+                        quiz["assets"]["imageBasePath"] = row["image_base_path"]
+                    if row.get("audio_base_path"):
+                        quiz["assets"]["audioBasePath"] = row["audio_base_path"]
+                    if row.get("cover_base_path"):
+                        quiz["assets"]["coverBasePath"] = row["cover_base_path"]
+                    if row.get("background_image"):
+                        quiz["assets"]["backgroundImage"] = row["background_image"]
+                    if row.get("hint_character"):
+                        quiz["assets"]["hintCharacter"] = row["hint_character"]
+                    items.append({"row": row, "status": "Generated", "quiz": quiz})
+                json_response(self, 200, {"schemaVersion": "quiz-batch-v1.0", "items": items})
+                return
             if self.path == "/api/generate-ai":
                 prompt = PROMPT_PATH.read_text(encoding="utf-8")
                 provider = (payload.get("provider") or os.environ.get("DEFAULT_AI_PROVIDER") or "openai").lower()

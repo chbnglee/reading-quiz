@@ -1,5 +1,7 @@
 let quiz = null;
 let currentQuestionIndex = 0;
+let batchItems = [];
+let currentBatchIndex = -1;
 
 const SG_LABELS = {
   setting: 'Setting',
@@ -20,6 +22,20 @@ const SG_KO = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+const BATCH_COLUMNS = [
+  'story_id',
+  'title',
+  'level',
+  'story_text',
+  'image_base_path',
+  'audio_base_path',
+  'cover_base_path',
+  'background_image',
+  'hint_character',
+  'status',
+  'notes'
+];
 
 function toast(message) {
   const el = $('toast');
@@ -51,6 +67,7 @@ async function loadSample() {
     console.error(error);
     return;
   }
+  currentBatchIndex = -1;
   syncStoryInputs();
   currentQuestionIndex = 0;
   renderAll();
@@ -72,6 +89,8 @@ function renderAll() {
   renderQuestionSelect();
   renderPreview();
   renderEditor();
+  renderBatchList();
+  renderReviewPanel();
 }
 
 function renderQuestionNav() {
@@ -180,6 +199,7 @@ function applyEditorChanges() {
     q.interaction = safeJsonParse($('interaction-json').value, 'Interaction') || {};
     q.scoring = safeJsonParse($('scoring-json').value, 'Scoring') || {};
     q.diagnostics = safeJsonParse($('diagnostics-json').value, 'Diagnostics') || [];
+    syncCurrentBatchItem();
     renderAll();
     toast('변경을 반영했습니다.');
   } catch (error) {
@@ -197,9 +217,18 @@ function updateStoryFromInputs() {
   quiz.story.title = title;
   quiz.story.level = level;
   quiz.story.text = storyText;
+  if (currentBatchIndex >= 0 && batchItems[currentBatchIndex]) {
+    const item = batchItems[currentBatchIndex];
+    item.row.story_id = storyId;
+    item.row.title = title;
+    item.row.level = level;
+    item.row.story_text = storyText;
+    item.quiz = deepClone(quiz);
+  }
 }
 
 async function generateRuleDraft() {
+  syncCurrentBatchItem();
   updateStoryFromInputs();
   const payload = {
     storyId: $('story-id').value.trim(),
@@ -219,12 +248,14 @@ async function generateRuleDraft() {
   } catch {
     quiz = buildRuleDraft(payload);
   }
+  currentBatchIndex = -1;
   currentQuestionIndex = 0;
   renderAll();
   toast('초안을 생성했습니다. 오른쪽에서 검수해 주세요.');
 }
 
 async function generateAiDraft() {
+  syncCurrentBatchItem();
   updateStoryFromInputs();
   const apiKey = $('api-key').value.trim();
   const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
@@ -255,6 +286,7 @@ async function generateAiDraft() {
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
     quiz = data.quiz;
+    currentBatchIndex = -1;
     currentQuestionIndex = 0;
     renderAll();
     toast(`${payload.provider} 초안을 생성했습니다.`);
@@ -437,6 +469,336 @@ function downloadBlob(filename, mime, content) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function normalizeStatus(status) {
+  const value = String(status || '').trim().toLowerCase();
+  if (['approved', 'approve', '승인'].includes(value)) return 'Approved';
+  if (['needs review', 'needs_review', 'review', '검수 필요'].includes(value)) return 'Needs Review';
+  if (['generated', '생성'].includes(value)) return 'Generated';
+  return 'Input';
+}
+
+function statusClass(status) {
+  return `status-${normalizeStatus(status).toLowerCase().replace(/\s+/g, '-')}`;
+}
+
+function normalizeBatchRow(raw, index) {
+  const read = (...keys) => {
+    for (const key of keys) {
+      if (raw[key] !== undefined && raw[key] !== null && String(raw[key]).trim() !== '') return String(raw[key]).trim();
+    }
+    return '';
+  };
+  const storyId = read('story_id', 'storyId', 'Story ID', 'StoryID', '스토리ID', '스토리 코드') || `STORY_${String(index + 1).padStart(3, '0')}`;
+  return {
+    story_id: storyId,
+    title: read('title', 'Title', 'story_title', 'Story Title', '제목') || storyId,
+    level: read('level', 'Level', '레벨') || 'Draft Level',
+    story_text: read('story_text', 'storyText', 'Story Text', 'text', 'Text', '스토리 전문', '본문'),
+    image_base_path: read('image_base_path', 'imageBasePath', 'Image Base Path', 'image_folder', 'Image Folder'),
+    audio_base_path: read('audio_base_path', 'audioBasePath', 'Audio Base Path', 'audio_folder', 'Audio Folder'),
+    cover_base_path: read('cover_base_path', 'coverBasePath', 'Cover Base Path', 'cover_folder', 'Cover Folder'),
+    background_image: read('background_image', 'backgroundImage', 'Background Image'),
+    hint_character: read('hint_character', 'hintCharacter', 'Hint Character'),
+    status: normalizeStatus(read('status', 'Status', '상태')),
+    notes: read('notes', 'Notes', '메모')
+  };
+}
+
+function createBatchItem(row, index) {
+  return {
+    id: row.story_id || `STORY_${String(index + 1).padStart(3, '0')}`,
+    row,
+    status: normalizeStatus(row.status),
+    issues: [],
+    quiz: null
+  };
+}
+
+function quizFromBatchRow(row) {
+  const draft = buildRuleDraft({
+    storyId: row.story_id,
+    title: row.title,
+    level: row.level,
+    storyText: row.story_text
+  });
+  draft.assets.imageBasePath = row.image_base_path || draft.assets.imageBasePath;
+  draft.assets.audioBasePath = row.audio_base_path || draft.assets.audioBasePath;
+  draft.assets.coverBasePath = row.cover_base_path || draft.assets.coverBasePath;
+  draft.assets.backgroundImage = row.background_image || draft.assets.backgroundImage;
+  draft.assets.hintCharacter = row.hint_character || draft.assets.hintCharacter;
+  draft.generation.notes = row.notes || draft.generation.notes;
+  return draft;
+}
+
+function validateQuizDraft(sourceQuiz, row = {}) {
+  const issues = [];
+  const scenes = sourceQuiz.story?.scenes || [];
+  if (!row.story_text && !sourceQuiz.story?.text) issues.push('스토리 전문이 비어 있습니다.');
+  if (scenes.length < 5) issues.push('장면이 5개 미만입니다. 시퀀싱 문항 검수가 필요합니다.');
+  if ((sourceQuiz.questions || []).length !== 6) issues.push('문항 수가 6개가 아닙니다.');
+  const expectedAxes = Object.keys(SG_LABELS);
+  const foundAxes = new Set((sourceQuiz.questions || []).map(q => q.storyGrammar));
+  expectedAxes.forEach(axis => {
+    if (!foundAxes.has(axis)) issues.push(`${SG_LABELS[axis]} 항목이 없습니다.`);
+  });
+  (sourceQuiz.questions || []).forEach(q => {
+    if (!q.instruction) issues.push(`${q.qId}: 지시문이 없습니다.`);
+    if (!q.hint) issues.push(`${q.qId}: 힌트가 없습니다.`);
+    if (!q.scoring?.formula) issues.push(`${q.qId}: 계산식이 없습니다.`);
+    if (q.type === 'scene_word_unscramble') {
+      const sentenceId = q.resources?.sentenceId;
+      const sentenceFound = scenes.some(scene => (scene.sentences || []).some(s => s.sentenceId === sentenceId));
+      if (sentenceId && !sentenceFound) issues.push(`${q.qId}: 언스크램블 sentenceId가 원문에서 확인되지 않습니다.`);
+    }
+  });
+  return issues;
+}
+
+function generateBatchDrafts() {
+  if (!batchItems.length) {
+    toast('먼저 Batch XLSX/JSON을 불러와 주세요.');
+    return;
+  }
+  syncCurrentBatchItem();
+  batchItems = batchItems.map((item, index) => {
+    const draft = quizFromBatchRow(item.row);
+    const issues = validateQuizDraft(draft, item.row);
+    return {
+      ...item,
+      id: item.row.story_id || item.id || `STORY_${String(index + 1).padStart(3, '0')}`,
+      quiz: draft,
+      issues,
+      status: issues.length ? 'Needs Review' : 'Generated'
+    };
+  });
+  selectBatchItem(0, false);
+  toast(`${batchItems.length}개 스토리 초안을 생성했습니다.`);
+}
+
+function renderBatchList() {
+  const list = $('batch-list');
+  const count = $('batch-count');
+  if (!list || !count) return;
+  count.textContent = `${batchItems.length} stories`;
+  if (!batchItems.length) {
+    list.innerHTML = '<div class="batch-empty">Batch Input XLSX를 불러오면 여러 스토리를 한 번에 생성하고 검수할 수 있습니다.</div>';
+    return;
+  }
+  list.innerHTML = batchItems.map((item, index) => {
+    const row = item.row || {};
+    const status = normalizeStatus(item.status);
+    return `<button class="batch-item${index === currentBatchIndex ? ' active' : ''}" onclick="selectBatchItem(${index})">
+      <div class="batch-title-row">
+        <span class="batch-story-id">${escapeHtml(row.story_id || item.id)}</span>
+        <span class="status-badge ${statusClass(status)}">${escapeHtml(status)}</span>
+      </div>
+      <div class="batch-title">${escapeHtml(row.title || 'Untitled Story')}</div>
+    </button>`;
+  }).join('');
+}
+
+function renderReviewPanel() {
+  const issueList = $('issue-list');
+  if (!issueList) return;
+  if (currentBatchIndex < 0 || !batchItems[currentBatchIndex]) {
+    issueList.textContent = 'Batch 항목을 선택하면 검수 이슈가 표시됩니다.';
+    return;
+  }
+  const item = batchItems[currentBatchIndex];
+  const issues = item.issues || [];
+  if (!issues.length) {
+    issueList.innerHTML = '<strong>자동 검증 통과</strong><br>필요하면 문항 내용을 검수한 뒤 Approve를 눌러 주세요.';
+    return;
+  }
+  issueList.innerHTML = `<strong>검수 필요</strong><ul>${issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}</ul>`;
+}
+
+function selectBatchItem(index, saveCurrent = true) {
+  if (!batchItems[index]) return;
+  if (saveCurrent) syncCurrentBatchItem();
+  currentBatchIndex = index;
+  const item = batchItems[index];
+  if (!item.quiz) {
+    item.quiz = quizFromBatchRow(item.row);
+    item.issues = validateQuizDraft(item.quiz, item.row);
+    item.status = item.issues.length ? 'Needs Review' : 'Generated';
+  }
+  quiz = deepClone(item.quiz);
+  currentQuestionIndex = 0;
+  syncStoryInputs();
+  renderAll();
+}
+
+function syncCurrentBatchItem() {
+  if (currentBatchIndex < 0 || !batchItems[currentBatchIndex] || !quiz) return;
+  const item = batchItems[currentBatchIndex];
+  item.quiz = deepClone(quiz);
+  item.row.story_id = quiz.story?.storyId || item.row.story_id;
+  item.row.title = quiz.story?.title || item.row.title;
+  item.row.level = quiz.story?.level || item.row.level;
+  item.row.story_text = quiz.story?.text || item.row.story_text;
+  item.issues = validateQuizDraft(item.quiz, item.row);
+  if (item.status !== 'Approved') item.status = item.issues.length ? 'Needs Review' : 'Generated';
+}
+
+function setCurrentBatchStatus(status) {
+  syncCurrentBatchItem();
+  if (currentBatchIndex < 0 || !batchItems[currentBatchIndex]) {
+    toast('먼저 Batch 항목을 선택해 주세요.');
+    return;
+  }
+  batchItems[currentBatchIndex].status = normalizeStatus(status);
+  renderAll();
+  toast(`${batchItems[currentBatchIndex].row.story_id} 상태를 ${normalizeStatus(status)}로 바꿨습니다.`);
+}
+
+function loadBatchBundle(parsed) {
+  const sourceItems = Array.isArray(parsed) ? parsed : (parsed.items || parsed.quizzes || parsed.stories || []);
+  batchItems = sourceItems.map((entry, index) => {
+    const qz = entry.quiz || (entry.schemaVersion === 'quiz-v3.0' ? entry : null);
+    const row = normalizeBatchRow(entry.row || entry.story || entry, index);
+    const item = createBatchItem(row, index);
+    if (qz) {
+      item.quiz = qz;
+      item.status = normalizeStatus(entry.status || row.status || 'Generated');
+      item.issues = validateQuizDraft(qz, row);
+    }
+    return item;
+  });
+  currentBatchIndex = -1;
+  if (batchItems.length) selectBatchItem(0, false);
+  else renderBatchList();
+}
+
+function loadBatchFile(file) {
+  if (!file) return;
+  if (!window.XLSX) {
+    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        loadBatchBundle(JSON.parse(reader.result));
+      } else {
+        const wb = XLSX.read(reader.result, { type: 'array' });
+        const sheetName = wb.SheetNames.includes('INPUT') ? 'INPUT' : wb.SheetNames[0];
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: '' });
+        batchItems = rows.map((row, index) => createBatchItem(normalizeBatchRow(row, index), index));
+        currentBatchIndex = -1;
+        if (batchItems.length) selectBatchItem(0, false);
+        else renderBatchList();
+      }
+      toast(`${batchItems.length}개 Batch 항목을 불러왔습니다.`);
+    } catch (error) {
+      console.error(error);
+      toast('Batch 파일 형식을 확인해 주세요.');
+    }
+  };
+  if (file.name.toLowerCase().endsWith('.json')) reader.readAsText(file, 'utf-8');
+  else reader.readAsArrayBuffer(file);
+}
+
+function downloadBatchTemplate() {
+  if (!window.XLSX) {
+    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    return;
+  }
+  const wb = XLSX.utils.book_new();
+  aoaSheet(wb, 'INPUT', [
+    BATCH_COLUMNS,
+    [
+      'OG0001',
+      'Sample Story',
+      'Level 1',
+      'SC01_ST01_N = The story starts here.\nSC02_ST01_N = A problem begins.\nSC03_ST01_N = The character tries something.\nSC04_ST01_N = The character feels sad.\nSC05_ST01_N = The story ends.',
+      '../v3/OG0001/Image/',
+      '../v3/OG0001/Audio/',
+      '../v3/OG0001/Cover/',
+      '../v3/OG0001/Image/OG0001_Talking_BG_I.png',
+      '../v3/Assets/BKTK_Characters_Bookey.png',
+      'Input',
+      'Optional memo'
+    ]
+  ]);
+  aoaSheet(wb, 'README', [
+    ['Column', 'Required', 'Description'],
+    ['story_id', 'Y', 'Story code such as OG0021'],
+    ['title', 'Y', 'Story title'],
+    ['level', 'Y', 'Level label'],
+    ['story_text', 'Y', 'Use SC##_ST##_N = sentence lines.'],
+    ['image_base_path', 'N', 'Relative image folder path.'],
+    ['audio_base_path', 'N', 'Relative audio folder path.'],
+    ['cover_base_path', 'N', 'Relative cover folder path.'],
+    ['background_image', 'N', 'Preview background image path.'],
+    ['hint_character', 'N', 'Bookey character image path.'],
+    ['status', 'N', 'Input / Generated / Needs Review / Approved'],
+    ['notes', 'N', 'Internal memo']
+  ]);
+  XLSX.writeFile(wb, 'StoryBatch_Input_Template.xlsx');
+}
+
+function exportBatchJson() {
+  syncCurrentBatchItem();
+  const payload = {
+    schemaVersion: 'quiz-batch-v1.0',
+    exportedAt: new Date().toISOString(),
+    items: batchItems.map(item => ({
+      row: item.row,
+      status: item.status,
+      issues: item.issues || [],
+      quiz: item.quiz
+    }))
+  };
+  downloadBlob('QuizBatch.json', 'application/json;charset=utf-8', JSON.stringify(payload, null, 2));
+}
+
+function workbookForQuiz(sourceQuiz, kind) {
+  const previousQuiz = quiz;
+  quiz = sourceQuiz;
+  const wb = XLSX.utils.book_new();
+  if (kind === 'dev') buildDevWorkbook(wb);
+  else buildReadingWorkbook(wb);
+  quiz = previousQuiz;
+  return wb;
+}
+
+function previewHtmlForQuiz(sourceQuiz) {
+  const data = JSON.stringify(sourceQuiz).replace(/</g, '\\u003c');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Preview</title><style>body{font-family:Arial,sans-serif;background:#f7f4ff;margin:0;padding:24px;color:#263148}.wrap{max-width:900px;margin:auto}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}img{max-width:160px;border-radius:14px;margin:6px}.pill{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold}</style></head><body><main class="wrap"><h1>${escapeHtml(sourceQuiz.story.title)}</h1><div id="app"></div></main><script>const quiz=${data};const app=document.getElementById('app');const asset=(p)=>/^(https?:|data:|\\/)/.test(p)?p:(quiz.assets.imageBasePath+p);app.innerHTML=quiz.questions.map(q=>'<section class="card"><span class="pill">Q'+q.number+' '+q.storyGrammar+'</span><h2>'+q.instruction+'</h2><p>'+q.hint+'</p><div>'+((q.resources.images||[]).map(i=>'<img src="'+asset(i.path)+'" alt="'+(i.sceneId||i.id)+'">').join(''))+'</div><pre>'+JSON.stringify(q.interaction,null,2)+'</pre></section>').join('');</script></body></html>`;
+}
+
+async function exportApprovedZip() {
+  syncCurrentBatchItem();
+  if (!window.XLSX) {
+    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    return;
+  }
+  const approved = batchItems.filter(item => normalizeStatus(item.status) === 'Approved' && item.quiz);
+  if (!approved.length) {
+    toast('Approved 상태의 Batch 항목이 없습니다.');
+    return;
+  }
+  if (!window.JSZip) {
+    toast('ZIP 라이브러리를 불러오지 못했습니다. Batch JSON만 내보냅니다.');
+    exportBatchJson();
+    return;
+  }
+  const zip = new JSZip();
+  approved.forEach(item => {
+    const storyId = item.quiz.story.storyId;
+    const folder = zip.folder(storyId);
+    folder.file(`${storyId}.quiz.json`, JSON.stringify(item.quiz, null, 2));
+    folder.file(`${storyId}_Preview.html`, previewHtmlForQuiz(item.quiz));
+    folder.file(`${storyId}_ReadingQuiz.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'reading'), { bookType: 'xlsx', type: 'array' }));
+    folder.file(`${storyId}_DevSpec.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'dev'), { bookType: 'xlsx', type: 'array' }));
+  });
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadBlob('Approved_Quiz_Exports.zip', 'application/zip', blob);
+  toast(`${approved.length}개 승인 항목을 ZIP으로 내보냈습니다.`);
+}
+
 function exportJson() {
   updateStoryFromInputs();
   downloadBlob(`${quiz.story.storyId}_quiz_v3.json`, 'application/json;charset=utf-8', JSON.stringify(quiz, null, 2));
@@ -543,9 +905,7 @@ function resourceRows(q) {
 
 function exportPreviewHtml() {
   updateStoryFromInputs();
-  const data = JSON.stringify(quiz).replace(/</g, '\\u003c');
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(quiz.story.title)} Preview</title><style>body{font-family:Arial,sans-serif;background:#f7f4ff;margin:0;padding:24px;color:#263148}.wrap{max-width:900px;margin:auto}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}img{max-width:160px;border-radius:14px;margin:6px}.pill{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold}</style></head><body><main class="wrap"><h1>${escapeHtml(quiz.story.title)}</h1><div id="app"></div></main><script>const quiz=${data};const app=document.getElementById('app');const asset=(p)=>/^(https?:|data:|\\/)/.test(p)?p:(quiz.assets.imageBasePath+p);app.innerHTML=quiz.questions.map(q=>'<section class="card"><span class="pill">Q'+q.number+' '+q.storyGrammar+'</span><h2>'+q.instruction+'</h2><p>'+q.hint+'</p><div>'+((q.resources.images||[]).map(i=>'<img src="'+asset(i.path)+'" alt="'+(i.sceneId||i.id)+'">').join(''))+'</div><pre>'+JSON.stringify(q.interaction,null,2)+'</pre></section>').join('');</script></body></html>`;
-  downloadBlob(`${quiz.story.storyId}_Preview.html`, 'text/html;charset=utf-8', html);
+  downloadBlob(`${quiz.story.storyId}_Preview.html`, 'text/html;charset=utf-8', previewHtmlForQuiz(quiz));
 }
 
 function loadJsonFile(file) {
@@ -553,11 +913,19 @@ function loadJsonFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      quiz = JSON.parse(reader.result);
-      currentQuestionIndex = 0;
-      syncStoryInputs();
-      renderAll();
-      toast('JSON을 불러왔습니다.');
+      const parsed = JSON.parse(reader.result);
+      if (parsed.schemaVersion === 'quiz-batch-v1.0' || Array.isArray(parsed.quizzes) || Array.isArray(parsed.items)) {
+        loadBatchBundle(parsed);
+        toast('Batch JSON을 불러왔습니다.');
+      } else {
+        syncCurrentBatchItem();
+        quiz = parsed;
+        currentBatchIndex = -1;
+        currentQuestionIndex = 0;
+        syncStoryInputs();
+        renderAll();
+        toast('JSON을 불러왔습니다.');
+      }
     } catch {
       toast('JSON 파일 형식을 확인해 주세요.');
     }
@@ -576,9 +944,16 @@ function escapeAttr(value) {
 function bindEvents() {
   $('load-sample-btn').onclick = loadSample;
   $('json-file').onchange = e => loadJsonFile(e.target.files[0]);
+  $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);
+  $('batch-template-btn').onclick = downloadBatchTemplate;
+  $('batch-generate-btn').onclick = generateBatchDrafts;
+  $('batch-export-json-btn').onclick = exportBatchJson;
+  $('batch-export-zip-btn').onclick = exportApprovedZip;
   $('generate-rule-btn').onclick = generateRuleDraft;
   $('generate-ai-btn').onclick = generateAiDraft;
   $('apply-btn').onclick = applyEditorChanges;
+  $('mark-review-btn').onclick = () => setCurrentBatchStatus('Needs Review');
+  $('approve-btn').onclick = () => setCurrentBatchStatus('Approved');
   $('question-select').onchange = e => {
     currentQuestionIndex = Number(e.target.value);
     renderAll();

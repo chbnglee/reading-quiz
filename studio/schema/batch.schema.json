@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bookytalky.local/schemas/story-batch-input.schema.json",
+  "title": "Story Batch Input",
+  "type": "object",
+  "required": ["schemaVersion", "stories"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "story-batch-v1.0"
+    },
+    "stories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["story_id", "title", "level", "story_text"],
+        "additionalProperties": true,
+        "properties": {
+          "story_id": { "type": "string" },
+          "title": { "type": "string" },
+          "level": { "type": "string" },
+          "story_text": { "type": "string" },
+          "image_base_path": { "type": "string" },
+          "audio_base_path": { "type": "string" },
+          "cover_base_path": { "type": "string" },
+          "background_image": { "type": "string" },
+          "hint_character": { "type": "string" },
+          "status": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

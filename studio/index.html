@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="static/studio.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -72,6 +73,24 @@
       <strong>권장 흐름</strong>
       <p>스토리 전문과 리소스를 준비한 뒤 초안을 만들고, 오른쪽 패널에서 문항·가중치·힌트를 검수한 후 엑셀과 미리보기 HTML을 내보냅니다.</p>
     </div>
+
+    <section class="batch-box">
+      <div class="panel-head compact">
+        <h2>Batch Queue</h2>
+        <span class="pill" id="batch-count">0 stories</span>
+      </div>
+      <div class="button-stack">
+        <button class="secondary-btn" id="batch-template-btn">Batch Template XLSX</button>
+        <label class="secondary-btn file-label centered">
+          Batch XLSX/JSON 불러오기
+          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv,.json,application/json">
+        </label>
+        <button class="primary-btn" id="batch-generate-btn">Batch 초안 생성</button>
+        <button class="secondary-btn" id="batch-export-json-btn">Batch JSON 내보내기</button>
+        <button class="secondary-btn" id="batch-export-zip-btn">Approved ZIP 내보내기</button>
+      </div>
+      <div class="batch-list" id="batch-list"></div>
+    </section>
   </aside>
 
   <section class="panel preview-panel">
@@ -148,6 +167,15 @@
     </label>
 
     <button class="primary-btn" id="apply-btn">변경 반영</button>
+
+    <div class="review-box">
+      <h3>Batch Review</h3>
+      <div class="review-actions">
+        <button class="secondary-btn" id="mark-review-btn">Needs Review</button>
+        <button class="primary-btn" id="approve-btn">Approve</button>
+      </div>
+      <div class="issue-list" id="issue-list">Batch 항목을 선택하면 검수 이슈가 표시됩니다.</div>
+    </div>
 
     <div class="export-box">
       <h3>Export</h3>

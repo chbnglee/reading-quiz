@@ -6,17 +6,42 @@ Quiz Studio is a local/static authoring surface for Story Grammar reading quizze
 
 - Loads the canonical OG0021 Quiz v3 JSON sample.
 - Lets you paste a new story and generate a rule-based draft.
+- Lets you load a batch XLSX/JSON file with many stories.
+- Generates rule-based draft quiz JSON for each batch row.
+- Lets reviewers move through a batch queue, edit one quiz at a time, and mark items `Needs Review` or `Approved`.
 - Lets you edit instructions, hints, interactions, scoring, diagnostics, and assets.
 - Exports:
   - Quiz JSON
+  - Batch JSON
   - Reading Quiz XLSX
   - Dev Spec XLSX
   - standalone preview HTML
+  - Approved ZIP containing JSON, Reading Quiz XLSX, Dev Spec XLSX, and preview HTML per approved story
 
 ## Static use
 
 Open `index.html` from the `studio` folder, or open it through GitHub Pages.
-Static mode supports sample loading, manual editing, rule-based draft generation, and exports.
+Static mode supports sample loading, batch input loading, manual editing, rule-based draft generation, review status updates, and exports.
+
+## Batch input format
+
+Use the `Batch Template XLSX` button in the Studio UI.
+
+The `INPUT` sheet supports these columns:
+
+- `story_id`
+- `title`
+- `level`
+- `story_text`
+- `image_base_path`
+- `audio_base_path`
+- `cover_base_path`
+- `background_image`
+- `hint_character`
+- `status`
+- `notes`
+
+Each row becomes one quiz draft. The Studio keeps JSON as the working source of truth, then exports the required XLSX files from that JSON.
 
 ## Local AI use
 
