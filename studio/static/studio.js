@@ -24,6 +24,8 @@ const SG_KO = {
 };
 
 const $ = (id) => document.getElementById(id);
+const OPENAI_MODEL = 'gpt-4.1-mini';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const BATCH_COLUMNS = [
   'story_id',
@@ -51,6 +53,115 @@ function safeJsonParse(value, label) {
   } catch (error) {
     throw new Error(`${label} JSON 형식을 확인해 주세요.`);
   }
+}
+
+function isLocalOrigin() {
+  return ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+}
+
+async function loadGenerationPrompt() {
+  const res = await fetch('prompts/story_grammar_v3.md', { cache: 'no-store' });
+  if (!res.ok) throw new Error(`Prompt file not found: HTTP ${res.status}`);
+  return res.text();
+}
+
+function extractJsonFromText(text) {
+  let raw = String(text || '').trim();
+  if (raw.startsWith('```')) raw = raw.replace(/^```(?:json)?/i, '').replace(/```$/i, '').trim();
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start >= 0 && end > start) raw = raw.slice(start, end + 1);
+  return JSON.parse(raw);
+}
+
+function aiInputFromRow(row, index = 0) {
+  const storyId = row.story_id || row.storyId || `STORY_${String(index + 1).padStart(3, '0')}`;
+  return {
+    storyId,
+    title: row.title || row.Title || storyId,
+    level: row.level || row.Level || 'Draft Level',
+    storyText: row.story_text || row.storyText || row['Story Text'] || '',
+    assetNaming: {
+      image: '{storyId}_SC##_I.png',
+      audio: '{storyId}_SC##_ST##_N_A.mp3',
+      cover: '{storyId}_Cover_L_I.png'
+    }
+  };
+}
+
+function applyDefaultAssetsToQuiz(sourceQuiz, row = {}) {
+  const qz = sourceQuiz.quiz || sourceQuiz;
+  const input = aiInputFromRow(row);
+  qz.schemaVersion = qz.schemaVersion || 'quiz-v3.0';
+  qz.story = qz.story || {};
+  qz.story.storyId = qz.story.storyId || input.storyId;
+  qz.story.title = qz.story.title || input.title;
+  qz.story.level = qz.story.level || input.level;
+  qz.story.text = qz.story.text || input.storyText;
+  qz.assets = qz.assets || {};
+  qz.assets.imageBasePath = row.image_base_path || qz.assets.imageBasePath || `../v3/${qz.story.storyId}/Image/`;
+  qz.assets.audioBasePath = row.audio_base_path || qz.assets.audioBasePath || `../v3/${qz.story.storyId}/Audio/`;
+  qz.assets.coverBasePath = row.cover_base_path || qz.assets.coverBasePath || `../v3/${qz.story.storyId}/Cover/`;
+  qz.assets.backgroundImage = row.background_image || qz.assets.backgroundImage || `../v3/${qz.story.storyId}/Image/${qz.story.storyId}_Talking_BG_I.png`;
+  qz.assets.hintCharacter = row.hint_character || qz.assets.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
+  return qz;
+}
+
+async function callOpenAiInBrowser(prompt, userPayload, apiKey) {
+  if (!apiKey) throw new Error('OpenAI API Key를 입력해 주세요.');
+  const body = {
+    model: OPENAI_MODEL,
+    input: [
+      { role: 'system', content: prompt },
+      { role: 'user', content: JSON.stringify(userPayload) }
+    ],
+    text: { format: { type: 'json_object' } }
+  };
+  const res = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error?.message || `OpenAI HTTP ${res.status}`);
+  let text = data.output_text || '';
+  if (!text && Array.isArray(data.output)) {
+    text = data.output.flatMap(item => item.content || [])
+      .filter(content => content.type === 'output_text' || content.type === 'text')
+      .map(content => content.text || '')
+      .join('');
+  }
+  return extractJsonFromText(text);
+}
+
+async function callGeminiInBrowser(prompt, userPayload, apiKey) {
+  if (!apiKey) throw new Error('Gemini API Key를 입력해 주세요.');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const body = {
+    contents: [{
+      role: 'user',
+      parts: [{ text: `${prompt}\n\nINPUT:\n${JSON.stringify(userPayload)}` }]
+    }],
+    generationConfig: { responseMimeType: 'application/json' }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error?.message || `Gemini HTTP ${res.status}`);
+  const text = data.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
+  return extractJsonFromText(text);
+}
+
+async function callAiInBrowser(provider, prompt, userPayload, apiKey) {
+  return provider === 'gemini'
+    ? callGeminiInBrowser(prompt, userPayload, apiKey)
+    : callOpenAiInBrowser(prompt, userPayload, apiKey);
 }
 
 async function loadSample() {
@@ -279,11 +390,6 @@ async function generateAiDraft() {
   syncCurrentBatchItem();
   updateStoryFromInputs();
   const apiKey = $('api-key').value.trim();
-  const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
-  if (!isLocal) {
-    toast('AI 생성은 로컬 서버에서 실행해 주세요.');
-    return;
-  }
   const payload = {
     provider: $('ai-provider').value,
     input: {
@@ -298,21 +404,44 @@ async function generateAiDraft() {
     }
   };
   if (apiKey) payload.apiKey = apiKey;
+  const btn = $('generate-ai-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
   try {
-    const res = await fetch('/api/generate-ai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
-    quiz = data.quiz;
+    if (isLocalOrigin()) {
+      const res = await fetch('/api/generate-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
+      quiz = applyDefaultAssetsToQuiz(data.quiz, {
+        story_id: payload.input.storyId,
+        title: payload.input.title,
+        level: payload.input.level,
+        story_text: payload.input.storyText
+      });
+    } else {
+      const prompt = await loadGenerationPrompt();
+      const generated = await callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
+      quiz = applyDefaultAssetsToQuiz(generated, {
+        story_id: payload.input.storyId,
+        title: payload.input.title,
+        level: payload.input.level,
+        story_text: payload.input.storyText
+      });
+    }
     currentBatchIndex = -1;
     currentQuestionIndex = 0;
     renderAll();
     toast(`${payload.provider} 초안을 생성했습니다.`);
   } catch (error) {
-    toast(`로컬 AI 서버가 필요합니다: ${error.message}`);
+    toast(`AI 생성 실패: ${error.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
@@ -621,28 +750,61 @@ async function generateBatchAiDrafts() {
   }
   const apiKey = $('api-key').value.trim();
   const provider = $('ai-provider').value;
-  const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
-  if (!isLocal) {
-    toast('AI Batch는 로컬 서버에서 실행해 주세요.');
-    return;
-  }
   syncCurrentBatchItem();
+  const btn = $('batch-ai-generate-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
   try {
-    const res = await fetch('/api/generate-batch-ai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        provider,
-        apiKey,
-        stories: batchItems.map(item => item.row)
-      })
-    });
-    const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || 'AI batch generation failed.');
-    loadBatchBundle(data);
+    if (isLocalOrigin()) {
+      btn.textContent = 'Generating...';
+      const res = await fetch('/api/generate-batch-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider,
+          apiKey,
+          stories: batchItems.map(item => item.row)
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'AI batch generation failed.');
+      loadBatchBundle(data);
+    } else {
+      if (!apiKey) throw new Error('웹에서는 API Key를 입력해 주세요.');
+      const prompt = await loadGenerationPrompt();
+      const generatedItems = [];
+      for (let index = 0; index < batchItems.length; index += 1) {
+        const item = batchItems[index];
+        btn.textContent = `Generating ${index + 1}/${batchItems.length}`;
+        try {
+          const input = aiInputFromRow(item.row, index);
+          const generated = await callAiInBrowser(provider, prompt, input, apiKey);
+          const qz = applyDefaultAssetsToQuiz(generated, item.row);
+          const issues = validateQuizDraft(qz, item.row);
+          generatedItems.push({
+            row: item.row,
+            status: issues.length ? 'Needs Review' : 'Generated',
+            issues,
+            quiz: qz
+          });
+        } catch (storyError) {
+          const fallback = quizFromBatchRow(item.row);
+          generatedItems.push({
+            row: item.row,
+            status: 'Needs Review',
+            issues: [`AI generation failed: ${storyError.message}`],
+            quiz: fallback
+          });
+        }
+      }
+      loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', provider, items: generatedItems });
+    }
     toast(`${provider}로 ${batchItems.length}개 초안을 생성했습니다.`);
   } catch (error) {
     toast(`AI Batch 실패: ${error.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 

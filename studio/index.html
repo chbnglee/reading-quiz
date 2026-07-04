@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260704-2">
+<link rel="stylesheet" href="static/studio.css?v=20260704-3">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -47,8 +47,8 @@
 
       <label class="field compact-field">
         <span>API Key</span>
-        <input id="api-key" type="password" placeholder="Local server only">
-        <small class="field-note">로컬 서버에서만 사용하고 저장하지 않습니다.</small>
+        <input id="api-key" type="password" placeholder="Required for web AI generation">
+        <small class="field-note">웹에서는 브라우저가 API를 직접 호출합니다. 키는 저장하지 않습니다.</small>
       </label>
 
       <button class="primary-btn compact-primary" id="batch-ai-generate-btn">✨ AI Batch Generate</button>
@@ -199,6 +199,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260704-2"></script>
+<script src="static/studio.js?v=20260704-3"></script>
 </body>
 </html>

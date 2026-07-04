@@ -31,6 +31,10 @@ body{
 }
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
+button:disabled{
+  cursor:not-allowed;
+  opacity:.55;
+}
 .topbar{
   display:flex;
   align-items:center;

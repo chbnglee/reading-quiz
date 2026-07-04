@@ -18,12 +18,12 @@ Quiz Studio is a local/static authoring surface for Story Grammar reading quizze
   - standalone Reading Quiz HTML
   - Approved ZIP containing JSON, Reading Quiz XLSX, Dev Spec XLSX, Reading Quiz HTML, and matched assets per approved story
 
-## Static use
+## Web/static use
 
 Open `index.html` from the `studio` folder, or open it through GitHub Pages.
-Static mode supports sample loading, batch input loading, manual editing, review status updates, local asset preview mapping, and exports.
+Static mode supports sample loading, batch input loading, AI generation, manual editing, review status updates, local asset preview mapping, and exports.
 
-AI batch generation requires the local server because API keys should not be sent from a public GitHub Pages page.
+On GitHub Pages, AI generation runs directly in the browser using the API key typed into the UI. The key is not stored by Studio, but it is still a client-side call. For production use with shared users, move this behind a server/API proxy.
 
 ## Batch input format
 
@@ -69,7 +69,7 @@ For reopening previous work, load `QuizBatch.json` or an individual `*.quiz.json
 
 ## Local AI use
 
-AI generation should run through the local server so API keys are not exposed in the browser.
+AI generation can also run through the local server so API keys are not exposed in the browser.
 
 1. Copy `.env.example` to `.env` and set `OPENAI_API_KEY` or `GEMINI_API_KEY`.
 2. Run:
