@@ -30,12 +30,6 @@ const BATCH_COLUMNS = [
   'title',
   'level',
   'story_text',
-  'image_base_path',
-  'audio_base_path',
-  'cover_base_path',
-  'background_image',
-  'hint_character',
-  'status',
   'notes'
 ];
 
@@ -133,8 +127,12 @@ function assetUrl(path, kind = 'image') {
   return findLocalAssetUrl(joined) || joined;
 }
 
+function fileName(pathValue) {
+  return String(pathValue || '').split(/[\\/]/).pop();
+}
+
 function basename(pathValue) {
-  return String(pathValue || '').split(/[\\/]/).pop().toLowerCase();
+  return fileName(pathValue).toLowerCase();
 }
 
 function findLocalAssetUrl(pathValue) {
@@ -786,12 +784,6 @@ function downloadBatchTemplate() {
       'Sample Story',
       'Level 1',
       'SC01_ST01_N = The story starts here.\nSC02_ST01_N = A problem begins.\nSC03_ST01_N = The character tries something.\nSC04_ST01_N = The character feels sad.\nSC05_ST01_N = The story ends.',
-      '../v3/OG0001/Image/',
-      '../v3/OG0001/Audio/',
-      '../v3/OG0001/Cover/',
-      '../v3/OG0001/Image/OG0001_Talking_BG_I.png',
-      '../v3/Assets/BKTK_Characters_Bookey.png',
-      'Input',
       'Optional memo'
     ]
   ]);
@@ -801,13 +793,13 @@ function downloadBatchTemplate() {
     ['title', 'Y', 'Story title'],
     ['level', 'Y', 'Level label'],
     ['story_text', 'Y', 'Use SC##_ST##_N = sentence lines.'],
-    ['image_base_path', 'N', 'Relative image folder path.'],
-    ['audio_base_path', 'N', 'Relative audio folder path.'],
-    ['cover_base_path', 'N', 'Relative cover folder path.'],
-    ['background_image', 'N', 'Preview background image path.'],
-    ['hint_character', 'N', 'Bookey character image path.'],
-    ['status', 'N', 'Input / Generated / Needs Review / Approved'],
-    ['notes', 'N', 'Internal memo']
+    ['notes', 'N', 'Internal memo'],
+    [],
+    ['Asset Rule', 'Description', 'Example'],
+    ['Images', 'Do not enter local file paths in this sheet. Studio matches images by filename after you load an Assets folder.', 'OG0021_SC01_I.png'],
+    ['Audio', 'Do not enter local file paths in this sheet. Studio matches audio by filename after you load an Assets folder.', 'OG0021_SC02_ST01_N_A.mp3'],
+    ['Cover', 'Cover images are matched by filename when included in the selected Assets folder or exported package.', 'OG0021_Cover_L_I.png'],
+    ['Reopen', 'Use QuizBatch.json or an individual *.quiz.json as the editable source. XLSX files are export deliverables.', 'QuizBatch.json']
   ]);
   XLSX.writeFile(wb, 'StoryBatch_Input_Template.xlsx');
 }
@@ -837,20 +829,48 @@ function workbookForQuiz(sourceQuiz, kind) {
   return wb;
 }
 
+function packageQuizForExport(sourceQuiz) {
+  const packaged = deepClone(sourceQuiz);
+  packaged.assets = packaged.assets || {};
+  packaged.assets.imageBasePath = 'Image/';
+  packaged.assets.audioBasePath = 'Audio/';
+  packaged.assets.coverBasePath = 'Cover/';
+  if (packaged.assets.backgroundImage) packaged.assets.backgroundImage = `Image/${fileName(packaged.assets.backgroundImage)}`;
+  if (packaged.assets.hintCharacter) packaged.assets.hintCharacter = `Assets/${fileName(packaged.assets.hintCharacter)}`;
+  (packaged.questions || []).forEach(q => {
+    (q.resources?.images || []).forEach(img => {
+      if (img.path) img.path = fileName(img.path);
+    });
+    if (q.resources?.audio?.path) q.resources.audio.path = fileName(q.resources.audio.path);
+  });
+  return packaged;
+}
+
 function previewHtmlForQuiz(sourceQuiz) {
   const data = JSON.stringify(sourceQuiz).replace(/</g, '\\u003c');
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Preview</title><style>body{font-family:Arial,sans-serif;background:#f7f4ff;margin:0;padding:24px;color:#263148}.wrap{max-width:900px;margin:auto}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}img{max-width:160px;border-radius:14px;margin:6px}.pill{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold}</style></head><body><main class="wrap"><h1>${escapeHtml(sourceQuiz.story.title)}</h1><div id="app"></div></main><script>const quiz=${data};const app=document.getElementById('app');const asset=(p)=>/^(https?:|data:|\\/)/.test(p)?p:(quiz.assets.imageBasePath+p);app.innerHTML=quiz.questions.map(q=>'<section class="card"><span class="pill">Q'+q.number+' '+q.storyGrammar+'</span><h2>'+q.instruction+'</h2><p>'+q.hint+'</p><div>'+((q.resources.images||[]).map(i=>'<img src="'+asset(i.path)+'" alt="'+(i.sceneId||i.id)+'">').join(''))+'</div><pre>'+JSON.stringify(q.interaction,null,2)+'</pre></section>').join('');</script></body></html>`;
 }
 
-function collectQuizAssetPaths(sourceQuiz) {
-  const paths = new Set();
-  if (sourceQuiz.assets?.backgroundImage) paths.add(sourceQuiz.assets.backgroundImage);
-  if (sourceQuiz.assets?.hintCharacter) paths.add(sourceQuiz.assets.hintCharacter);
+function collectQuizAssetEntries(sourceQuiz) {
+  const entries = [];
+  if (sourceQuiz.assets?.backgroundImage) entries.push({ path: sourceQuiz.assets.backgroundImage, folder: 'Image' });
+  if (sourceQuiz.assets?.hintCharacter) entries.push({ path: sourceQuiz.assets.hintCharacter, folder: 'Assets' });
   (sourceQuiz.questions || []).forEach(q => {
-    (q.resources?.images || []).forEach(img => img.path && paths.add(img.path));
-    if (q.resources?.audio?.path) paths.add(q.resources.audio.path);
+    (q.resources?.images || []).forEach(img => img.path && entries.push({ path: img.path, folder: 'Image' }));
+    if (q.resources?.audio?.path) entries.push({ path: q.resources.audio.path, folder: 'Audio' });
   });
-  return [...paths];
+  const storyId = sourceQuiz.story?.storyId || '';
+  if (storyId) {
+    entries.push({ path: `${storyId}_Cover_L_I.png`, folder: 'Cover', optional: true });
+    entries.push({ path: `${storyId}_Cover_P_I.png`, folder: 'Cover', optional: true });
+  }
+  const seen = new Set();
+  return entries.filter(entry => {
+    const key = `${entry.folder}/${basename(entry.path)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function findLocalAssetFile(pathValue) {
@@ -883,16 +903,16 @@ async function exportApprovedZip() {
   }
   const zip = new JSZip();
   approved.forEach(item => {
-    const storyId = item.quiz.story.storyId;
+    const packagedQuiz = packageQuizForExport(item.quiz);
+    const storyId = packagedQuiz.story.storyId;
     const folder = zip.folder(storyId);
-    folder.file(`${storyId}.quiz.json`, JSON.stringify(item.quiz, null, 2));
-    folder.file(`${storyId}_Preview.html`, previewHtmlForQuiz(item.quiz));
-    folder.file(`${storyId}_ReadingQuiz.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'reading'), { bookType: 'xlsx', type: 'array' }));
-    folder.file(`${storyId}_DevSpec.xlsx`, XLSX.write(workbookForQuiz(item.quiz, 'dev'), { bookType: 'xlsx', type: 'array' }));
-    const assetFolder = folder.folder('Assets');
-    collectQuizAssetPaths(item.quiz).forEach(assetPath => {
-      const file = findLocalAssetFile(assetPath);
-      if (file) assetFolder.file(file.name, file);
+    folder.file(`${storyId}.quiz.json`, JSON.stringify(packagedQuiz, null, 2));
+    folder.file(`${storyId}_ReadingQuiz.html`, previewHtmlForQuiz(packagedQuiz));
+    folder.file(`${storyId}_ReadingQuiz.xlsx`, XLSX.write(workbookForQuiz(packagedQuiz, 'reading'), { bookType: 'xlsx', type: 'array' }));
+    folder.file(`${storyId}_DevSpec.xlsx`, XLSX.write(workbookForQuiz(packagedQuiz, 'dev'), { bookType: 'xlsx', type: 'array' }));
+    collectQuizAssetEntries(item.quiz).forEach(entry => {
+      const file = findLocalAssetFile(entry.path);
+      if (file) folder.folder(entry.folder).file(file.name, file);
     });
   });
   const blob = await zip.generateAsync({ type: 'blob' });
@@ -902,7 +922,7 @@ async function exportApprovedZip() {
 
 function exportJson() {
   updateStoryFromInputs();
-  downloadBlob(`${quiz.story.storyId}_quiz_v3.json`, 'application/json;charset=utf-8', JSON.stringify(quiz, null, 2));
+  downloadBlob(`${quiz.story.storyId}.quiz.json`, 'application/json;charset=utf-8', JSON.stringify(packageQuizForExport(quiz), null, 2));
 }
 
 function exportWorkbook(kind) {
@@ -911,11 +931,17 @@ function exportWorkbook(kind) {
     return;
   }
   updateStoryFromInputs();
-  const wb = XLSX.utils.book_new();
-  if (kind === 'dev') buildDevWorkbook(wb);
-  else buildReadingWorkbook(wb);
-  const filename = kind === 'dev' ? `${quiz.story.storyId}_DevSpec.xlsx` : `${quiz.story.storyId}_ReadingQuiz.xlsx`;
-  XLSX.writeFile(wb, filename);
+  const previousQuiz = quiz;
+  quiz = packageQuizForExport(quiz);
+  try {
+    const wb = XLSX.utils.book_new();
+    if (kind === 'dev') buildDevWorkbook(wb);
+    else buildReadingWorkbook(wb);
+    const filename = kind === 'dev' ? `${quiz.story.storyId}_DevSpec.xlsx` : `${quiz.story.storyId}_ReadingQuiz.xlsx`;
+    XLSX.writeFile(wb, filename);
+  } finally {
+    quiz = previousQuiz;
+  }
 }
 
 function aoaSheet(wb, name, rows) {
@@ -1006,7 +1032,8 @@ function resourceRows(q) {
 
 function exportPreviewHtml() {
   updateStoryFromInputs();
-  downloadBlob(`${quiz.story.storyId}_Preview.html`, 'text/html;charset=utf-8', previewHtmlForQuiz(quiz));
+  const packagedQuiz = packageQuizForExport(quiz);
+  downloadBlob(`${packagedQuiz.story.storyId}_ReadingQuiz.html`, 'text/html;charset=utf-8', previewHtmlForQuiz(packagedQuiz));
 }
 
 function loadJsonFile(file) {

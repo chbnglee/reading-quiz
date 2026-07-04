@@ -18,7 +18,7 @@
   <div class="top-actions">
     <button class="ghost-btn" id="load-sample-btn">OG0021 샘플</button>
     <label class="ghost-btn file-label">
-      JSON 불러오기
+      Quiz/Batch JSON 불러오기
       <input type="file" id="json-file" accept=".json,application/json">
     </label>
   </div>
@@ -94,7 +94,7 @@
 
     <div class="note-box">
       <strong>권장 흐름</strong>
-      <p>Batch XLSX와 에셋 폴더를 불러온 뒤 AI Batch Generate로 초안을 만들고, 목록에서 항목을 골라 Preview와 Editor에서 검수합니다.</p>
+      <p>Batch XLSX는 스토리 정보만 입력합니다. 이미지와 오디오는 Assets 폴더를 불러오면 파일명 규칙으로 자동 매칭됩니다.</p>
     </div>
   </aside>
 
@@ -187,7 +187,7 @@
       <button class="export-btn" id="export-json-btn">Quiz JSON</button>
       <button class="export-btn" id="export-reading-btn">Reading Quiz XLSX</button>
       <button class="export-btn" id="export-dev-btn">Dev Spec XLSX</button>
-      <button class="export-btn" id="export-html-btn">Preview HTML</button>
+      <button class="export-btn" id="export-html-btn">Reading Quiz HTML</button>
     </div>
   </aside>
 </main>

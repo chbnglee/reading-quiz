@@ -15,8 +15,8 @@ Quiz Studio is a local/static authoring surface for Story Grammar reading quizze
   - Batch JSON
   - Reading Quiz XLSX
   - Dev Spec XLSX
-  - standalone preview HTML
-  - Approved ZIP containing JSON, Reading Quiz XLSX, Dev Spec XLSX, and preview HTML per approved story
+  - standalone Reading Quiz HTML
+  - Approved ZIP containing JSON, Reading Quiz XLSX, Dev Spec XLSX, Reading Quiz HTML, and matched assets per approved story
 
 ## Static use
 
@@ -35,19 +35,36 @@ The `INPUT` sheet supports these columns:
 - `title`
 - `level`
 - `story_text`
-- `image_base_path`
-- `audio_base_path`
-- `cover_base_path`
-- `background_image`
-- `hint_character`
-- `status`
 - `notes`
 
 Each row becomes one quiz draft. The Studio keeps JSON as the working source of truth, then exports the required XLSX files from that JSON.
 
-Asset path columns are used for exported metadata. They do not grant browser access to local files by themselves.
-For visual preview in Studio, use the `Assets` button and select the folder that contains images/audio.
-Studio matches files by filename, for example `OG0021_SC01_I.png` or `OG0021_SC02_ST01_N_A.mp3`.
+Do not enter local image/audio paths in the batch sheet. The Studio derives resource names from the story ID and scene/sentence IDs, then matches real files after you use the `Assets` button.
+
+Expected asset filenames:
+
+- Image: `OG0021_SC01_I.png`
+- Audio: `OG0021_SC02_ST01_N_A.mp3`
+- Cover: `OG0021_Cover_L_I.png`
+
+For visual preview in Studio, use the `Assets` button and select the folder that contains images/audio/cover files. The browser can only access files selected by the user, so an XLSX cell containing `C:\...` or another local path is not enough.
+
+For reopening previous work, load `QuizBatch.json` or an individual `*.quiz.json`. XLSX files are final deliverables for teachers/developers, not the preferred editable source.
+
+## Recommended workflow
+
+1. Click `Format` and download `StoryBatch_Input_Template.xlsx`.
+2. Fill one story per row: `story_id`, `title`, `level`, `story_text`, and optional `notes`.
+3. Load that Batch XLSX in Studio.
+4. Load the asset folder with `Assets` so preview can show images/audio by filename.
+5. Enter an API key and run `AI Batch Generate`.
+6. Review each story in the batch list, edit details in `Quiz Editor`, then mark approved stories as `Approved`.
+7. Click `Export` to download a ZIP. Each approved story folder includes:
+   - `{storyId}.quiz.json`
+   - `{storyId}_ReadingQuiz.xlsx`
+   - `{storyId}_DevSpec.xlsx`
+   - `{storyId}_ReadingQuiz.html`
+   - matched assets
 
 ## Local AI use
 
