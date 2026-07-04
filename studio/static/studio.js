@@ -1,6 +1,8 @@
 let quiz = null;
 let currentQuestionIndex = 0;
 let batchItems = [];
+let batchInputRows = [];
+let batchGeneratedItems = [];
 let currentBatchIndex = -1;
 let assetFiles = new Map();
 let assetObjectUrls = [];
@@ -105,6 +107,53 @@ function applyDefaultAssetsToQuiz(sourceQuiz, row = {}) {
   qz.assets.backgroundImage = row.background_image || qz.assets.backgroundImage || `../v3/${qz.story.storyId}/Image/${qz.story.storyId}_Talking_BG_I.png`;
   qz.assets.hintCharacter = row.hint_character || qz.assets.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
   return qz;
+}
+
+function hasMeaningfulInteraction(q) {
+  const i = q?.interaction || {};
+  if (Array.isArray(i.options) && i.options.length >= 2) return true;
+  if (Array.isArray(i.items) && i.items.length >= 2) return true;
+  if (Array.isArray(i.slots) && i.slots.length >= 1) return true;
+  if (Array.isArray(i.correct) && i.correct.length >= 1) return true;
+  if (i.correct && typeof i.correct === 'object' && Object.keys(i.correct).length) return true;
+  return false;
+}
+
+function hasMeaningfulScoring(q) {
+  return !!(q?.scoring?.formula && Array.isArray(q.scoring.components) && q.scoring.components.length);
+}
+
+function mergeQuestionDraft(baseQ, aiQ) {
+  if (!aiQ) return baseQ;
+  const merged = deepClone(baseQ);
+  merged.qId = aiQ.qId || merged.qId;
+  merged.number = aiQ.number || merged.number;
+  merged.storyGrammar = aiQ.storyGrammar || merged.storyGrammar;
+  merged.type = aiQ.type || merged.type;
+  if (aiQ.instruction) merged.instruction = aiQ.instruction;
+  if (aiQ.hint) merged.hint = aiQ.hint;
+  if (aiQ.resources && (aiQ.resources.images || aiQ.resources.audio || aiQ.resources.scene)) merged.resources = aiQ.resources;
+  if (hasMeaningfulInteraction(aiQ)) merged.interaction = aiQ.interaction;
+  if (hasMeaningfulScoring(aiQ)) merged.scoring = aiQ.scoring;
+  if (Array.isArray(aiQ.diagnostics) && aiQ.diagnostics.length) merged.diagnostics = aiQ.diagnostics;
+  if (aiQ.lrs?.objectId) merged.lrs = aiQ.lrs;
+  return merged;
+}
+
+function completeGeneratedQuiz(generatedQuiz, row = {}) {
+  const base = quizFromBatchRow(normalizeBatchRow(row, 0));
+  const incoming = applyDefaultAssetsToQuiz(generatedQuiz, row);
+  const byAxis = new Map((incoming.questions || []).map(q => [q.storyGrammar, q]));
+  const byNumber = new Map((incoming.questions || []).map(q => [Number(q.number), q]));
+  const completed = deepClone(base);
+  completed.schemaVersion = incoming.schemaVersion || base.schemaVersion;
+  completed.story = { ...base.story, ...(incoming.story || {}) };
+  completed.assets = { ...base.assets, ...(incoming.assets || {}) };
+  completed.storyGrammarAxes = Array.isArray(incoming.storyGrammarAxes) && incoming.storyGrammarAxes.length ? incoming.storyGrammarAxes : base.storyGrammarAxes;
+  completed.questions = base.questions.map(baseQ => mergeQuestionDraft(baseQ, byAxis.get(baseQ.storyGrammar) || byNumber.get(baseQ.number)));
+  completed.reporting = incoming.reporting || base.reporting;
+  completed.generation = incoming.generation || base.generation;
+  return applyDefaultAssetsToQuiz(completed, row);
 }
 
 async function callOpenAiInBrowser(prompt, userPayload, apiKey) {
@@ -417,7 +466,7 @@ async function generateAiDraft() {
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
-      quiz = applyDefaultAssetsToQuiz(data.quiz, {
+      quiz = completeGeneratedQuiz(data.quiz, {
         story_id: payload.input.storyId,
         title: payload.input.title,
         level: payload.input.level,
@@ -426,7 +475,7 @@ async function generateAiDraft() {
     } else {
       const prompt = await loadGenerationPrompt();
       const generated = await callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
-      quiz = applyDefaultAssetsToQuiz(generated, {
+      quiz = completeGeneratedQuiz(generated, {
         story_id: payload.input.storyId,
         title: payload.input.title,
         level: payload.input.level,
@@ -664,6 +713,21 @@ function createBatchItem(row, index) {
   };
 }
 
+function updateBatchInputStatus() {
+  const status = $('batch-input-status');
+  if (!status) return;
+  if (!batchInputRows.length) {
+    status.textContent = 'No batch format uploaded.';
+    return;
+  }
+  status.textContent = `${batchInputRows.length} stories loaded. Ready for AI Batch Generate.`;
+}
+
+function showBatchOutputs(show = true) {
+  const box = $('batch-output-box');
+  if (box) box.hidden = !show;
+}
+
 function quizFromBatchRow(row) {
   const draft = buildRuleDraft({
     storyId: row.story_id,
@@ -694,7 +758,13 @@ function validateQuizDraft(sourceQuiz, row = {}) {
   (sourceQuiz.questions || []).forEach(q => {
     if (!q.instruction) issues.push(`${q.qId}: 지시문이 없습니다.`);
     if (!q.hint) issues.push(`${q.qId}: 힌트가 없습니다.`);
+    if (!q.resources || (!q.resources.images && !q.resources.audio && !q.resources.scene)) issues.push(`${q.qId}: 리소스 정보가 없습니다.`);
+    if (!hasMeaningfulInteraction(q)) issues.push(`${q.qId}: 선택지/배치 항목 등 interaction 정보가 없습니다.`);
     if (!q.scoring?.formula) issues.push(`${q.qId}: 계산식이 없습니다.`);
+    if (!Array.isArray(q.scoring?.components) || !q.scoring.components.length) issues.push(`${q.qId}: 가중치/채점 구성요소가 없습니다.`);
+    if ((q.type || '').includes('mcq') && (!Array.isArray(q.interaction?.options) || q.interaction.options.length < 2)) {
+      issues.push(`${q.qId}: 객관식 선택지가 부족합니다.`);
+    }
     if (q.type === 'scene_word_unscramble') {
       const sentenceId = q.resources?.sentenceId;
       const sentenceFound = scenes.some(scene => (scene.sentences || []).some(s => s.sentenceId === sentenceId));
@@ -729,23 +799,26 @@ function loadAssetFolder(files) {
   assetObjectUrls.forEach(url => URL.revokeObjectURL(url));
   assetObjectUrls = [];
   assetFiles = new Map();
-  Array.from(files || []).forEach(file => {
-    const url = URL.createObjectURL(file);
-    assetObjectUrls.push(url);
-    const relative = (file.webkitRelativePath || file.name).replace(/\\/g, '/').toLowerCase();
-    const name = file.name.toLowerCase();
-    assetFiles.set(relative, { file, url });
-    assetFiles.set(name, { file, url });
-  });
+  Array.from(files || []).forEach(file => registerAssetFile(file, file.webkitRelativePath || file.name));
   const status = $('asset-status');
   if (status) status.textContent = assetFiles.size ? `${Math.floor(assetFiles.size / 2)} asset files loaded for preview/export.` : 'No asset folder loaded.';
   renderPreview();
   toast(`${Math.floor(assetFiles.size / 2)}개 에셋 파일을 연결했습니다.`);
 }
 
+function registerAssetFile(file, relativePath = '') {
+  const url = URL.createObjectURL(file);
+  assetObjectUrls.push(url);
+  const relative = String(relativePath || file.name).replace(/\\/g, '/').toLowerCase();
+  const name = file.name.toLowerCase();
+  assetFiles.set(relative, { file, url });
+  assetFiles.set(name, { file, url });
+}
+
 async function generateBatchAiDrafts() {
-  if (!batchItems.length) {
-    toast('먼저 Batch XLSX/JSON을 불러와 주세요.');
+  const sourceRows = batchInputRows.length ? batchInputRows : [];
+  if (!sourceRows.length) {
+    toast('먼저 Story Batch에서 Format XLSX를 업로드해 주세요.');
     return;
   }
   const apiKey = $('api-key').value.trim();
@@ -763,43 +836,49 @@ async function generateBatchAiDrafts() {
         body: JSON.stringify({
           provider,
           apiKey,
-          stories: batchItems.map(item => item.row)
+          stories: sourceRows
         })
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || 'AI batch generation failed.');
-      loadBatchBundle(data);
+      batchGeneratedItems = (data.items || []).map((entry, index) => {
+        const row = normalizeBatchRow(entry.row || sourceRows[index] || {}, index);
+        const qz = completeGeneratedQuiz(entry.quiz || {}, row);
+        const issues = [...(entry.issues || []), ...validateQuizDraft(qz, row)];
+        return { row, status: issues.length ? 'Needs Review' : normalizeStatus(entry.status || 'Generated'), issues, quiz: qz };
+      });
     } else {
       if (!apiKey) throw new Error('웹에서는 API Key를 입력해 주세요.');
       const prompt = await loadGenerationPrompt();
       const generatedItems = [];
-      for (let index = 0; index < batchItems.length; index += 1) {
-        const item = batchItems[index];
-        btn.textContent = `Generating ${index + 1}/${batchItems.length}`;
+      for (let index = 0; index < sourceRows.length; index += 1) {
+        const row = sourceRows[index];
+        btn.textContent = `Generating ${index + 1}/${sourceRows.length}`;
         try {
-          const input = aiInputFromRow(item.row, index);
+          const input = aiInputFromRow(row, index);
           const generated = await callAiInBrowser(provider, prompt, input, apiKey);
-          const qz = applyDefaultAssetsToQuiz(generated, item.row);
-          const issues = validateQuizDraft(qz, item.row);
+          const qz = completeGeneratedQuiz(generated, row);
+          const issues = validateQuizDraft(qz, row);
           generatedItems.push({
-            row: item.row,
+            row,
             status: issues.length ? 'Needs Review' : 'Generated',
             issues,
             quiz: qz
           });
         } catch (storyError) {
-          const fallback = quizFromBatchRow(item.row);
+          const fallback = quizFromBatchRow(row);
           generatedItems.push({
-            row: item.row,
+            row,
             status: 'Needs Review',
             issues: [`AI generation failed: ${storyError.message}`],
             quiz: fallback
           });
         }
       }
-      loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', provider, items: generatedItems });
+      batchGeneratedItems = generatedItems;
     }
-    toast(`${provider}로 ${batchItems.length}개 초안을 생성했습니다.`);
+    showBatchOutputs(true);
+    toast(`${provider}로 ${batchGeneratedItems.length}개 초안을 생성했습니다. 아래에서 산출물을 다운로드할 수 있습니다.`);
   } catch (error) {
     toast(`AI Batch 실패: ${error.message}`);
   } finally {
@@ -912,25 +991,225 @@ function loadBatchFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      if (file.name.toLowerCase().endsWith('.json')) {
-        loadBatchBundle(JSON.parse(reader.result));
-      } else {
-        const wb = XLSX.read(reader.result, { type: 'array' });
-        const sheetName = wb.SheetNames.includes('INPUT') ? 'INPUT' : wb.SheetNames[0];
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: '' });
-        batchItems = rows.map((row, index) => createBatchItem(normalizeBatchRow(row, index), index));
-        currentBatchIndex = -1;
-        if (batchItems.length) selectBatchItem(0, false);
-        else renderBatchList();
-      }
-      toast(`${batchItems.length}개 Batch 항목을 불러왔습니다.`);
+      const wb = XLSX.read(reader.result, { type: 'array' });
+      const sheetName = wb.SheetNames.includes('INPUT') ? 'INPUT' : wb.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: '' });
+      batchInputRows = rows.map((row, index) => normalizeBatchRow(row, index));
+      batchGeneratedItems = [];
+      showBatchOutputs(false);
+      updateBatchInputStatus();
+      toast(`${batchInputRows.length}개 Story Batch 입력을 불러왔습니다.`);
     } catch (error) {
       console.error(error);
       toast('Batch 파일 형식을 확인해 주세요.');
     }
   };
-  if (file.name.toLowerCase().endsWith('.json')) reader.readAsText(file, 'utf-8');
-  else reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(file);
+}
+
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function readFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function rowsFromSheet(wb, sheetName) {
+  return wb.Sheets[sheetName] ? XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' }) : [];
+}
+
+function rowValue(rows, label) {
+  const row = rows.find(r => String(r[0] || '').trim().toLowerCase() === label.toLowerCase());
+  return row ? row[1] : '';
+}
+
+function rowsAfterHeader(rows, headerLabel) {
+  const start = rows.findIndex(r => String(r[0] || '').trim() === headerLabel);
+  if (start < 0) return [];
+  const out = [];
+  for (let i = start + 1; i < rows.length; i += 1) {
+    const row = rows[i];
+    if (!row.some(cell => String(cell || '').trim())) break;
+    out.push(row);
+  }
+  return out;
+}
+
+function quizFromReadingWorkbook(wb, fallbackName = 'Uploaded Quiz') {
+  const quizRows = rowsFromSheet(wb, 'QUIZ_LIST');
+  const storyId = rowValue(quizRows, 'Story ID') || fallbackName.replace(/\.[^.]+$/, '') || 'UPLOADED';
+  const title = rowValue(quizRows, 'Title') || storyId;
+  const level = rowValue(quizRows, 'Level') || 'Uploaded Level';
+  const metaRows = rowsAfterHeader(quizRows, 'Q_ID');
+  const metaByQid = new Map(metaRows.map(r => [r[0], {
+    qId: r[0],
+    number: Number(r[1]) || metaRows.indexOf(r) + 1,
+    storyGrammar: r[2],
+    type: r[3],
+    instruction: r[4],
+    hint: r[5],
+    formula: r[6]
+  }]));
+  const questionSheets = wb.SheetNames.filter(name => /^Q\d{2}_/i.test(name));
+  const questions = questionSheets.map((sheetName, idx) => {
+    const rows = rowsFromSheet(wb, sheetName);
+    const qId = rowValue(rows, 'Q_ID') || `${storyId}_V3_Q${String(idx + 1).padStart(2, '0')}`;
+    const meta = metaByQid.get(qId) || {};
+    const resources = { images: [] };
+    rowsAfterHeader(rows, 'Kind').forEach(r => {
+      const kind = r[0];
+      if (kind === 'image') resources.images.push({ id: r[1], path: r[2], kind: 'image', sceneId: r[3], sentenceId: r[4] });
+      if (kind === 'audio') resources.audio = { id: r[1], path: r[2], kind: 'audio', sceneId: r[3], sentenceId: r[4] };
+      if (kind === 'scene') resources.scene = r[3] || r[1];
+    });
+    const interactionText = rowValue(rows, 'JSON');
+    let interaction = {};
+    try { interaction = interactionText ? JSON.parse(interactionText) : {}; } catch { interaction = {}; }
+    const components = rowsAfterHeader(rows, 'Key').map(r => ({
+      key: r[0],
+      weight: r[1],
+      rule: r[2],
+      correctValue: r[3],
+      partialCredit: r[4],
+      rationale: r[5]
+    }));
+    const diagnostics = rowsAfterHeader(rows, 'Code').map(r => ({ code: r[0], threshold: r[1], messageKo: r[2] }));
+    return {
+      qId,
+      number: meta.number || idx + 1,
+      type: rowValue(rows, 'Type') || meta.type || 'text_mcq',
+      storyGrammar: meta.storyGrammar || sheetName.replace(/^Q\d{2}_/i, '').toLowerCase(),
+      instruction: rowValue(rows, 'Instruction') || meta.instruction || '',
+      hint: rowValue(rows, 'Hint') || meta.hint || '',
+      resources,
+      interaction,
+      scoring: {
+        type: components[0]?.rule || 'imported',
+        maxScore: 100,
+        formula: meta.formula || '',
+        components
+      },
+      diagnostics,
+      lrs: { verb: 'answered', objectId: `quiz_${storyId}_v3_Q${String(idx + 1).padStart(2, '0')}`, resultFields: ['score_raw'] }
+    };
+  });
+  return applyDefaultAssetsToQuiz({
+    schemaVersion: 'quiz-v3.0',
+    story: { storyId, title, level, text: '', scenes: [] },
+    assets: {},
+    storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
+    questions,
+    reporting: defaultReporting(),
+    generation: { provider: 'imported_xlsx', model: 'xlsx-parser', promptVersion: 'story_grammar_v3', createdAt: new Date().toISOString().slice(0, 10), notes: 'Imported from Reading Quiz XLSX.' }
+  }, { story_id: storyId, title, level, story_text: '' });
+}
+
+function quizFromDevWorkbook(wb, fallbackName = 'Uploaded Quiz') {
+  if (!wb.Sheets.QUESTIONS) return null;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets.QUESTIONS, { defval: '' });
+  if (!rows.length) return null;
+  const storyId = rows[0].story_id || fallbackName.replace(/\.[^.]+$/, '') || 'UPLOADED';
+  const resources = XLSX.utils.sheet_to_json(wb.Sheets.RESOURCES || {}, { defval: '' });
+  const options = XLSX.utils.sheet_to_json(wb.Sheets.OPTIONS || {}, { defval: '' });
+  const rules = XLSX.utils.sheet_to_json(wb.Sheets.SCORING_RULES || {}, { defval: '' });
+  const questions = rows.map((r, idx) => {
+    const qResources = resources.filter(x => x.q_id === r.q_id);
+    const qOptions = options.filter(x => x.q_id === r.q_id);
+    return {
+      qId: r.q_id,
+      number: Number(r.number) || idx + 1,
+      storyGrammar: r.story_grammar,
+      type: r.question_type,
+      instruction: r.instruction,
+      hint: r.hint,
+      resources: {
+        images: qResources.filter(x => x.resource_kind === 'image').map(x => ({ id: x.resource_id, path: x.path, kind: 'image', sceneId: x.scene_id, sentenceId: x.sentence_id })),
+        audio: (() => {
+          const a = qResources.find(x => x.resource_kind === 'audio');
+          return a ? { id: a.resource_id, path: a.path, kind: 'audio', sceneId: a.scene_id, sentenceId: a.sentence_id } : undefined;
+        })()
+      },
+      interaction: qOptions.length ? { promptMode: 'text_mcq', options: qOptions.map(o => ({ key: o.option_key, text: o.option_text, score: o.score, isCorrect: !!o.is_correct, diagnostic: o.diagnostic })), correct: qOptions.find(o => o.is_correct)?.option_key || '' } : {},
+      scoring: { type: 'imported', maxScore: r.max_score || 100, formula: r.formula, components: rules.filter(x => x.q_id === r.q_id).map(x => ({ key: x.component_key, weight: x.weight, rule: x.rule, correctValue: x.correct_value, partialCredit: x.partial_credit, rationale: x.rationale })) },
+      diagnostics: [],
+      lrs: { verb: 'answered', objectId: `quiz_${storyId}_v3_Q${String(idx + 1).padStart(2, '0')}`, resultFields: ['score_raw'] }
+    };
+  });
+  return applyDefaultAssetsToQuiz({
+    schemaVersion: 'quiz-v3.0',
+    story: { storyId, title: storyId, level: 'Uploaded Level', text: '', scenes: [] },
+    assets: {},
+    storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
+    questions,
+    reporting: defaultReporting(),
+    generation: { provider: 'imported_devspec', model: 'xlsx-parser', promptVersion: 'story_grammar_v3', createdAt: new Date().toISOString().slice(0, 10), notes: 'Imported from Dev Spec XLSX.' }
+  }, { story_id: storyId, title: storyId, level: 'Uploaded Level', story_text: '' });
+}
+
+async function loadQuizUploadFiles(files) {
+  const fileList = Array.from(files || []);
+  if (!fileList.length) return;
+  const loadedItems = [];
+  try {
+    for (const file of fileList) {
+      const lower = file.name.toLowerCase();
+      if (lower.endsWith('.zip')) {
+        if (!window.JSZip) throw new Error('ZIP 라이브러리를 불러오지 못했습니다.');
+        const zip = await JSZip.loadAsync(await readFileAsArrayBuffer(file));
+        const zipEntries = Object.values(zip.files).filter(entry => !entry.dir);
+        const jsonEntries = zipEntries.filter(entry => entry.name.toLowerCase().endsWith('.json'));
+        const assetEntries = zipEntries.filter(entry => /\.(png|jpe?g|webp|gif|mp3|wav|m4a|ogg)$/i.test(entry.name));
+        for (const entry of assetEntries) {
+          const blob = await entry.async('blob');
+          const assetFile = new File([blob], fileName(entry.name), { type: blob.type || 'application/octet-stream' });
+          registerAssetFile(assetFile, entry.name);
+        }
+        for (const entry of jsonEntries) {
+          const parsed = JSON.parse(await entry.async('string'));
+          if (parsed.schemaVersion === 'quiz-batch-v1.0' || Array.isArray(parsed.items)) {
+            (parsed.items || []).forEach((item, idx) => loadedItems.push({ ...item, row: normalizeBatchRow(item.row || item.quiz?.story || {}, idx) }));
+          } else {
+            loadedItems.push({ row: normalizeBatchRow(parsed.story || {}, loadedItems.length), status: 'Generated', issues: [], quiz: parsed });
+          }
+        }
+      } else if (lower.endsWith('.json')) {
+        const parsed = JSON.parse(await readFileAsText(file));
+        if (parsed.schemaVersion === 'quiz-batch-v1.0' || Array.isArray(parsed.items)) {
+          (parsed.items || []).forEach((item, idx) => loadedItems.push({ ...item, row: normalizeBatchRow(item.row || item.quiz?.story || {}, idx) }));
+        } else {
+          loadedItems.push({ row: normalizeBatchRow(parsed.story || {}, loadedItems.length), status: 'Generated', issues: [], quiz: parsed });
+        }
+      } else if (lower.endsWith('.xlsx') || lower.endsWith('.xls')) {
+        const wb = XLSX.read(await readFileAsArrayBuffer(file), { type: 'array' });
+        const qz = wb.SheetNames.includes('QUIZ_LIST')
+          ? quizFromReadingWorkbook(wb, file.name)
+          : quizFromDevWorkbook(wb, file.name);
+        if (qz) loadedItems.push({ row: normalizeBatchRow(qz.story || {}, loadedItems.length), status: 'Generated', issues: validateQuizDraft(qz, qz.story || {}), quiz: qz });
+      }
+    }
+    if (!loadedItems.length) {
+      toast('불러올 수 있는 퀴즈 파일이 없습니다.');
+      return;
+    }
+    loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', items: loadedItems });
+    const status = $('asset-status');
+    if (status && assetFiles.size) status.textContent = `${Math.floor(assetFiles.size / 2)} asset files loaded for preview/export.`;
+    toast(`${loadedItems.length}개 Quiz 항목을 불러왔습니다.`);
+  } catch (error) {
+    console.error(error);
+    toast(`Quiz Upload 실패: ${error.message}`);
+  }
 }
 
 function downloadBatchTemplate() {
@@ -968,10 +1247,15 @@ function downloadBatchTemplate() {
 
 function exportBatchJson() {
   syncCurrentBatchItem();
+  const items = batchGeneratedItems.length ? batchGeneratedItems : batchItems;
+  if (!items.length) {
+    toast('다운로드할 생성 결과가 없습니다.');
+    return;
+  }
   const payload = {
     schemaVersion: 'quiz-batch-v1.0',
     exportedAt: new Date().toISOString(),
-    items: batchItems.map(item => ({
+    items: items.map(item => ({
       row: item.row,
       status: item.status,
       issues: item.issues || [],
@@ -1053,9 +1337,11 @@ async function exportApprovedZip() {
     toast('XLSX 라이브러리를 불러오지 못했습니다.');
     return;
   }
-  const approved = batchItems.filter(item => normalizeStatus(item.status) === 'Approved' && item.quiz);
-  if (!approved.length) {
-    toast('Approved 상태의 Batch 항목이 없습니다.');
+  const exportItems = batchGeneratedItems.length
+    ? batchGeneratedItems.filter(item => item.quiz)
+    : batchItems.filter(item => normalizeStatus(item.status) === 'Approved' && item.quiz);
+  if (!exportItems.length) {
+    toast(batchGeneratedItems.length ? '다운로드할 생성 결과가 없습니다.' : 'Approved 상태의 Batch 항목이 없습니다.');
     return;
   }
   if (!window.JSZip) {
@@ -1064,7 +1350,7 @@ async function exportApprovedZip() {
     return;
   }
   const zip = new JSZip();
-  approved.forEach(item => {
+  exportItems.forEach(item => {
     const packagedQuiz = packageQuizForExport(item.quiz);
     const storyId = packagedQuiz.story.storyId;
     const folder = zip.folder(storyId);
@@ -1078,8 +1364,8 @@ async function exportApprovedZip() {
     });
   });
   const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob('Approved_Quiz_Exports.zip', 'application/zip', blob);
-  toast(`${approved.length}개 승인 항목을 ZIP으로 내보냈습니다.`);
+  downloadBlob(batchGeneratedItems.length ? 'Generated_Quiz_Outputs.zip' : 'Approved_Quiz_Exports.zip', 'application/zip', blob);
+  toast(`${exportItems.length}개 항목을 ZIP으로 내보냈습니다.`);
 }
 
 function exportJson() {
@@ -1233,13 +1519,13 @@ function escapeAttr(value) {
 
 function bindEvents() {
   $('load-sample-btn').onclick = loadSample;
-  $('json-file').onchange = e => loadJsonFile(e.target.files[0]);
+  $('quiz-file').onchange = e => loadQuizUploadFiles(e.target.files);
   $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);
   $('asset-folder').onchange = e => loadAssetFolder(e.target.files);
   $('batch-template-btn').onclick = downloadBatchTemplate;
   $('batch-ai-generate-btn').onclick = generateBatchAiDrafts;
-  $('batch-export-json-btn').onclick = exportBatchJson;
-  $('batch-export-zip-btn').onclick = exportApprovedZip;
+  $('batch-download-json-btn').onclick = exportBatchJson;
+  $('batch-download-zip-btn').onclick = exportApprovedZip;
   $('generate-ai-btn').onclick = generateAiDraft;
   $('apply-btn').onclick = applyEditorChanges;
   $('mark-review-btn').onclick = () => setCurrentBatchStatus('Needs Review');

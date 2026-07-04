@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260704-3">
+<link rel="stylesheet" href="static/studio.css?v=20260704-4">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -23,19 +23,14 @@
       <div class="panel-head compact">
         <h2>Story Batch</h2>
       </div>
-      <div class="mini-actions">
-        <button class="icon-btn" id="batch-template-btn" title="Download batch template">📄 <span>Format</span></button>
-        <label class="icon-btn file-label centered" title="Load batch XLSX or JSON">
-          📂 <span>Load</span>
-          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv,.json,application/json">
+      <div class="mini-actions batch-format-actions">
+        <button class="icon-btn" id="batch-template-btn" title="Download batch template">📄 <span>Format Download</span></button>
+        <label class="icon-btn file-label centered" title="Upload completed batch format">
+          📂 <span>Format Upload</span>
+          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv">
         </label>
-        <label class="icon-btn file-label centered" title="Load image/audio folders for preview">
-          🖼️ <span>Assets</span>
-          <input type="file" id="asset-folder" multiple webkitdirectory directory>
-        </label>
-        <button class="icon-btn" id="batch-export-json-btn" title="Download batch JSON">⬇️ <span>JSON</span></button>
-        <button class="icon-btn" id="batch-export-zip-btn" title="Export approved quizzes">📦 <span>Export</span></button>
       </div>
+      <div class="asset-status" id="batch-input-status">No batch format uploaded.</div>
 
       <label class="field compact-field">
         <span>AI Provider</span>
@@ -52,7 +47,13 @@
       </label>
 
       <button class="primary-btn compact-primary" id="batch-ai-generate-btn">✨ AI Batch Generate</button>
-      <div class="asset-status" id="asset-status">No asset folder loaded.</div>
+      <div class="batch-output-box" id="batch-output-box" hidden>
+        <div class="output-title">Generated Outputs</div>
+        <div class="mini-actions output-actions">
+          <button class="icon-btn" id="batch-download-json-btn" title="Download generated batch JSON">⬇️ <span>Batch JSON</span></button>
+          <button class="icon-btn" id="batch-download-zip-btn" title="Download Reading Quiz, Dev Spec, JSON, HTML">📦 <span>Quiz ZIP</span></button>
+        </div>
+      </div>
     </section>
 
     <section class="select-story-box">
@@ -61,12 +62,17 @@
         <span class="pill" id="batch-count">0 stories</span>
       </div>
       <div class="mini-actions select-actions">
-        <button class="icon-btn" id="load-sample-btn" title="Load OG0021 sample">⭐ <span>Sample</span></button>
-        <label class="icon-btn file-label centered" title="Load QuizBatch JSON or one quiz JSON">
-          📂 <span>Quiz JSON</span>
-          <input type="file" id="json-file" accept=".json,application/json">
+        <label class="icon-btn file-label centered" title="Upload generated quiz JSON/XLSX/ZIP">
+          📂 <span>Quiz Upload</span>
+          <input type="file" id="quiz-file" accept=".json,.xlsx,.xls,.zip,application/json" multiple>
         </label>
+        <label class="icon-btn file-label centered" title="Load image/audio folders for preview">
+          🖼️ <span>Assets</span>
+          <input type="file" id="asset-folder" multiple webkitdirectory directory>
+        </label>
+        <button class="icon-btn" id="load-sample-btn" title="Load OG0021 sample">⭐ <span>Sample</span></button>
       </div>
+      <div class="asset-status" id="asset-status">No asset folder loaded.</div>
       <div class="batch-list" id="batch-list"></div>
     </section>
 
@@ -100,7 +106,7 @@
 
     <div class="note-box">
       <strong>권장 흐름</strong>
-      <p>Batch XLSX는 스토리 정보만 입력합니다. 이미지와 오디오는 Assets 폴더를 불러오면 파일명 규칙으로 자동 매칭됩니다.</p>
+      <p>Story Batch에서 산출물을 만든 뒤, Select Story의 Quiz Upload로 불러와 미리보기와 편집을 진행합니다.</p>
     </div>
   </aside>
 
@@ -199,6 +205,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260704-3"></script>
+<script src="static/studio.js?v=20260704-4"></script>
 </body>
 </html>
