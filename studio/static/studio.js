@@ -652,7 +652,7 @@ function renderBatchList() {
   if (!list || !count) return;
   count.textContent = `${batchItems.length} stories`;
   if (!batchItems.length) {
-    list.innerHTML = '<div class="batch-empty">Batch Input XLSX를 불러오면 여러 스토리를 한 번에 생성하고 검수할 수 있습니다.</div>';
+    list.innerHTML = '<div class="batch-empty">Story Batch에서 Batch XLSX를 불러오거나, 여기에서 Quiz/Batch JSON을 불러오면 스토리를 선택할 수 있습니다.</div>';
     return;
   }
   list.innerHTML = batchItems.map((item, index) => {

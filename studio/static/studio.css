@@ -138,6 +138,8 @@ input,textarea,select{
   color:var(--ui-ink);
   border-radius:8px;
   padding:9px 10px;
+  font-size:10pt;
+  line-height:1.45;
   outline:none;
 }
 input:focus,textarea:focus,select:focus{border-color:#6B7280;box-shadow:0 0 0 3px rgba(17,24,39,.08)}
@@ -200,9 +202,16 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
 .batch-box{
   margin-bottom:18px;
 }
+.select-story-box,
 .story-detail-box{
   padding-top:16px;
   border-top:1px solid var(--line);
+}
+.select-story-box{
+  margin-bottom:18px;
+}
+.select-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr));
 }
 .batch-list{
   display:grid;

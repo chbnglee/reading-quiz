@@ -55,11 +55,12 @@ For reopening previous work, load `QuizBatch.json` or an individual `*.quiz.json
 
 1. Click `Format` and download `StoryBatch_Input_Template.xlsx`.
 2. Fill one story per row: `story_id`, `title`, `level`, `story_text`, and optional `notes`.
-3. Load that Batch XLSX in Studio.
+3. Load that Batch XLSX in the `Story Batch` section.
 4. Load the asset folder with `Assets` so preview can show images/audio by filename.
 5. Enter an API key and run `AI Batch Generate`.
-6. Review each story in the batch list, edit details in `Quiz Editor`, then mark approved stories as `Approved`.
-7. Click `Export` to download a ZIP. Each approved story folder includes:
+6. Use `Select Story` to load an existing `QuizBatch.json` / `*.quiz.json` or choose one generated story from the batch list.
+7. Review the selected story in `Preview` and `Quiz Editor`, then mark approved stories as `Approved`.
+8. Click `Export` to download a ZIP. Each approved story folder includes:
    - `{storyId}.quiz.json`
    - `{storyId}_ReadingQuiz.xlsx`
    - `{storyId}_DevSpec.xlsx`

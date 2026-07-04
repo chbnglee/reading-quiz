@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css">
+<link rel="stylesheet" href="static/studio.css?v=20260704-2">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -15,13 +15,6 @@
     <div class="eyebrow">BookeyTalkey</div>
     <h1>Quiz Studio</h1>
   </div>
-  <div class="top-actions">
-    <button class="ghost-btn" id="load-sample-btn">OG0021 샘플</button>
-    <label class="ghost-btn file-label">
-      Quiz/Batch JSON 불러오기
-      <input type="file" id="json-file" accept=".json,application/json">
-    </label>
-  </div>
 </header>
 
 <main class="studio-grid">
@@ -29,7 +22,6 @@
     <section class="batch-box">
       <div class="panel-head compact">
         <h2>Story Batch</h2>
-        <span class="pill" id="batch-count">0 stories</span>
       </div>
       <div class="mini-actions">
         <button class="icon-btn" id="batch-template-btn" title="Download batch template">📄 <span>Format</span></button>
@@ -61,6 +53,20 @@
 
       <button class="primary-btn compact-primary" id="batch-ai-generate-btn">✨ AI Batch Generate</button>
       <div class="asset-status" id="asset-status">No asset folder loaded.</div>
+    </section>
+
+    <section class="select-story-box">
+      <div class="panel-head compact">
+        <h2>Select Story</h2>
+        <span class="pill" id="batch-count">0 stories</span>
+      </div>
+      <div class="mini-actions select-actions">
+        <button class="icon-btn" id="load-sample-btn" title="Load OG0021 sample">⭐ <span>Sample</span></button>
+        <label class="icon-btn file-label centered" title="Load QuizBatch JSON or one quiz JSON">
+          📂 <span>Quiz JSON</span>
+          <input type="file" id="json-file" accept=".json,application/json">
+        </label>
+      </div>
       <div class="batch-list" id="batch-list"></div>
     </section>
 
@@ -193,6 +199,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js"></script>
+<script src="static/studio.js?v=20260704-2"></script>
 </body>
 </html>
