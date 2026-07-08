@@ -1,0 +1,1024 @@
+{
+  "schemaVersion": "quiz-v3.0",
+  "story": {
+    "storyId": "OG0005",
+    "title": "The Rainbow Cloud in the Box",
+    "level": "Level 4",
+    "text": "SC01_ST01_N = On the quiet planet of Tiny Rock, two friends named Podo and Didi spent their evenings watching the universe.\nSC01_ST02_N = Between the two, Didi was always searching for excitement.\nSC02_ST01_N = Suddenly, an amazing rainbow cloud floated near their rock.\nSC02_ST02_N = It was a swirling cloud of stardust, glowing with vibrant shades of violet, orange, and emerald green.\nSC03_ST01_N = \"It is the most beautiful thing I have ever seen!\" exclaimed Didi.\nSC03_ST02_N = \"I must have it.\nSC03_ST03_N = I will capture a piece to keep on my shelf.\"\nSC04_ST01_N = Podo frowned gently.\nSC04_ST02_N = \"I do not think you can own a cloud, Didi,\" he warned.\nSC04_ST03_N = \"Its beauty comes from its movement.\"\nSC05_ST01_N = Ignoring his friend, Didi grabbed a net and caught a portion of the cloud in a clear crystal box.\nSC05_ST02_N = \"Got it!\" he shouted triumphantly.\nSC06_ST01_N = He rushed inside to display his treasure.\nSC06_ST02_N = But as he set the box down, the vibrant light began to dim.\nSC06_ST03_N = The swirling colors stopped moving.\nSC07_ST01_N = The captured cloud transformed before their eyes.\nSC07_ST02_N = It became a lifeless, dark gray clump of moisture, looking like a dirty raincloud.\nSC08_ST01_N = \"This is terrible,\" Didi groaned, tapping the glass.\nSC08_ST02_N = \"It looks like smoke.\nSC08_ST03_N = Where did the magic go?\"\nSC09_ST01_N = \"The magic was in the freedom,\" Podo said wisely.\nSC09_ST02_N = \"By trapping it, you extinguished its light.\nSC09_ST03_N = Its light died when it cannot move.\"\nSC10_ST01_N = Didi realized his mistake.\nSC10_ST02_N = He looked at the dull box and then at the vast, open sky.\nSC10_ST03_N = He picked up the box and ran back outside.\nSC11_ST01_N = With a hopeful heart, Didi opened the crystal box.\nSC11_ST02_N = The gray puff floated slowly out into the sky.\nSC12_ST01_N = Instantly, the open sky brought it back to life.\nSC12_ST02_N = The gray turned back to brilliant violet, orange, and emerald.\nSC12_ST03_N = It joined the rest of the cloud, swirling happily.\nSC13_ST01_N = \"It is a masterpiece again,\" Didi whispered, watching it drift away.\nSC13_ST02_N = \"Indeed,\" agreed Podo.\nSC13_ST03_N = \"And now it is where it belongs.\nSC13_ST04_N = That is the most beautiful thing of all.\"\nSC13_ST05_N = They watched it fly freely and smiled.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "On the quiet planet of Tiny Rock, two friends named Podo and Didi spent their evenings watching the universe."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "Between the two, Didi was always searching for excitement."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "Suddenly, an amazing rainbow cloud floated near their rock."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "It was a swirling cloud of stardust, glowing with vibrant shades of violet, orange, and emerald green."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "\"It is the most beautiful thing I have ever seen!\" exclaimed Didi."
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "\"I must have it."
+          },
+          {
+            "sentenceId": "SC03_ST03_N",
+            "text": "I will capture a piece to keep on my shelf.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "Podo frowned gently."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "\"I do not think you can own a cloud, Didi,\" he warned."
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "\"Its beauty comes from its movement.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "Ignoring his friend, Didi grabbed a net and caught a portion of the cloud in a clear crystal box."
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "\"Got it!\" he shouted triumphantly."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "He rushed inside to display his treasure."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "But as he set the box down, the vibrant light began to dim."
+          },
+          {
+            "sentenceId": "SC06_ST03_N",
+            "text": "The swirling colors stopped moving."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "The captured cloud transformed before their eyes."
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "It became a lifeless, dark gray clump of moisture, looking like a dirty raincloud."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "\"This is terrible,\" Didi groaned, tapping the glass."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "\"It looks like smoke."
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "Where did the magic go?\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "\"The magic was in the freedom,\" Podo said wisely."
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "\"By trapping it, you extinguished its light."
+          },
+          {
+            "sentenceId": "SC09_ST03_N",
+            "text": "Its light died when it cannot move.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "Didi realized his mistake."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "He looked at the dull box and then at the vast, open sky."
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "He picked up the box and ran back outside."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC11",
+        "sentences": [
+          {
+            "sentenceId": "SC11_ST01_N",
+            "text": "With a hopeful heart, Didi opened the crystal box."
+          },
+          {
+            "sentenceId": "SC11_ST02_N",
+            "text": "The gray puff floated slowly out into the sky."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC12",
+        "sentences": [
+          {
+            "sentenceId": "SC12_ST01_N",
+            "text": "Instantly, the open sky brought it back to life."
+          },
+          {
+            "sentenceId": "SC12_ST02_N",
+            "text": "The gray turned back to brilliant violet, orange, and emerald."
+          },
+          {
+            "sentenceId": "SC12_ST03_N",
+            "text": "It joined the rest of the cloud, swirling happily."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC13",
+        "sentences": [
+          {
+            "sentenceId": "SC13_ST01_N",
+            "text": "\"It is a masterpiece again,\" Didi whispered, watching it drift away."
+          },
+          {
+            "sentenceId": "SC13_ST02_N",
+            "text": "\"Indeed,\" agreed Podo."
+          },
+          {
+            "sentenceId": "SC13_ST03_N",
+            "text": "\"And now it is where it belongs."
+          },
+          {
+            "sentenceId": "SC13_ST04_N",
+            "text": "That is the most beautiful thing of all.\""
+          },
+          {
+            "sentenceId": "SC13_ST05_N",
+            "text": "They watched it fly freely and smiled."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/OG0005_Talking_BG_I.webp",
+    "coverImage": "Cover/OG0005_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "consequence",
+      "labelEn": "Consequence",
+      "labelKo": "결과 이해"
+    },
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경 이해"
+    },
+    {
+      "key": "initiating_event",
+      "labelEn": "Initiating Event",
+      "labelKo": "사건 시작"
+    },
+    {
+      "key": "attempt",
+      "labelEn": "Attempt",
+      "labelKo": "해결 행동"
+    },
+    {
+      "key": "reaction",
+      "labelEn": "Reaction",
+      "labelKo": "감정 반응"
+    },
+    {
+      "key": "internal_response",
+      "labelEn": "Internal Response",
+      "labelKo": "내면 추론"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "OG0005_V3_Q01",
+      "number": 1,
+      "type": "story_sequence_drag",
+      "storyGrammar": "consequence",
+      "instruction": "Put the story scenes in order.",
+      "hint": "Didi sees a cloud, traps it, and lets it go.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0005_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Rainbow cloud appears"
+          },
+          {
+            "id": "SC03",
+            "path": "OG0005_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03",
+            "caption": "Didi wants it"
+          },
+          {
+            "id": "SC05",
+            "path": "OG0005_SC05_I.webp",
+            "kind": "image",
+            "sceneId": "SC05",
+            "caption": "Didi catches it"
+          },
+          {
+            "id": "SC07",
+            "path": "OG0005_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07",
+            "caption": "Cloud turns gray"
+          },
+          {
+            "id": "SC12",
+            "path": "OG0005_SC12_I.webp",
+            "kind": "image",
+            "sceneId": "SC12",
+            "caption": "Cloud comes back"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC02",
+          "SC03",
+          "SC05",
+          "SC07",
+          "SC12"
+        ],
+        "correct": [
+          "SC02",
+          "SC03",
+          "SC05",
+          "SC07",
+          "SC12"
+        ]
+      },
+      "scoring": {
+        "type": "weighted_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "SC02",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 1,
+            "rationale": "Rainbow cloud appears"
+          },
+          {
+            "key": "SC03",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 2,
+            "rationale": "Didi wants it"
+          },
+          {
+            "key": "SC05",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 3,
+            "rationale": "Didi catches it"
+          },
+          {
+            "key": "SC07",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 4,
+            "rationale": "Cloud turns gray"
+          },
+          {
+            "key": "SC12",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 5,
+            "rationale": "Cloud comes back"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 70,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q01_consequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0005_V3_Q02",
+      "number": 2,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where are they?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0005_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "podo_didi",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "tiny_rock",
+            "weight": 2.0
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "watch_universe",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "podo_didi",
+            "text": "Podo and Didi",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "cloud",
+            "text": "the rainbow cloud",
+            "slot": "who",
+            "diagnostic": "대상과 인물을 혼동합니다."
+          },
+          {
+            "key": "tiny_rock",
+            "text": "on Tiny Rock",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "crystal_box",
+            "text": "in a crystal box",
+            "slot": "where",
+            "diagnostic": "중간 사건의 장소를 시작 배경으로 혼동합니다."
+          },
+          {
+            "key": "watch_universe",
+            "text": "watch the universe",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "capture_cloud",
+            "text": "capture the cloud",
+            "slot": "at_first",
+            "diagnostic": "시도 장면을 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "podo_didi",
+          "where": "tiny_rock",
+          "at_first": "watch_universe"
+        }
+      },
+      "scoring": {
+        "type": "weighted_slot_match",
+        "maxScore": 100,
+        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "who",
+            "weight": 2.5,
+            "rule": "slot_match",
+            "correctValue": "podo_didi",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Who? in the opening setting."
+          },
+          {
+            "key": "where",
+            "weight": 2.0,
+            "rule": "slot_match",
+            "correctValue": "tiny_rock",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Where? in the opening setting."
+          },
+          {
+            "key": "at_first",
+            "weight": 1.5,
+            "rule": "slot_match",
+            "correctValue": "watch_universe",
+            "partialCredit": 0.35,
+            "rationale": "Identifies At first... in the opening setting."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 70,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q02_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0005_V3_Q03",
+      "number": 3,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "initiating_event",
+      "instruction": "Listen. Which scene starts the problem?",
+      "hint": "Listen for Didi's wish. This starts the trouble.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0005_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          },
+          {
+            "id": "SC03",
+            "path": "OG0005_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03"
+          },
+          {
+            "id": "SC07",
+            "path": "OG0005_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07"
+          },
+          {
+            "id": "SC12",
+            "path": "OG0005_SC12_I.webp",
+            "kind": "image",
+            "sceneId": "SC12"
+          }
+        ],
+        "audio": {
+          "id": "SC03_ST03_N_A",
+          "path": "OG0005_SC03_ST03_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC03",
+          "sentenceId": "SC03_ST03_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Podo and Didi watch the sky.",
+            "score": 30,
+            "isCorrect": false,
+            "diagnostic": "배경 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC01"
+          },
+          {
+            "key": "B",
+            "text": "Didi wants to capture the cloud.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC03"
+          },
+          {
+            "key": "C",
+            "text": "The cloud turns gray.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "문제의 시작이 아니라 결과 장면을 선택합니다.",
+            "scene": "SC07"
+          },
+          {
+            "key": "D",
+            "text": "The cloud comes back to life.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "해결 장면을 발단으로 혼동합니다.",
+            "scene": "SC12"
+          }
+        ],
+        "correct": "B"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 30,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "배경 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "B",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct initiating event scene."
+          },
+          {
+            "key": "C",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제의 시작이 아니라 결과 장면을 선택합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "해결 장면을 발단으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "initiating_event_gap",
+          "threshold": 70,
+          "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q03_initiating_event",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0005_V3_Q04",
+      "number": 4,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "attempt",
+      "instruction": "Put the story words in order.",
+      "hint": "Start with He. Look for the action.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC10",
+            "path": "OG0005_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10"
+          }
+        ],
+        "scene": "SC10"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "outside.",
+          "back",
+          "ran",
+          "and",
+          "box",
+          "the",
+          "up",
+          "picked",
+          "He"
+        ],
+        "correct": [
+          "He",
+          "picked",
+          "up",
+          "the",
+          "box",
+          "and",
+          "ran",
+          "back",
+          "outside."
+        ]
+      },
+      "scoring": {
+        "type": "weighted_word_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "He",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 1,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "picked",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 2,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "up",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 3,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "the",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 4,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "box",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 5,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "and",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 6,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "ran",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 7,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "back",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 8,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "outside.",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 9,
+            "rationale": "Actor/action/result word order."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "attempt_sentence_gap",
+          "threshold": 70,
+          "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q04_attempt",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0005_V3_Q05",
+      "number": 5,
+      "type": "emotion_mcq",
+      "storyGrammar": "reaction",
+      "instruction": "How does Didi feel here?",
+      "hint": "The magic is gone. How does Didi feel?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC08",
+            "path": "OG0005_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08"
+          }
+        ],
+        "scene": "SC08",
+        "emotionSource": "Neutral, Sad"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "disappointed",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "proud",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "포획 직후 감정을 문제 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "text": "angry",
+            "score": 40,
+            "isCorrect": false,
+            "diagnostic": "부정 감정은 파악했으나 실망과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "sleepy",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "장면의 문제 상황을 놓칩니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct reaction/emotion."
+          },
+          {
+            "key": "B",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "포획 직후 감정을 문제 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "weight": 40,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "부정 감정은 파악했으나 실망과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "장면의 문제 상황을 놓칩니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "reaction_emotion_gap",
+          "threshold": 70,
+          "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q05_reaction",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0005_V3_Q06",
+      "number": 6,
+      "type": "internal_response_mcq",
+      "storyGrammar": "internal_response",
+      "instruction": "What is Didi thinking?",
+      "hint": "Think about what Didi learns.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC10",
+            "path": "OG0005_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10"
+          }
+        ],
+        "scene": "SC10"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "I made a mistake.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "I need a bigger box.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "문제의 원인을 소유가 아닌 도구로 오해합니다."
+          },
+          {
+            "key": "C",
+            "text": "The cloud is mine forever.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "인물의 깨달음과 반대되는 생각을 선택합니다."
+          },
+          {
+            "key": "D",
+            "text": "Podo should go away.",
+            "score": 10,
+            "isCorrect": false,
+            "diagnostic": "친구의 조언을 내면 변화와 연결하지 못합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct internal response."
+          },
+          {
+            "key": "B",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제의 원인을 소유가 아닌 도구로 오해합니다."
+          },
+          {
+            "key": "C",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "인물의 깨달음과 반대되는 생각을 선택합니다."
+          },
+          {
+            "key": "D",
+            "weight": 10,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "친구의 조언을 내면 변화와 연결하지 못합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "internal_response_gap",
+          "threshold": 70,
+          "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0005_v3_Q06_internal_response",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    }
+  ],
+  "reporting": {
+    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "masteryBands": [
+      {
+        "key": "stable",
+        "min": 85,
+        "max": 100,
+        "labelKo": "안정"
+      },
+      {
+        "key": "developing",
+        "min": 70,
+        "max": 84,
+        "labelKo": "발달 중"
+      },
+      {
+        "key": "shaky",
+        "min": 50,
+        "max": 69,
+        "labelKo": "흔들림"
+      },
+      {
+        "key": "focus",
+        "min": 0,
+        "max": 49,
+        "labelKo": "집중 보완"
+      }
+    ]
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-v3-logic",
+    "promptVersion": "story_grammar_v3",
+    "createdAt": "2026-07-08",
+    "notes": "Generated directly from Resources_0708."
+  }
+}

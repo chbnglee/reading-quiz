@@ -1,0 +1,1124 @@
+{
+  "schemaVersion": "quiz-v3.0",
+  "story": {
+    "storyId": "CS0003",
+    "title": "Hans in Luck",
+    "level": "Level 2",
+    "text": "SC01_ST01_N = Hans works hard for seven years.\nSC01_ST02_N = He receives a big piece of gold as pay.\nSC01_ST03_N = Hans puts the gold on his shoulder and starts to walk home to his mother.\nSC02_ST01_N = The gold is very heavy.\nSC02_ST02_N = Hans sees a man on a horse.\nSC02_ST03_N = \"Riding looks easy,\" says Hans.\nSC03_ST01_N = The man stops and says, \"Give me your gold, and I will give you my horse.\"\nSC03_ST02_N = Hans is happy to trade.\nSC04_ST01_N = Hans gets on the horse, but the horse runs too fast.\nSC04_ST02_N = He falls to the ground.\nSC04_ST03_N = A farmer with a cow helps him stand up.\nSC05_ST01_N = \"Horses are dangerous,\" says Hans.\nSC05_ST02_N = \"I like your cow.\nSC05_ST03_N = It gives milk every day.\"\nSC05_ST04_N = The farmer smiles and says, \"I will trade my cow for your horse.\"\nSC05_ST05_N = Hans agrees right away.\nSC06_ST01_N = Hans walks with the cow.\nSC06_ST02_N = He feels very thirsty and tries to get milk.\nSC06_ST03_N = But no milk comes out.\nSC06_ST04_N = The cow kicks Hans, and he falls down.\nSC07_ST01_N = A man with a pig sees him.\nSC07_ST02_N = \"That cow is too old to give milk,\" says the man.\nSC07_ST03_N = \"Your pig looks young and good,\" says Hans.\nSC07_ST04_N = \"I can trade my pig for the cow,\" says the man.\nSC07_ST05_N = Hans agrees to the trade.\nSC08_ST01_N = Later, Hans meets a boy with a white goose.\nSC08_ST02_N = Hans tells the boy about his lucky trades.\nSC08_ST03_N = The boy says, \"My goose is very heavy.\nSC08_ST04_N = The meat will be good.\"\nSC08_ST05_N = \"My pig is good, too,\" says Hans.\nSC09_ST01_N = Then the boy says, \"Is that pig yours?\nSC09_ST02_N = A rich man is looking for his lost pig.\nSC09_ST03_N = It is missing.\nSC09_ST04_N = You may be in trouble.\"\nSC09_ST05_N = Hans feels afraid.\nSC09_ST06_N = \"Please help me,\" he says.\nSC09_ST07_N = \"Take this pig and give me your goose.\"\nSC10_ST01_N = Hans thinks he is very lucky with the big goose.\nSC10_ST02_N = In the next village, he sees a man with a large stone.\nSC10_ST03_N = The man uses the stone for his work.\nSC10_ST04_N = The man sings while he works.\nSC10_ST05_N = \"You look happy,\" says Hans.\nSC11_ST01_N = The man says, \"My work brings me money.\nSC11_ST02_N = You can do this work, too.\"\nSC11_ST03_N = \"How can I do that?\" asks Hans.\nSC11_ST04_N = \"You just need a stone,\" says the man.\nSC11_ST05_N = \"Take this goose and give me your stone,\" says Hans.\nSC12_ST01_N = \"Now I will be rich,\" Hans thinks.\nSC12_ST02_N = But the stone is very heavy.\nSC12_ST03_N = Soon, Hans feels tired and hungry.\nSC13_ST01_N = Hans stops at a well to drink water.\nSC13_ST02_N = He puts the stone on the edge.\nSC13_ST03_N = By accident, he pushes the stone.\nSC13_ST04_N = Splash!\nSC13_ST05_N = It falls into the deep water.\nSC14_ST01_N = He jumps for joy.\nSC14_ST02_N = \"Thank my lucky stars!\" he shouts.\nSC14_ST03_N = \"The heavy stone is gone.\nSC14_ST04_N = I am free from this heavy weight.\"\nSC14_ST05_N = Now he has nothing left.\nSC14_ST06_N = He has no gold, no horse, and no stone.\nSC14_ST07_N = But he is the happiest man in the world.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "Hans works hard for seven years."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "He receives a big piece of gold as pay."
+          },
+          {
+            "sentenceId": "SC01_ST03_N",
+            "text": "Hans puts the gold on his shoulder and starts to walk home to his mother."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "The gold is very heavy."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "Hans sees a man on a horse."
+          },
+          {
+            "sentenceId": "SC02_ST03_N",
+            "text": "\"Riding looks easy,\" says Hans."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "The man stops and says, \"Give me your gold, and I will give you my horse.\""
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "Hans is happy to trade."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "Hans gets on the horse, but the horse runs too fast."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "He falls to the ground."
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "A farmer with a cow helps him stand up."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "\"Horses are dangerous,\" says Hans."
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "\"I like your cow."
+          },
+          {
+            "sentenceId": "SC05_ST03_N",
+            "text": "It gives milk every day.\""
+          },
+          {
+            "sentenceId": "SC05_ST04_N",
+            "text": "The farmer smiles and says, \"I will trade my cow for your horse.\""
+          },
+          {
+            "sentenceId": "SC05_ST05_N",
+            "text": "Hans agrees right away."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "Hans walks with the cow."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "He feels very thirsty and tries to get milk."
+          },
+          {
+            "sentenceId": "SC06_ST03_N",
+            "text": "But no milk comes out."
+          },
+          {
+            "sentenceId": "SC06_ST04_N",
+            "text": "The cow kicks Hans, and he falls down."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "A man with a pig sees him."
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "\"That cow is too old to give milk,\" says the man."
+          },
+          {
+            "sentenceId": "SC07_ST03_N",
+            "text": "\"Your pig looks young and good,\" says Hans."
+          },
+          {
+            "sentenceId": "SC07_ST04_N",
+            "text": "\"I can trade my pig for the cow,\" says the man."
+          },
+          {
+            "sentenceId": "SC07_ST05_N",
+            "text": "Hans agrees to the trade."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "Later, Hans meets a boy with a white goose."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "Hans tells the boy about his lucky trades."
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "The boy says, \"My goose is very heavy."
+          },
+          {
+            "sentenceId": "SC08_ST04_N",
+            "text": "The meat will be good.\""
+          },
+          {
+            "sentenceId": "SC08_ST05_N",
+            "text": "\"My pig is good, too,\" says Hans."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "Then the boy says, \"Is that pig yours?"
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "A rich man is looking for his lost pig."
+          },
+          {
+            "sentenceId": "SC09_ST03_N",
+            "text": "It is missing."
+          },
+          {
+            "sentenceId": "SC09_ST04_N",
+            "text": "You may be in trouble.\""
+          },
+          {
+            "sentenceId": "SC09_ST05_N",
+            "text": "Hans feels afraid."
+          },
+          {
+            "sentenceId": "SC09_ST06_N",
+            "text": "\"Please help me,\" he says."
+          },
+          {
+            "sentenceId": "SC09_ST07_N",
+            "text": "\"Take this pig and give me your goose.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "Hans thinks he is very lucky with the big goose."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "In the next village, he sees a man with a large stone."
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "The man uses the stone for his work."
+          },
+          {
+            "sentenceId": "SC10_ST04_N",
+            "text": "The man sings while he works."
+          },
+          {
+            "sentenceId": "SC10_ST05_N",
+            "text": "\"You look happy,\" says Hans."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC11",
+        "sentences": [
+          {
+            "sentenceId": "SC11_ST01_N",
+            "text": "The man says, \"My work brings me money."
+          },
+          {
+            "sentenceId": "SC11_ST02_N",
+            "text": "You can do this work, too.\""
+          },
+          {
+            "sentenceId": "SC11_ST03_N",
+            "text": "\"How can I do that?\" asks Hans."
+          },
+          {
+            "sentenceId": "SC11_ST04_N",
+            "text": "\"You just need a stone,\" says the man."
+          },
+          {
+            "sentenceId": "SC11_ST05_N",
+            "text": "\"Take this goose and give me your stone,\" says Hans."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC12",
+        "sentences": [
+          {
+            "sentenceId": "SC12_ST01_N",
+            "text": "\"Now I will be rich,\" Hans thinks."
+          },
+          {
+            "sentenceId": "SC12_ST02_N",
+            "text": "But the stone is very heavy."
+          },
+          {
+            "sentenceId": "SC12_ST03_N",
+            "text": "Soon, Hans feels tired and hungry."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC13",
+        "sentences": [
+          {
+            "sentenceId": "SC13_ST01_N",
+            "text": "Hans stops at a well to drink water."
+          },
+          {
+            "sentenceId": "SC13_ST02_N",
+            "text": "He puts the stone on the edge."
+          },
+          {
+            "sentenceId": "SC13_ST03_N",
+            "text": "By accident, he pushes the stone."
+          },
+          {
+            "sentenceId": "SC13_ST04_N",
+            "text": "Splash!"
+          },
+          {
+            "sentenceId": "SC13_ST05_N",
+            "text": "It falls into the deep water."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC14",
+        "sentences": [
+          {
+            "sentenceId": "SC14_ST01_N",
+            "text": "He jumps for joy."
+          },
+          {
+            "sentenceId": "SC14_ST02_N",
+            "text": "\"Thank my lucky stars!\" he shouts."
+          },
+          {
+            "sentenceId": "SC14_ST03_N",
+            "text": "\"The heavy stone is gone."
+          },
+          {
+            "sentenceId": "SC14_ST04_N",
+            "text": "I am free from this heavy weight.\""
+          },
+          {
+            "sentenceId": "SC14_ST05_N",
+            "text": "Now he has nothing left."
+          },
+          {
+            "sentenceId": "SC14_ST06_N",
+            "text": "He has no gold, no horse, and no stone."
+          },
+          {
+            "sentenceId": "SC14_ST07_N",
+            "text": "But he is the happiest man in the world."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/CS0003_Talking_BG_I.webp",
+    "coverImage": "Cover/CS0003_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "consequence",
+      "labelEn": "Consequence",
+      "labelKo": "결과 이해"
+    },
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경 이해"
+    },
+    {
+      "key": "initiating_event",
+      "labelEn": "Initiating Event",
+      "labelKo": "사건 시작"
+    },
+    {
+      "key": "attempt",
+      "labelEn": "Attempt",
+      "labelKo": "해결 행동"
+    },
+    {
+      "key": "reaction",
+      "labelEn": "Reaction",
+      "labelKo": "감정 반응"
+    },
+    {
+      "key": "internal_response",
+      "labelEn": "Internal Response",
+      "labelKo": "내면 추론"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "CS0003_V3_Q01",
+      "number": 1,
+      "type": "story_sequence_drag",
+      "storyGrammar": "consequence",
+      "instruction": "Put the story scenes in order.",
+      "hint": "Hans trades many things. Think from gold to the stone.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "CS0003_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01",
+            "caption": "Hans gets gold"
+          },
+          {
+            "id": "SC03",
+            "path": "CS0003_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03",
+            "caption": "Gold for horse"
+          },
+          {
+            "id": "SC07",
+            "path": "CS0003_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07",
+            "caption": "Cow for pig"
+          },
+          {
+            "id": "SC13",
+            "path": "CS0003_SC13_I.webp",
+            "kind": "image",
+            "sceneId": "SC13",
+            "caption": "Stone falls"
+          },
+          {
+            "id": "SC14",
+            "path": "CS0003_SC14_I.webp",
+            "kind": "image",
+            "sceneId": "SC14",
+            "caption": "Hans feels free"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC01",
+          "SC03",
+          "SC07",
+          "SC13",
+          "SC14"
+        ],
+        "correct": [
+          "SC01",
+          "SC03",
+          "SC07",
+          "SC13",
+          "SC14"
+        ]
+      },
+      "scoring": {
+        "type": "weighted_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "SC01",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 1,
+            "rationale": "Hans gets gold"
+          },
+          {
+            "key": "SC03",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 2,
+            "rationale": "Gold for horse"
+          },
+          {
+            "key": "SC07",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 3,
+            "rationale": "Cow for pig"
+          },
+          {
+            "key": "SC13",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 4,
+            "rationale": "Stone falls"
+          },
+          {
+            "key": "SC14",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 5,
+            "rationale": "Hans feels free"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 70,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q01_consequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0003_V3_Q02",
+      "number": 2,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where is he?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "CS0003_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "hans",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "road_home",
+            "weight": 2.0
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "receives_gold",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "hans",
+            "text": "Hans",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "horse_man",
+            "text": "a man on a horse",
+            "slot": "who",
+            "diagnostic": "첫 장면의 주인공과 이후 만나는 인물을 혼동합니다."
+          },
+          {
+            "key": "road_home",
+            "text": "on the road home",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "well",
+            "text": "at a well",
+            "slot": "where",
+            "diagnostic": "마지막 장면의 장소를 시작 배경으로 혼동합니다."
+          },
+          {
+            "key": "receives_gold",
+            "text": "receives a big piece of gold",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "loses_stone",
+            "text": "loses the stone",
+            "slot": "at_first",
+            "diagnostic": "이야기의 결과를 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "hans",
+          "where": "road_home",
+          "at_first": "receives_gold"
+        }
+      },
+      "scoring": {
+        "type": "weighted_slot_match",
+        "maxScore": 100,
+        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "who",
+            "weight": 2.5,
+            "rule": "slot_match",
+            "correctValue": "hans",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Who? in the opening setting."
+          },
+          {
+            "key": "where",
+            "weight": 2.0,
+            "rule": "slot_match",
+            "correctValue": "road_home",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Where? in the opening setting."
+          },
+          {
+            "key": "at_first",
+            "weight": 1.5,
+            "rule": "slot_match",
+            "correctValue": "receives_gold",
+            "partialCredit": 0.35,
+            "rationale": "Identifies At first... in the opening setting."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 70,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q02_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0003_V3_Q03",
+      "number": 3,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "initiating_event",
+      "instruction": "Listen. Which scene starts the problem?",
+      "hint": "Listen for the first problem.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC04",
+            "path": "CS0003_SC04_I.webp",
+            "kind": "image",
+            "sceneId": "SC04"
+          },
+          {
+            "id": "SC02",
+            "path": "CS0003_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02"
+          },
+          {
+            "id": "SC07",
+            "path": "CS0003_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07"
+          },
+          {
+            "id": "SC14",
+            "path": "CS0003_SC14_I.webp",
+            "kind": "image",
+            "sceneId": "SC14"
+          }
+        ],
+        "audio": {
+          "id": "SC02_ST01_N_A",
+          "path": "CS0003_SC02_ST01_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC02",
+          "sentenceId": "SC02_ST01_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Hans rides the horse.",
+            "score": 25,
+            "isCorrect": false,
+            "diagnostic": "문제 발생 뒤의 이동 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC04"
+          },
+          {
+            "key": "B",
+            "text": "The gold is too heavy.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC02"
+          },
+          {
+            "key": "C",
+            "text": "Hans trades the cow.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "반복되는 거래 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC07"
+          },
+          {
+            "key": "D",
+            "text": "Hans feels free.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "결말 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC14"
+          }
+        ],
+        "correct": "B"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 25,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제 발생 뒤의 이동 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "B",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct initiating event scene."
+          },
+          {
+            "key": "C",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "반복되는 거래 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말 장면을 사건 시작으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "initiating_event_gap",
+          "threshold": 70,
+          "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q03_initiating_event",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0003_V3_Q04",
+      "number": 4,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "attempt",
+      "instruction": "Put the story words in order.",
+      "hint": "Start with the action word in the sentence.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC09",
+            "path": "CS0003_SC09_I.webp",
+            "kind": "image",
+            "sceneId": "SC09"
+          }
+        ],
+        "scene": "SC09"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "goose.",
+          "your",
+          "me",
+          "give",
+          "and",
+          "pig",
+          "this",
+          "Take"
+        ],
+        "correct": [
+          "Take",
+          "this",
+          "pig",
+          "and",
+          "give",
+          "me",
+          "your",
+          "goose."
+        ]
+      },
+      "scoring": {
+        "type": "weighted_word_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "Take",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 1,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "this",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 2,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "pig",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 3,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "and",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 4,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "give",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 5,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "me",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 6,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "your",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 7,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "goose.",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 8,
+            "rationale": "Actor/action/result word order."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "attempt_sentence_gap",
+          "threshold": 70,
+          "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q04_attempt",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0003_V3_Q05",
+      "number": 5,
+      "type": "emotion_mcq",
+      "storyGrammar": "reaction",
+      "instruction": "How does Hans feel here?",
+      "hint": "Look at Hans's face and the danger.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC09",
+            "path": "CS0003_SC09_I.webp",
+            "kind": "image",
+            "sceneId": "SC09"
+          }
+        ],
+        "scene": "SC09",
+        "emotionSource": "Neutral, Sad"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "happy",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "결말의 기쁨을 문제 장면에 적용합니다."
+          },
+          {
+            "key": "B",
+            "text": "afraid",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "C",
+            "text": "angry",
+            "score": 35,
+            "isCorrect": false,
+            "diagnostic": "부정 감정은 파악했으나 두려움과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "proud",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "장면의 위험 신호를 놓칩니다."
+          }
+        ],
+        "correct": "B"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말의 기쁨을 문제 장면에 적용합니다."
+          },
+          {
+            "key": "B",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct reaction/emotion."
+          },
+          {
+            "key": "C",
+            "weight": 35,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "부정 감정은 파악했으나 두려움과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "장면의 위험 신호를 놓칩니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "reaction_emotion_gap",
+          "threshold": 70,
+          "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q05_reaction",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0003_V3_Q06",
+      "number": 6,
+      "type": "internal_response_mcq",
+      "storyGrammar": "internal_response",
+      "instruction": "What is Hans thinking?",
+      "hint": "Think about why Hans is happy at the end.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC14",
+            "path": "CS0003_SC14_I.webp",
+            "kind": "image",
+            "sceneId": "SC14"
+          }
+        ],
+        "scene": "SC14"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "I am free now.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "I need more gold.",
+            "score": 10,
+            "isCorrect": false,
+            "diagnostic": "초반 목표를 결말의 깨달음으로 혼동합니다."
+          },
+          {
+            "key": "C",
+            "text": "I want the horse back.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "이전 거래 장면에 머무릅니다."
+          },
+          {
+            "key": "D",
+            "text": "I am in trouble.",
+            "score": 30,
+            "isCorrect": false,
+            "diagnostic": "중간 위기 장면의 생각을 결말에 적용합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct internal response."
+          },
+          {
+            "key": "B",
+            "weight": 10,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "초반 목표를 결말의 깨달음으로 혼동합니다."
+          },
+          {
+            "key": "C",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "이전 거래 장면에 머무릅니다."
+          },
+          {
+            "key": "D",
+            "weight": 30,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "중간 위기 장면의 생각을 결말에 적용합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "internal_response_gap",
+          "threshold": 70,
+          "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0003_v3_Q06_internal_response",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    }
+  ],
+  "reporting": {
+    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "masteryBands": [
+      {
+        "key": "stable",
+        "min": 85,
+        "max": 100,
+        "labelKo": "안정"
+      },
+      {
+        "key": "developing",
+        "min": 70,
+        "max": 84,
+        "labelKo": "발달 중"
+      },
+      {
+        "key": "shaky",
+        "min": 50,
+        "max": 69,
+        "labelKo": "흔들림"
+      },
+      {
+        "key": "focus",
+        "min": 0,
+        "max": 49,
+        "labelKo": "집중 보완"
+      }
+    ]
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-v3-logic",
+    "promptVersion": "story_grammar_v3",
+    "createdAt": "2026-07-08",
+    "notes": "Generated directly from Resources_0708."
+  }
+}

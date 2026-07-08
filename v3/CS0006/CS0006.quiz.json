@@ -1,0 +1,1120 @@
+{
+  "schemaVersion": "quiz-v3.0",
+  "story": {
+    "storyId": "CS0006",
+    "title": "The Cat in Boots",
+    "level": "Level 2",
+    "text": "SC01_ST01_N = A miller had three sons.\nSC01_ST02_N = When he died, the oldest got the mill, the second got a donkey, and the youngest got only a cat.\nSC01_ST03_N = The youngest son felt very sad.\nSC01_ST04_N = \"What can I do with just a cat?\" he said.\nSC02_ST01_N = Then the Cat said, \"Do not worry.\nSC02_ST02_N = Give me a bag and a pair of boots.\nSC02_ST03_N = I will help you.\"\nSC02_ST04_N = The son was not sure, but he had seen the Cat do many clever tricks before.\nSC02_ST05_N = He began to feel hopeful and agreed.\nSC03_ST01_N = The Cat put on his boots and went to the woods.\nSC03_ST02_N = He put some food in his bag and lay down as if he were dead.\nSC04_ST01_N = Soon, a young rabbit came to look inside the bag.\nSC04_ST02_N = The Cat quickly pulled the string, caught it, and went to the King's palace.\nSC05_ST01_N = The Cat bowed and said, \"This is a gift from Lord Carabas.\"\nSC05_ST02_N = The King was very pleased with the gift.\nSC06_ST01_N = Another day, the Cat caught two birds in the same way.\nSC06_ST02_N = He brought them to the King and said, \"These are from Lord Carabas.\"\nSC07_ST01_N = For many days, the Cat brought more animals to the King.\nSC07_ST02_N = The King began to like the Lord Carabas and gave the Cat some gold.\nSC08_ST01_N = One day, the King went for a ride by the river.\nSC08_ST02_N = The Cat said, \"Master, today your fortune will change.\nSC08_ST03_N = Come with me to the river.\"\nSC08_ST04_N = The young man followed him.\nSC09_ST01_N = \"Go into the water,\" said the Cat.\nSC09_ST02_N = While his master was bathing, the Cat hid his clothes under a stone.\nSC10_ST01_N = Soon the King's coach came by.\nSC10_ST02_N = The Cat cried, \"Help!\nSC10_ST03_N = The Lord Carabas is drowning!\nSC10_ST04_N = Thieves stole his clothes!\"\nSC11_ST01_N = The King's guards pulled the young man from the water.\nSC11_ST02_N = The King gave him fine clothes.\nSC11_ST03_N = He looked very handsome, and the Princess liked him at once.\nSC11_ST04_N = The King asked him to join them in the coach.\nSC12_ST01_N = Meanwhile, the Cat ran ahead and met some workers cutting grass.\nSC12_ST02_N = \"If the King asks,\" he said, \"tell him this land belongs to the Lord Carabas.\"\nSC13_ST01_N = The King passed and asked, \"Whose land is this?\"\nSC13_ST02_N = \"The Lord Carabas's!\" the worker answered.\nSC13_ST03_N = The King was impressed.\nSC13_ST04_N = He believed that the Lord was a very wealthy man.\nSC14_ST01_N = The Cat went on and told more workers the same thing.\nSC14_ST02_N = He did this in fields of grain and across the wide countryside.\nSC14_ST03_N = So everywhere the King looked, people said the land belonged to the Lord.\nSC15_ST01_N = At last, the Cat came to a grand castle.\nSC15_ST02_N = A rich Giant lived there, and all the lands the Cat had just passed by belonged to him.\nSC16_ST01_N = The Giant had the power to change his shape.\nSC16_ST02_N = The Cat said, \"I heard you can turn into any animal.\"\nSC16_ST03_N = \"That is true,\"answered the Giant.\nSC16_ST04_N = At once, he became a huge lion.\nSC16_ST05_N = The Cat quickly jumped back in fear.\nSC17_ST01_N = Then the Cat said, \"That is amazing!\nSC17_ST02_N = But can you turn into something very small, like a mouse?\"\nSC17_ST03_N = The Giant laughed and turned into a tiny mouse to show off.\nSC18_ST01_N = The Cat jumped on the mouse.\nSC18_ST02_N = Now the grand castle belonged to his lord.\nSC19_ST01_N = The King arrived and was impressed by the castle.\nSC19_ST02_N = \"You are very rich, Lord Carabas,\" he said.\nSC20_ST01_N = Lord Carabas married the Princess that very day.\nSC20_ST02_N = The Cat became a great lord and lived happily ever after.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "A miller had three sons."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "When he died, the oldest got the mill, the second got a donkey, and the youngest got only a cat."
+          },
+          {
+            "sentenceId": "SC01_ST03_N",
+            "text": "The youngest son felt very sad."
+          },
+          {
+            "sentenceId": "SC01_ST04_N",
+            "text": "\"What can I do with just a cat?\" he said."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "Then the Cat said, \"Do not worry."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "Give me a bag and a pair of boots."
+          },
+          {
+            "sentenceId": "SC02_ST03_N",
+            "text": "I will help you.\""
+          },
+          {
+            "sentenceId": "SC02_ST04_N",
+            "text": "The son was not sure, but he had seen the Cat do many clever tricks before."
+          },
+          {
+            "sentenceId": "SC02_ST05_N",
+            "text": "He began to feel hopeful and agreed."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "The Cat put on his boots and went to the woods."
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "He put some food in his bag and lay down as if he were dead."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "Soon, a young rabbit came to look inside the bag."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "The Cat quickly pulled the string, caught it, and went to the King's palace."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "The Cat bowed and said, \"This is a gift from Lord Carabas.\""
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "The King was very pleased with the gift."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "Another day, the Cat caught two birds in the same way."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "He brought them to the King and said, \"These are from Lord Carabas.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "For many days, the Cat brought more animals to the King."
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "The King began to like the Lord Carabas and gave the Cat some gold."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "One day, the King went for a ride by the river."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "The Cat said, \"Master, today your fortune will change."
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "Come with me to the river.\""
+          },
+          {
+            "sentenceId": "SC08_ST04_N",
+            "text": "The young man followed him."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "\"Go into the water,\" said the Cat."
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "While his master was bathing, the Cat hid his clothes under a stone."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "Soon the King's coach came by."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "The Cat cried, \"Help!"
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "The Lord Carabas is drowning!"
+          },
+          {
+            "sentenceId": "SC10_ST04_N",
+            "text": "Thieves stole his clothes!\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC11",
+        "sentences": [
+          {
+            "sentenceId": "SC11_ST01_N",
+            "text": "The King's guards pulled the young man from the water."
+          },
+          {
+            "sentenceId": "SC11_ST02_N",
+            "text": "The King gave him fine clothes."
+          },
+          {
+            "sentenceId": "SC11_ST03_N",
+            "text": "He looked very handsome, and the Princess liked him at once."
+          },
+          {
+            "sentenceId": "SC11_ST04_N",
+            "text": "The King asked him to join them in the coach."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC12",
+        "sentences": [
+          {
+            "sentenceId": "SC12_ST01_N",
+            "text": "Meanwhile, the Cat ran ahead and met some workers cutting grass."
+          },
+          {
+            "sentenceId": "SC12_ST02_N",
+            "text": "\"If the King asks,\" he said, \"tell him this land belongs to the Lord Carabas.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC13",
+        "sentences": [
+          {
+            "sentenceId": "SC13_ST01_N",
+            "text": "The King passed and asked, \"Whose land is this?\""
+          },
+          {
+            "sentenceId": "SC13_ST02_N",
+            "text": "\"The Lord Carabas's!\" the worker answered."
+          },
+          {
+            "sentenceId": "SC13_ST03_N",
+            "text": "The King was impressed."
+          },
+          {
+            "sentenceId": "SC13_ST04_N",
+            "text": "He believed that the Lord was a very wealthy man."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC14",
+        "sentences": [
+          {
+            "sentenceId": "SC14_ST01_N",
+            "text": "The Cat went on and told more workers the same thing."
+          },
+          {
+            "sentenceId": "SC14_ST02_N",
+            "text": "He did this in fields of grain and across the wide countryside."
+          },
+          {
+            "sentenceId": "SC14_ST03_N",
+            "text": "So everywhere the King looked, people said the land belonged to the Lord."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC15",
+        "sentences": [
+          {
+            "sentenceId": "SC15_ST01_N",
+            "text": "At last, the Cat came to a grand castle."
+          },
+          {
+            "sentenceId": "SC15_ST02_N",
+            "text": "A rich Giant lived there, and all the lands the Cat had just passed by belonged to him."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC16",
+        "sentences": [
+          {
+            "sentenceId": "SC16_ST01_N",
+            "text": "The Giant had the power to change his shape."
+          },
+          {
+            "sentenceId": "SC16_ST02_N",
+            "text": "The Cat said, \"I heard you can turn into any animal.\""
+          },
+          {
+            "sentenceId": "SC16_ST03_N",
+            "text": "\"That is true,\"answered the Giant."
+          },
+          {
+            "sentenceId": "SC16_ST04_N",
+            "text": "At once, he became a huge lion."
+          },
+          {
+            "sentenceId": "SC16_ST05_N",
+            "text": "The Cat quickly jumped back in fear."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC17",
+        "sentences": [
+          {
+            "sentenceId": "SC17_ST01_N",
+            "text": "Then the Cat said, \"That is amazing!"
+          },
+          {
+            "sentenceId": "SC17_ST02_N",
+            "text": "But can you turn into something very small, like a mouse?\""
+          },
+          {
+            "sentenceId": "SC17_ST03_N",
+            "text": "The Giant laughed and turned into a tiny mouse to show off."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC18",
+        "sentences": [
+          {
+            "sentenceId": "SC18_ST01_N",
+            "text": "The Cat jumped on the mouse."
+          },
+          {
+            "sentenceId": "SC18_ST02_N",
+            "text": "Now the grand castle belonged to his lord."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC19",
+        "sentences": [
+          {
+            "sentenceId": "SC19_ST01_N",
+            "text": "The King arrived and was impressed by the castle."
+          },
+          {
+            "sentenceId": "SC19_ST02_N",
+            "text": "\"You are very rich, Lord Carabas,\" he said."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC20",
+        "sentences": [
+          {
+            "sentenceId": "SC20_ST01_N",
+            "text": "Lord Carabas married the Princess that very day."
+          },
+          {
+            "sentenceId": "SC20_ST02_N",
+            "text": "The Cat became a great lord and lived happily ever after."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/CS0006_Talking_BG_I.webp",
+    "coverImage": "Cover/CS0006_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "consequence",
+      "labelEn": "Consequence",
+      "labelKo": "결과 이해"
+    },
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경 이해"
+    },
+    {
+      "key": "initiating_event",
+      "labelEn": "Initiating Event",
+      "labelKo": "사건 시작"
+    },
+    {
+      "key": "attempt",
+      "labelEn": "Attempt",
+      "labelKo": "해결 행동"
+    },
+    {
+      "key": "reaction",
+      "labelEn": "Reaction",
+      "labelKo": "감정 반응"
+    },
+    {
+      "key": "internal_response",
+      "labelEn": "Internal Response",
+      "labelKo": "내면 추론"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "CS0006_V3_Q01",
+      "number": 1,
+      "type": "story_sequence_drag",
+      "storyGrammar": "consequence",
+      "instruction": "Put the story scenes in order.",
+      "hint": "The Cat makes a poor son look rich. Think of the big steps.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "CS0006_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01",
+            "caption": "Young man gets a cat"
+          },
+          {
+            "id": "SC02",
+            "path": "CS0006_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Cat promises help"
+          },
+          {
+            "id": "SC10",
+            "path": "CS0006_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10",
+            "caption": "Cat tricks the King"
+          },
+          {
+            "id": "SC18",
+            "path": "CS0006_SC18_I.webp",
+            "kind": "image",
+            "sceneId": "SC18",
+            "caption": "Cat beats the Giant"
+          },
+          {
+            "id": "SC20",
+            "path": "CS0006_SC20_I.webp",
+            "kind": "image",
+            "sceneId": "SC20",
+            "caption": "Happy ending"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC01",
+          "SC02",
+          "SC10",
+          "SC18",
+          "SC20"
+        ],
+        "correct": [
+          "SC01",
+          "SC02",
+          "SC10",
+          "SC18",
+          "SC20"
+        ]
+      },
+      "scoring": {
+        "type": "weighted_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "SC01",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 1,
+            "rationale": "Young man gets a cat"
+          },
+          {
+            "key": "SC02",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 2,
+            "rationale": "Cat promises help"
+          },
+          {
+            "key": "SC10",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 3,
+            "rationale": "Cat tricks the King"
+          },
+          {
+            "key": "SC18",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 4,
+            "rationale": "Cat beats the Giant"
+          },
+          {
+            "key": "SC20",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 5,
+            "rationale": "Happy ending"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 70,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q01_consequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0006_V3_Q02",
+      "number": 2,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where does the story start?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "CS0006_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "youngest_son",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "mill_home",
+            "weight": 2.0
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "gets_cat",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "youngest_son",
+            "text": "the youngest son",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "king",
+            "text": "the King",
+            "slot": "who",
+            "diagnostic": "뒤에 등장하는 인물을 시작 장면의 중심 인물로 혼동합니다."
+          },
+          {
+            "key": "mill_home",
+            "text": "at the mill",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "castle",
+            "text": "at the castle",
+            "slot": "where",
+            "diagnostic": "후반 배경을 처음 배경으로 혼동합니다."
+          },
+          {
+            "key": "gets_cat",
+            "text": "gets only a cat",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "marries_princess",
+            "text": "marries the Princess",
+            "slot": "at_first",
+            "diagnostic": "결말을 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "youngest_son",
+          "where": "mill_home",
+          "at_first": "gets_cat"
+        }
+      },
+      "scoring": {
+        "type": "weighted_slot_match",
+        "maxScore": 100,
+        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "who",
+            "weight": 2.5,
+            "rule": "slot_match",
+            "correctValue": "youngest_son",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Who? in the opening setting."
+          },
+          {
+            "key": "where",
+            "weight": 2.0,
+            "rule": "slot_match",
+            "correctValue": "mill_home",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Where? in the opening setting."
+          },
+          {
+            "key": "at_first",
+            "weight": 1.5,
+            "rule": "slot_match",
+            "correctValue": "gets_cat",
+            "partialCredit": 0.35,
+            "rationale": "Identifies At first... in the opening setting."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 70,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q02_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0006_V3_Q03",
+      "number": 3,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "initiating_event",
+      "instruction": "Listen. Which scene starts the problem?",
+      "hint": "Listen for the youngest son's problem.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "CS0006_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          },
+          {
+            "id": "SC05",
+            "path": "CS0006_SC05_I.webp",
+            "kind": "image",
+            "sceneId": "SC05"
+          },
+          {
+            "id": "SC10",
+            "path": "CS0006_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10"
+          },
+          {
+            "id": "SC18",
+            "path": "CS0006_SC18_I.webp",
+            "kind": "image",
+            "sceneId": "SC18"
+          }
+        ],
+        "audio": {
+          "id": "SC01_ST02_N_A",
+          "path": "CS0006_SC01_ST02_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC01",
+          "sentenceId": "SC01_ST02_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "The youngest son gets only a cat.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC01"
+          },
+          {
+            "key": "B",
+            "text": "The Cat gives a rabbit to the King.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "문제 이후의 첫 성과 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC05"
+          },
+          {
+            "key": "C",
+            "text": "The Cat cries for help.",
+            "score": 25,
+            "isCorrect": false,
+            "diagnostic": "중간 계획 장면을 시작 사건으로 혼동합니다.",
+            "scene": "SC10"
+          },
+          {
+            "key": "D",
+            "text": "The Cat catches the mouse.",
+            "score": 10,
+            "isCorrect": false,
+            "diagnostic": "해결 장면을 시작 사건으로 혼동합니다.",
+            "scene": "SC18"
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct initiating event scene."
+          },
+          {
+            "key": "B",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제 이후의 첫 성과 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "C",
+            "weight": 25,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "중간 계획 장면을 시작 사건으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 10,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "해결 장면을 시작 사건으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "initiating_event_gap",
+          "threshold": 70,
+          "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q03_initiating_event",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0006_V3_Q04",
+      "number": 4,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "attempt",
+      "instruction": "Put the story words in order.",
+      "hint": "Make the short action sentence.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC18",
+            "path": "CS0006_SC18_I.webp",
+            "kind": "image",
+            "sceneId": "SC18"
+          }
+        ],
+        "scene": "SC18"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "mouse.",
+          "the",
+          "on",
+          "jumped",
+          "Cat",
+          "The"
+        ],
+        "correct": [
+          "The",
+          "Cat",
+          "jumped",
+          "on",
+          "the",
+          "mouse."
+        ]
+      },
+      "scoring": {
+        "type": "weighted_word_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "The",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 1,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "Cat",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 2,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "jumped",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 3,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "on",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 4,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "the",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 5,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "mouse.",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 6,
+            "rationale": "Actor/action/result word order."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "attempt_sentence_gap",
+          "threshold": 70,
+          "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q04_attempt",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0006_V3_Q05",
+      "number": 5,
+      "type": "emotion_mcq",
+      "storyGrammar": "reaction",
+      "instruction": "How does the Cat feel here?",
+      "hint": "Look at the Giant. How does the Cat feel?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC16",
+            "path": "CS0006_SC16_I.webp",
+            "kind": "image",
+            "sceneId": "SC16"
+          }
+        ],
+        "scene": "SC16",
+        "emotionSource": "Neutral, Sad"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "afraid",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "happy",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "장면의 위험보다 성공 결과를 먼저 떠올림"
+          },
+          {
+            "key": "C",
+            "text": "angry",
+            "score": 35,
+            "isCorrect": false,
+            "diagnostic": "긴장감은 파악했으나 감정을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "bored",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "장면의 긴박함을 놓칩니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct reaction/emotion."
+          },
+          {
+            "key": "B",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "장면의 위험보다 성공 결과를 먼저 떠올림"
+          },
+          {
+            "key": "C",
+            "weight": 35,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "긴장감은 파악했으나 감정을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "장면의 긴박함을 놓칩니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "reaction_emotion_gap",
+          "threshold": 70,
+          "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q05_reaction",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "CS0006_V3_Q06",
+      "number": 6,
+      "type": "internal_response_mcq",
+      "storyGrammar": "internal_response",
+      "instruction": "What is the Cat thinking?",
+      "hint": "Think about the Cat's clever plan.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC17",
+            "path": "CS0006_SC17_I.webp",
+            "kind": "image",
+            "sceneId": "SC17"
+          }
+        ],
+        "scene": "SC17"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "I can trick the Giant.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "I should run away now.",
+            "score": 30,
+            "isCorrect": false,
+            "diagnostic": "두려움 반응과 다음 계획을 혼동합니다."
+          },
+          {
+            "key": "C",
+            "text": "I want to give the King a rabbit.",
+            "score": 15,
+            "isCorrect": false,
+            "diagnostic": "초반 행동을 후반 생각으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "The castle is too small.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "이야기와 무관한 생각을 선택합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct internal response."
+          },
+          {
+            "key": "B",
+            "weight": 30,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "두려움 반응과 다음 계획을 혼동합니다."
+          },
+          {
+            "key": "C",
+            "weight": 15,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "초반 행동을 후반 생각으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "이야기와 무관한 생각을 선택합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "internal_response_gap",
+          "threshold": 70,
+          "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_CS0006_v3_Q06_internal_response",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    }
+  ],
+  "reporting": {
+    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "masteryBands": [
+      {
+        "key": "stable",
+        "min": 85,
+        "max": 100,
+        "labelKo": "안정"
+      },
+      {
+        "key": "developing",
+        "min": 70,
+        "max": 84,
+        "labelKo": "발달 중"
+      },
+      {
+        "key": "shaky",
+        "min": 50,
+        "max": 69,
+        "labelKo": "흔들림"
+      },
+      {
+        "key": "focus",
+        "min": 0,
+        "max": 49,
+        "labelKo": "집중 보완"
+      }
+    ]
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-v3-logic",
+    "promptVersion": "story_grammar_v3",
+    "createdAt": "2026-07-08",
+    "notes": "Generated directly from Resources_0708."
+  }
+}

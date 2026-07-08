@@ -7,39 +7,63 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'ABeeZee',sans-serif;background:linear-gradient(160deg,#F3EEFF,#EAF4FF,#FFF0F7);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
-h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(22px,5vw,32px);color:#7C3AED;margin-bottom:8px;text-align:center}
-p{color:#6B7280;font-size:14px;margin-bottom:32px;text-align:center}
-.grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:980px;width:100%}
-.card{background:white;border-radius:24px;box-shadow:0 8px 28px rgba(124,58,237,.12);padding:24px 20px;width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;text-decoration:none;transition:transform .2s,box-shadow .2s;border:2px solid #EDE9FE}
+body{font-family:'ABeeZee',sans-serif;background:linear-gradient(160deg,#F3EEFF,#EAF4FF,#FFF0F7);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:44px 20px}
+h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(24px,5vw,36px);color:#5B21B6;margin-bottom:8px;text-align:center}
+p{color:#6B7280;font-size:14px;margin-bottom:30px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1120px;width:100%}
+.card{background:white;border-radius:22px;box-shadow:0 8px 28px rgba(124,58,237,.12);padding:22px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-decoration:none;transition:transform .2s,box-shadow .2s;border:2px solid #EDE9FE;min-height:190px}
 .card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(124,58,237,.2)}
-.card-id{font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;color:#A78BFA;background:#F5F3FF;padding:4px 12px;border-radius:50px}
-.card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:17px;color:#374151;text-align:center}
-.card-level{font-size:12px;color:#9CA3AF}
-.card-btn{background:linear-gradient(135deg,#7C3AED,#A78BFA);color:white;border:none;border-radius:50px;padding:10px 28px;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;cursor:pointer;margin-top:4px}
+.card-id{font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;color:#7C3AED;background:#F5F3FF;padding:4px 12px;border-radius:50px}
+.card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:18px;color:#374151;line-height:1.25}
+.card-level{font-size:12px;color:#6B7280}
+.card-btn{margin-top:auto;background:linear-gradient(135deg,#7C3AED,#A78BFA);color:white;border:none;border-radius:50px;padding:10px 24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px}
 </style>
 </head>
 <body>
-<h1>📚 Reading Quiz v3</h1>
-<p>Story Grammar-focused quizzes and report sample.</p>
+<h1>Reading Quiz v3</h1>
+<p>Story Grammar-focused quiz samples.</p>
 <div class="grid">
   <a class="card" href="OG0021/OG0021_ReadingQuiz.html">
     <span class="card-id">OG0021</span>
     <div class="card-title">Milo and the Lost Color</div>
-    <div class="card-level">⭐ Level 1 · 6 Questions</div>
-    <div class="card-btn">Start Quiz →</div>
+    <div class="card-level">Level 2 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
   </a>
   <a class="card" href="OG0005/OG0005_ReadingQuiz.html">
     <span class="card-id">OG0005</span>
-    <div class="card-title">Podo and Didi</div>
-    <div class="card-level">⭐⭐ Level 2 · 6 Questions</div>
-    <div class="card-btn">Start Quiz →</div>
+    <div class="card-title">The Rainbow Cloud in the Box</div>
+    <div class="card-level">Level 4 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+  <a class="card" href="CS0003/CS0003_ReadingQuiz.html">
+    <span class="card-id">CS0003</span>
+    <div class="card-title">Hans in Luck</div>
+    <div class="card-level">Level 2 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+  <a class="card" href="CS0006/CS0006_ReadingQuiz.html">
+    <span class="card-id">CS0006</span>
+    <div class="card-title">The Cat in Boots</div>
+    <div class="card-level">Level 2 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+  <a class="card" href="OG0036/OG0036_ReadingQuiz.html">
+    <span class="card-id">OG0036</span>
+    <div class="card-title">The Secret of Judy's Silver Racket</div>
+    <div class="card-level">Level 3 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+  <a class="card" href="OG0049/OG0049_ReadingQuiz.html">
+    <span class="card-id">OG0049</span>
+    <div class="card-title">The Mystery of the Deep: The Lost Light</div>
+    <div class="card-level">Level 3 - 6 Questions</div>
+    <div class="card-btn">Open Quiz</div>
   </a>
   <a class="card" href="weekly_report_sample.html">
     <span class="card-id">REPORT</span>
     <div class="card-title">Reading Growth Report</div>
-    <div class="card-level">10 Stories · Parent Sample</div>
-    <div class="card-btn">Open Report →</div>
+    <div class="card-level">10 Stories - Parent Sample</div>
+    <div class="card-btn">Open Report</div>
   </a>
 </div>
 </body>

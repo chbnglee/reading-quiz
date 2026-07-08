@@ -1,0 +1,1127 @@
+{
+  "schemaVersion": "quiz-v3.0",
+  "story": {
+    "storyId": "OG0036",
+    "title": "The Secret of Judy's Silver Racket",
+    "level": "Level 3",
+    "text": "SC01_ST01_N = Judy loved tennis, but she was always nervous.\nSC01_ST02_N = During big matches, her legs were shaking.\nSC01_ST03_N = She often lost games because of her fear.\nSC02_ST01_N = One day, Judy found a shop called Jingle Jump.\nSC02_ST02_N = Mr. Jing, the owner, gave her a shimmering silver racket.\nSC02_ST03_N = \"This racket will guide you,\" he said.\nSC03_ST01_N = The next day, Judy went to the court.\nSC03_ST02_N = Suddenly, she heard a tiny whisper from the racket.\nSC03_ST03_N = \"Move right!\nSC03_ST04_N = Hit now!\" the whisper said clearly.\nSC04_ST01_N = Judy followed the whisper.\nSC04_ST02_N = She hit the ball perfectly.\nSC04_ST03_N = She was surprised and very happy.\nSC04_ST04_N = It was a winning shot.\nSC05_ST01_N = With the silver racket, Judy won many matches.\nSC05_ST02_N = She became well-known in her town.\nSC05_ST03_N = However, she stopped practicing hard.\nSC05_ST04_N = She only waited for the whispers.\nSC06_ST01_N = Soon, Judy reached the championship finals.\nSC06_ST02_N = Her opponent was Bella.\nSC06_ST03_N = Bella was the best player and had very fast serves.\nSC06_ST04_N = The whole stadium was filled with nervous excitement.\nSC07_ST01_N = In the first set, Judy played well.\nSC07_ST02_N = The silver racket told her what to do.\nSC07_ST03_N = Judy felt like a star.\nSC07_ST04_N = Bella was surprised by Judy's play.\nSC08_ST01_N = During the second set, however, Judy tripped and fell.\nSC08_ST02_N = The silver racket hit the ground.\nSC08_ST03_N = It broke into two pieces.\nSC08_ST04_N = Judy was shocked.\nSC09_ST01_N = The magical whispers stopped.\nSC09_ST02_N = Judy felt scared and alone.\nSC09_ST03_N = \"I can't win without the whispers,\" she thought.\nSC09_ST04_N = She started to lose many points.\nSC10_ST01_N = During the break, Judy sat on the bench.\nSC10_ST02_N = She looked at her old, scratched racket in her bag.\nSC10_ST03_N = It looked very dull and old.\nSC11_ST01_N = She gripped the handle.\nSC11_ST02_N = She saw the worn tape.\nSC11_ST03_N = She remembered her long hours of practice.\nSC11_ST04_N = Her hands were sore from working so hard.\nSC12_ST01_N = Judy realized something important.\nSC12_ST02_N = The whispers were not magic.\nSC12_ST03_N = They were her own instincts.\nSC12_ST04_N = She had learned them through many months of practice.\nSC13_ST01_N = \"The strength is inside me,\" Judy said.\nSC13_ST02_N = She stood up and held her old racket tightly.\nSC13_ST03_N = She did not need the silver racket anymore.\nSC14_ST01_N = Judy returned to the court.\nSC14_ST02_N = She played with her own rhythm.\nSC14_ST03_N = She was not nervous anymore.\nSC14_ST04_N = She moved fast and hit the ball with power.\nSC15_ST01_N = The match was very close.\nSC15_ST02_N = In the end, Bella won by a little.\nSC15_ST03_N = Bella smiled and said, \"That was a great game, Judy!\"\nSC16_ST01_N = Judy was happy.\nSC16_ST02_N = She lost the trophy, but she found her confidence.\nSC16_ST03_N = She knew she could play well with her own strength.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "Judy loved tennis, but she was always nervous."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "During big matches, her legs were shaking."
+          },
+          {
+            "sentenceId": "SC01_ST03_N",
+            "text": "She often lost games because of her fear."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "One day, Judy found a shop called Jingle Jump."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "Mr. Jing, the owner, gave her a shimmering silver racket."
+          },
+          {
+            "sentenceId": "SC02_ST03_N",
+            "text": "\"This racket will guide you,\" he said."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "The next day, Judy went to the court."
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "Suddenly, she heard a tiny whisper from the racket."
+          },
+          {
+            "sentenceId": "SC03_ST03_N",
+            "text": "\"Move right!"
+          },
+          {
+            "sentenceId": "SC03_ST04_N",
+            "text": "Hit now!\" the whisper said clearly."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "Judy followed the whisper."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "She hit the ball perfectly."
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "She was surprised and very happy."
+          },
+          {
+            "sentenceId": "SC04_ST04_N",
+            "text": "It was a winning shot."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "With the silver racket, Judy won many matches."
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "She became well-known in her town."
+          },
+          {
+            "sentenceId": "SC05_ST03_N",
+            "text": "However, she stopped practicing hard."
+          },
+          {
+            "sentenceId": "SC05_ST04_N",
+            "text": "She only waited for the whispers."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "Soon, Judy reached the championship finals."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "Her opponent was Bella."
+          },
+          {
+            "sentenceId": "SC06_ST03_N",
+            "text": "Bella was the best player and had very fast serves."
+          },
+          {
+            "sentenceId": "SC06_ST04_N",
+            "text": "The whole stadium was filled with nervous excitement."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "In the first set, Judy played well."
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "The silver racket told her what to do."
+          },
+          {
+            "sentenceId": "SC07_ST03_N",
+            "text": "Judy felt like a star."
+          },
+          {
+            "sentenceId": "SC07_ST04_N",
+            "text": "Bella was surprised by Judy's play."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "During the second set, however, Judy tripped and fell."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "The silver racket hit the ground."
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "It broke into two pieces."
+          },
+          {
+            "sentenceId": "SC08_ST04_N",
+            "text": "Judy was shocked."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "The magical whispers stopped."
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "Judy felt scared and alone."
+          },
+          {
+            "sentenceId": "SC09_ST03_N",
+            "text": "\"I can't win without the whispers,\" she thought."
+          },
+          {
+            "sentenceId": "SC09_ST04_N",
+            "text": "She started to lose many points."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "During the break, Judy sat on the bench."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "She looked at her old, scratched racket in her bag."
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "It looked very dull and old."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC11",
+        "sentences": [
+          {
+            "sentenceId": "SC11_ST01_N",
+            "text": "She gripped the handle."
+          },
+          {
+            "sentenceId": "SC11_ST02_N",
+            "text": "She saw the worn tape."
+          },
+          {
+            "sentenceId": "SC11_ST03_N",
+            "text": "She remembered her long hours of practice."
+          },
+          {
+            "sentenceId": "SC11_ST04_N",
+            "text": "Her hands were sore from working so hard."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC12",
+        "sentences": [
+          {
+            "sentenceId": "SC12_ST01_N",
+            "text": "Judy realized something important."
+          },
+          {
+            "sentenceId": "SC12_ST02_N",
+            "text": "The whispers were not magic."
+          },
+          {
+            "sentenceId": "SC12_ST03_N",
+            "text": "They were her own instincts."
+          },
+          {
+            "sentenceId": "SC12_ST04_N",
+            "text": "She had learned them through many months of practice."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC13",
+        "sentences": [
+          {
+            "sentenceId": "SC13_ST01_N",
+            "text": "\"The strength is inside me,\" Judy said."
+          },
+          {
+            "sentenceId": "SC13_ST02_N",
+            "text": "She stood up and held her old racket tightly."
+          },
+          {
+            "sentenceId": "SC13_ST03_N",
+            "text": "She did not need the silver racket anymore."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC14",
+        "sentences": [
+          {
+            "sentenceId": "SC14_ST01_N",
+            "text": "Judy returned to the court."
+          },
+          {
+            "sentenceId": "SC14_ST02_N",
+            "text": "She played with her own rhythm."
+          },
+          {
+            "sentenceId": "SC14_ST03_N",
+            "text": "She was not nervous anymore."
+          },
+          {
+            "sentenceId": "SC14_ST04_N",
+            "text": "She moved fast and hit the ball with power."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC15",
+        "sentences": [
+          {
+            "sentenceId": "SC15_ST01_N",
+            "text": "The match was very close."
+          },
+          {
+            "sentenceId": "SC15_ST02_N",
+            "text": "In the end, Bella won by a little."
+          },
+          {
+            "sentenceId": "SC15_ST03_N",
+            "text": "Bella smiled and said, \"That was a great game, Judy!\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC16",
+        "sentences": [
+          {
+            "sentenceId": "SC16_ST01_N",
+            "text": "Judy was happy."
+          },
+          {
+            "sentenceId": "SC16_ST02_N",
+            "text": "She lost the trophy, but she found her confidence."
+          },
+          {
+            "sentenceId": "SC16_ST03_N",
+            "text": "She knew she could play well with her own strength."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/OG0036_Talking_BG_I.webp",
+    "coverImage": "Cover/OG0036_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "consequence",
+      "labelEn": "Consequence",
+      "labelKo": "결과 이해"
+    },
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경 이해"
+    },
+    {
+      "key": "initiating_event",
+      "labelEn": "Initiating Event",
+      "labelKo": "사건 시작"
+    },
+    {
+      "key": "attempt",
+      "labelEn": "Attempt",
+      "labelKo": "해결 행동"
+    },
+    {
+      "key": "reaction",
+      "labelEn": "Reaction",
+      "labelKo": "감정 반응"
+    },
+    {
+      "key": "internal_response",
+      "labelEn": "Internal Response",
+      "labelKo": "내면 추론"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "OG0036_V3_Q01",
+      "number": 1,
+      "type": "story_sequence_drag",
+      "storyGrammar": "consequence",
+      "instruction": "Put the story scenes in order.",
+      "hint": "Judy trusts a racket, then learns to trust herself.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0036_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01",
+            "caption": "Judy is nervous"
+          },
+          {
+            "id": "SC02",
+            "path": "OG0036_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Judy gets a silver racket"
+          },
+          {
+            "id": "SC08",
+            "path": "OG0036_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08",
+            "caption": "The racket breaks"
+          },
+          {
+            "id": "SC12",
+            "path": "OG0036_SC12_I.webp",
+            "kind": "image",
+            "sceneId": "SC12",
+            "caption": "Judy realizes the truth"
+          },
+          {
+            "id": "SC16",
+            "path": "OG0036_SC16_I.webp",
+            "kind": "image",
+            "sceneId": "SC16",
+            "caption": "Judy finds confidence"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC01",
+          "SC02",
+          "SC08",
+          "SC12",
+          "SC16"
+        ],
+        "correct": [
+          "SC01",
+          "SC02",
+          "SC08",
+          "SC12",
+          "SC16"
+        ]
+      },
+      "scoring": {
+        "type": "weighted_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "SC01",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 1,
+            "rationale": "Judy is nervous"
+          },
+          {
+            "key": "SC02",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 2,
+            "rationale": "Judy gets a silver racket"
+          },
+          {
+            "key": "SC08",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 3,
+            "rationale": "The racket breaks"
+          },
+          {
+            "key": "SC12",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 4,
+            "rationale": "Judy realizes the truth"
+          },
+          {
+            "key": "SC16",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 5,
+            "rationale": "Judy finds confidence"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 70,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q01_consequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0036_V3_Q02",
+      "number": 2,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where is she?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0036_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "judy",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "tennis_court",
+            "weight": 2.0
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "nervous",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "judy",
+            "text": "Judy",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "bella",
+            "text": "Bella",
+            "slot": "who",
+            "diagnostic": "후반 상대 선수를 처음 주인공으로 혼동합니다."
+          },
+          {
+            "key": "tennis_court",
+            "text": "on the tennis court",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "shop",
+            "text": "at Jingle Jump",
+            "slot": "where",
+            "diagnostic": "문제 이후의 장소를 처음 배경으로 혼동합니다."
+          },
+          {
+            "key": "nervous",
+            "text": "feels nervous in matches",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "confident",
+            "text": "finds her confidence",
+            "slot": "at_first",
+            "diagnostic": "결말의 변화를 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "judy",
+          "where": "tennis_court",
+          "at_first": "nervous"
+        }
+      },
+      "scoring": {
+        "type": "weighted_slot_match",
+        "maxScore": 100,
+        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "who",
+            "weight": 2.5,
+            "rule": "slot_match",
+            "correctValue": "judy",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Who? in the opening setting."
+          },
+          {
+            "key": "where",
+            "weight": 2.0,
+            "rule": "slot_match",
+            "correctValue": "tennis_court",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Where? in the opening setting."
+          },
+          {
+            "key": "at_first",
+            "weight": 1.5,
+            "rule": "slot_match",
+            "correctValue": "nervous",
+            "partialCredit": 0.35,
+            "rationale": "Identifies At first... in the opening setting."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 70,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q02_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0036_V3_Q03",
+      "number": 3,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "initiating_event",
+      "instruction": "Listen. Which scene starts the problem?",
+      "hint": "Listen for Judy's problem.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0036_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          },
+          {
+            "id": "SC02",
+            "path": "OG0036_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02"
+          },
+          {
+            "id": "SC08",
+            "path": "OG0036_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08"
+          },
+          {
+            "id": "SC16",
+            "path": "OG0036_SC16_I.webp",
+            "kind": "image",
+            "sceneId": "SC16"
+          }
+        ],
+        "audio": {
+          "id": "SC01_ST03_N_A",
+          "path": "OG0036_SC01_ST03_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC01",
+          "sentenceId": "SC01_ST03_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Judy loses because of fear.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC01"
+          },
+          {
+            "key": "B",
+            "text": "Judy gets a silver racket.",
+            "score": 35,
+            "isCorrect": false,
+            "diagnostic": "문제 해결 도구의 등장을 문제의 시작으로 혼동합니다.",
+            "scene": "SC02"
+          },
+          {
+            "key": "C",
+            "text": "The racket breaks.",
+            "score": 25,
+            "isCorrect": false,
+            "diagnostic": "중간 위기를 처음 문제로 혼동합니다.",
+            "scene": "SC08"
+          },
+          {
+            "key": "D",
+            "text": "Judy finds confidence.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "결말 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC16"
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct initiating event scene."
+          },
+          {
+            "key": "B",
+            "weight": 35,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제 해결 도구의 등장을 문제의 시작으로 혼동합니다."
+          },
+          {
+            "key": "C",
+            "weight": 25,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "중간 위기를 처음 문제로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말 장면을 사건 시작으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "initiating_event_gap",
+          "threshold": 70,
+          "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q03_initiating_event",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0036_V3_Q04",
+      "number": 4,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "attempt",
+      "instruction": "Put the story words in order.",
+      "hint": "Build the sentence about Judy's brave action.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC13",
+            "path": "OG0036_SC13_I.webp",
+            "kind": "image",
+            "sceneId": "SC13"
+          }
+        ],
+        "scene": "SC13"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "tightly.",
+          "racket",
+          "old",
+          "her",
+          "held",
+          "and",
+          "up",
+          "stood",
+          "She"
+        ],
+        "correct": [
+          "She",
+          "stood",
+          "up",
+          "and",
+          "held",
+          "her",
+          "old",
+          "racket",
+          "tightly."
+        ]
+      },
+      "scoring": {
+        "type": "weighted_word_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "She",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 1,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "stood",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 2,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "up",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 3,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "and",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 4,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "held",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 5,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "her",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 6,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "old",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 7,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "racket",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 8,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "tightly.",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 9,
+            "rationale": "Actor/action/result word order."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "attempt_sentence_gap",
+          "threshold": 70,
+          "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q04_attempt",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0036_V3_Q05",
+      "number": 5,
+      "type": "emotion_mcq",
+      "storyGrammar": "reaction",
+      "instruction": "How does Judy feel here?",
+      "hint": "The whispers stop. How does Judy feel?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC09",
+            "path": "OG0036_SC09_I.webp",
+            "kind": "image",
+            "sceneId": "SC09"
+          }
+        ],
+        "scene": "SC09",
+        "emotionSource": "Neutral, Sad"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "scared",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "happy",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "초반 승리 감정을 위기 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "text": "angry",
+            "score": 35,
+            "isCorrect": false,
+            "diagnostic": "부정 감정은 파악했지만 두려움과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "proud",
+            "score": 15,
+            "isCorrect": false,
+            "diagnostic": "결말의 자신감을 위기 장면에 투영합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct reaction/emotion."
+          },
+          {
+            "key": "B",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "초반 승리 감정을 위기 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "weight": 35,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "부정 감정은 파악했지만 두려움과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 15,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말의 자신감을 위기 장면에 투영합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "reaction_emotion_gap",
+          "threshold": 70,
+          "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q05_reaction",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0036_V3_Q06",
+      "number": 6,
+      "type": "internal_response_mcq",
+      "storyGrammar": "internal_response",
+      "instruction": "What is Judy thinking?",
+      "hint": "Think about what Judy learns about herself.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC12",
+            "path": "OG0036_SC12_I.webp",
+            "kind": "image",
+            "sceneId": "SC12"
+          }
+        ],
+        "scene": "SC12"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "The whispers came from Judy herself.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "The silver racket is magic.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "겉으로 보이는 도구를 내적 능력보다 우선합니다."
+          },
+          {
+            "key": "C",
+            "text": "Bella is too strong.",
+            "score": 25,
+            "isCorrect": false,
+            "diagnostic": "상대 선수에 대한 부담과 깨달음을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "She should stop playing.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "포기 반응을 내적 성장으로 오해합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct internal response."
+          },
+          {
+            "key": "B",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "겉으로 보이는 도구를 내적 능력보다 우선합니다."
+          },
+          {
+            "key": "C",
+            "weight": 25,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "상대 선수에 대한 부담과 깨달음을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "포기 반응을 내적 성장으로 오해합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "internal_response_gap",
+          "threshold": 70,
+          "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0036_v3_Q06_internal_response",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    }
+  ],
+  "reporting": {
+    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "masteryBands": [
+      {
+        "key": "stable",
+        "min": 85,
+        "max": 100,
+        "labelKo": "안정"
+      },
+      {
+        "key": "developing",
+        "min": 70,
+        "max": 84,
+        "labelKo": "발달 중"
+      },
+      {
+        "key": "shaky",
+        "min": 50,
+        "max": 69,
+        "labelKo": "흔들림"
+      },
+      {
+        "key": "focus",
+        "min": 0,
+        "max": 49,
+        "labelKo": "집중 보완"
+      }
+    ]
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-v3-logic",
+    "promptVersion": "story_grammar_v3",
+    "createdAt": "2026-07-08",
+    "notes": "Generated directly from Resources_0708."
+  }
+}

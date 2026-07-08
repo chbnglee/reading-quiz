@@ -1,0 +1,997 @@
+{
+  "schemaVersion": "quiz-v3.0",
+  "story": {
+    "storyId": "OG0021",
+    "title": "Milo and the Lost Color",
+    "level": "Level 2",
+    "text": "SC01_ST01_N = Milo is a little chameleon.\nSC01_ST02_N = He loves to change colors–green, blue, red!\nSC02_ST01_N = But one morning, he wakes up gray.\nSC02_ST02_N = \"Oh no!\nSC02_ST03_N = Where is my color?\"\nSC02_ST04_N = Milo says.\nSC02_ST05_N = He looks at his tail.\nSC02_ST06_N = It's still gray.\nSC02_ST07_N = He feels sad and shy.\nSC03_ST01_N = Milo walks into the forest.\nSC03_ST02_N = He sees a yellow butterfly.\nSC03_ST03_N = \"Can I have your color?\" he asks.\nSC04_ST01_N = The butterfly smiles.\nSC04_ST02_N = \"My color helps me fly.\"\nSC04_ST03_N = Milo smiles back.\nSC04_ST04_N = \"Then I will keep looking.\"\nSC04_ST05_N = He waves goodbye.\nSC05_ST01_N = He meets a red flower.\nSC05_ST02_N = \"Can I have your color?\"\nSC05_ST03_N = Milo asks.\nSC05_ST04_N = The flower says, \"My color helps the bees find me.\"\nSC06_ST01_N = Milo is sad.\nSC06_ST02_N = \"Everyone has their own color.\"\nSC06_ST03_N = He sits by a blue pond.\nSC06_ST04_N = He cries.\nSC06_ST05_N = A tiny drop falls into the water.\nSC07_ST01_N = The pond shines!\nSC07_ST02_N = Milo sees many colors in the water–red, yellow, blue, green.\nSC07_ST03_N = They mix and dance like a rainbow.\nSC08_ST01_N = Milo laughs.\nSC08_ST02_N = \"Maybe my color is inside me!\"\nSC08_ST03_N = He takes a deep breath and closes his eyes.\nSC08_ST04_N = His body starts to glow.\nSC09_ST01_N = Green!\nSC09_ST02_N = Then blue!\nSC09_ST03_N = Then red again!\nSC09_ST04_N = Milo's colors come back, brighter than before.\nSC09_ST05_N = He feels happy and warm.\nSC10_ST01_N = Milo runs home.\nSC10_ST02_N = He looks in the mirror.\nSC10_ST03_N = \"I found my color.\nSC10_ST04_N = It's me!\" he says proudly.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "Milo is a little chameleon."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "He loves to change colors–green, blue, red!"
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "But one morning, he wakes up gray."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "\"Oh no!"
+          },
+          {
+            "sentenceId": "SC02_ST03_N",
+            "text": "Where is my color?\""
+          },
+          {
+            "sentenceId": "SC02_ST04_N",
+            "text": "Milo says."
+          },
+          {
+            "sentenceId": "SC02_ST05_N",
+            "text": "He looks at his tail."
+          },
+          {
+            "sentenceId": "SC02_ST06_N",
+            "text": "It's still gray."
+          },
+          {
+            "sentenceId": "SC02_ST07_N",
+            "text": "He feels sad and shy."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "Milo walks into the forest."
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "He sees a yellow butterfly."
+          },
+          {
+            "sentenceId": "SC03_ST03_N",
+            "text": "\"Can I have your color?\" he asks."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "The butterfly smiles."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "\"My color helps me fly.\""
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "Milo smiles back."
+          },
+          {
+            "sentenceId": "SC04_ST04_N",
+            "text": "\"Then I will keep looking.\""
+          },
+          {
+            "sentenceId": "SC04_ST05_N",
+            "text": "He waves goodbye."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "He meets a red flower."
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "\"Can I have your color?\""
+          },
+          {
+            "sentenceId": "SC05_ST03_N",
+            "text": "Milo asks."
+          },
+          {
+            "sentenceId": "SC05_ST04_N",
+            "text": "The flower says, \"My color helps the bees find me.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "Milo is sad."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "\"Everyone has their own color.\""
+          },
+          {
+            "sentenceId": "SC06_ST03_N",
+            "text": "He sits by a blue pond."
+          },
+          {
+            "sentenceId": "SC06_ST04_N",
+            "text": "He cries."
+          },
+          {
+            "sentenceId": "SC06_ST05_N",
+            "text": "A tiny drop falls into the water."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "The pond shines!"
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "Milo sees many colors in the water–red, yellow, blue, green."
+          },
+          {
+            "sentenceId": "SC07_ST03_N",
+            "text": "They mix and dance like a rainbow."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "Milo laughs."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "\"Maybe my color is inside me!\""
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "He takes a deep breath and closes his eyes."
+          },
+          {
+            "sentenceId": "SC08_ST04_N",
+            "text": "His body starts to glow."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "Green!"
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "Then blue!"
+          },
+          {
+            "sentenceId": "SC09_ST03_N",
+            "text": "Then red again!"
+          },
+          {
+            "sentenceId": "SC09_ST04_N",
+            "text": "Milo's colors come back, brighter than before."
+          },
+          {
+            "sentenceId": "SC09_ST05_N",
+            "text": "He feels happy and warm."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "Milo runs home."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "He looks in the mirror."
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "\"I found my color."
+          },
+          {
+            "sentenceId": "SC10_ST04_N",
+            "text": "It's me!\" he says proudly."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/OG0021_Talking_BG_I.webp",
+    "coverImage": "Cover/OG0021_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "consequence",
+      "labelEn": "Consequence",
+      "labelKo": "결과 이해"
+    },
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경 이해"
+    },
+    {
+      "key": "initiating_event",
+      "labelEn": "Initiating Event",
+      "labelKo": "사건 시작"
+    },
+    {
+      "key": "attempt",
+      "labelEn": "Attempt",
+      "labelKo": "해결 행동"
+    },
+    {
+      "key": "reaction",
+      "labelEn": "Reaction",
+      "labelKo": "감정 반응"
+    },
+    {
+      "key": "internal_response",
+      "labelEn": "Internal Response",
+      "labelKo": "내면 추론"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "OG0021_V3_Q01",
+      "number": 1,
+      "type": "story_sequence_drag",
+      "storyGrammar": "consequence",
+      "instruction": "Put the story scenes in order.",
+      "hint": "Milo loses his color, looks for it, and finds it inside.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Milo wakes up gray"
+          },
+          {
+            "id": "SC03",
+            "path": "OG0021_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03",
+            "caption": "Milo enters the forest"
+          },
+          {
+            "id": "SC06",
+            "path": "OG0021_SC06_I.webp",
+            "kind": "image",
+            "sceneId": "SC06",
+            "caption": "Milo feels sad"
+          },
+          {
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08",
+            "caption": "Milo understands"
+          },
+          {
+            "id": "SC10",
+            "path": "OG0021_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10",
+            "caption": "Milo returns home"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ],
+        "correct": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ]
+      },
+      "scoring": {
+        "type": "weighted_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "SC02",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 1,
+            "rationale": "Milo wakes up gray"
+          },
+          {
+            "key": "SC03",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 2,
+            "rationale": "Milo enters the forest"
+          },
+          {
+            "key": "SC06",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 3,
+            "rationale": "Milo feels sad"
+          },
+          {
+            "key": "SC08",
+            "weight": 1.5,
+            "rule": "position_distance",
+            "correctValue": 4,
+            "rationale": "Milo understands"
+          },
+          {
+            "key": "SC10",
+            "weight": 2.5,
+            "rule": "position_distance",
+            "correctValue": 5,
+            "rationale": "Milo returns home"
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 70,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q01_consequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0021_V3_Q02",
+      "number": 2,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where is he?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0021_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "milo",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "forest",
+            "weight": 2.0
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "changes_colors",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "milo",
+            "text": "Milo",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "butterfly",
+            "text": "the butterfly",
+            "slot": "who",
+            "diagnostic": "초반 주인공과 이후 만나는 인물을 혼동합니다."
+          },
+          {
+            "key": "forest",
+            "text": "in the forest",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "blue_pond",
+            "text": "by a blue pond",
+            "slot": "where",
+            "diagnostic": "중간 장면의 장소를 처음 배경으로 혼동합니다."
+          },
+          {
+            "key": "changes_colors",
+            "text": "loves to change colors",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "looks_mirror",
+            "text": "looks in the mirror",
+            "slot": "at_first",
+            "diagnostic": "결말 장면을 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "milo",
+          "where": "forest",
+          "at_first": "changes_colors"
+        }
+      },
+      "scoring": {
+        "type": "weighted_slot_match",
+        "maxScore": 100,
+        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "who",
+            "weight": 2.5,
+            "rule": "slot_match",
+            "correctValue": "milo",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Who? in the opening setting."
+          },
+          {
+            "key": "where",
+            "weight": 2.0,
+            "rule": "slot_match",
+            "correctValue": "forest",
+            "partialCredit": 0.35,
+            "rationale": "Identifies Where? in the opening setting."
+          },
+          {
+            "key": "at_first",
+            "weight": 1.5,
+            "rule": "slot_match",
+            "correctValue": "changes_colors",
+            "partialCredit": 0.35,
+            "rationale": "Identifies At first... in the opening setting."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 70,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q02_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0021_V3_Q03",
+      "number": 3,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "initiating_event",
+      "instruction": "Listen. Which scene starts the problem?",
+      "hint": "Listen for Milo's problem.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02"
+          },
+          {
+            "id": "SC04",
+            "path": "OG0021_SC04_I.webp",
+            "kind": "image",
+            "sceneId": "SC04"
+          },
+          {
+            "id": "SC07",
+            "path": "OG0021_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07"
+          },
+          {
+            "id": "SC10",
+            "path": "OG0021_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10"
+          }
+        ],
+        "audio": {
+          "id": "SC02_ST01_N_A",
+          "path": "OG0021_SC02_ST01_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC02",
+          "sentenceId": "SC02_ST01_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Milo wakes up gray.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC02"
+          },
+          {
+            "key": "B",
+            "text": "The butterfly keeps its color.",
+            "score": 30,
+            "isCorrect": false,
+            "diagnostic": "문제의 시작이 아니라 첫 만남 장면을 선택합니다.",
+            "scene": "SC04"
+          },
+          {
+            "key": "C",
+            "text": "The pond shines.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "해결의 실마리 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC07"
+          },
+          {
+            "key": "D",
+            "text": "Milo looks in the mirror.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "결말 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC10"
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct initiating event scene."
+          },
+          {
+            "key": "B",
+            "weight": 30,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "문제의 시작이 아니라 첫 만남 장면을 선택합니다."
+          },
+          {
+            "key": "C",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "해결의 실마리 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말 장면을 사건 시작으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "initiating_event_gap",
+          "threshold": 70,
+          "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q03_initiating_event",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0021_V3_Q04",
+      "number": 4,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "attempt",
+      "instruction": "Put the story words in order.",
+      "hint": "Put the short action sentence in order.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC03",
+            "path": "OG0021_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03"
+          }
+        ],
+        "scene": "SC03"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "forest.",
+          "the",
+          "into",
+          "walks",
+          "Milo"
+        ],
+        "correct": [
+          "Milo",
+          "walks",
+          "into",
+          "the",
+          "forest."
+        ]
+      },
+      "scoring": {
+        "type": "weighted_word_position",
+        "maxScore": 100,
+        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "components": [
+          {
+            "key": "Milo",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 1,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "walks",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 2,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "into",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 3,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "the",
+            "weight": 1.0,
+            "rule": "exact_position",
+            "correctValue": 4,
+            "rationale": "Actor/action/result word order."
+          },
+          {
+            "key": "forest.",
+            "weight": 2.5,
+            "rule": "exact_position",
+            "correctValue": 5,
+            "rationale": "Actor/action/result word order."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "attempt_sentence_gap",
+          "threshold": 70,
+          "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q04_attempt",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0021_V3_Q05",
+      "number": 5,
+      "type": "emotion_mcq",
+      "storyGrammar": "reaction",
+      "instruction": "How does Milo feel here?",
+      "hint": "Milo is by the pond. How does he feel?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC06",
+            "path": "OG0021_SC06_I.webp",
+            "kind": "image",
+            "sceneId": "SC06"
+          }
+        ],
+        "scene": "SC06",
+        "emotionSource": "Neutral, Sad"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "sad",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "happy",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "해결 이후 감정을 슬픈 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "text": "angry",
+            "score": 40,
+            "isCorrect": false,
+            "diagnostic": "부정 감정은 파악했지만 슬픔과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "proud",
+            "score": 10,
+            "isCorrect": false,
+            "diagnostic": "결말의 자신감을 현재 감정으로 혼동합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct reaction/emotion."
+          },
+          {
+            "key": "B",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "해결 이후 감정을 슬픈 장면에 적용합니다."
+          },
+          {
+            "key": "C",
+            "weight": 40,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "부정 감정은 파악했지만 슬픔과 분노를 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 10,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "결말의 자신감을 현재 감정으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "reaction_emotion_gap",
+          "threshold": 70,
+          "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q05_reaction",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    },
+    {
+      "qId": "OG0021_V3_Q06",
+      "number": 6,
+      "type": "internal_response_mcq",
+      "storyGrammar": "internal_response",
+      "instruction": "What is Milo thinking?",
+      "hint": "Think about what Milo learns.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08"
+          }
+        ],
+        "scene": "SC08"
+      },
+      "interaction": {
+        "promptMode": "text_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Maybe my color is inside me!",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": ""
+          },
+          {
+            "key": "B",
+            "text": "I need the butterfly's color.",
+            "score": 25,
+            "isCorrect": false,
+            "diagnostic": "외부에서 색을 얻으려는 초반 생각에 머무릅니다."
+          },
+          {
+            "key": "C",
+            "text": "I should stop looking.",
+            "score": 20,
+            "isCorrect": false,
+            "diagnostic": "슬픈 반응과 깨달음을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "text": "The pond is my home.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "장면의 배경 단서를 내적 깨달음으로 오해합니다."
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "fixed_option_score",
+        "maxScore": 100,
+        "formula": "score = selected_option.score",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "option_score",
+            "correctValue": true,
+            "rationale": "Correct internal response."
+          },
+          {
+            "key": "B",
+            "weight": 25,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "외부에서 색을 얻으려는 초반 생각에 머무릅니다."
+          },
+          {
+            "key": "C",
+            "weight": 20,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "슬픈 반응과 깨달음을 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "장면의 배경 단서를 내적 깨달음으로 오해합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "internal_response_gap",
+          "threshold": 70,
+          "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_v3_Q06_internal_response",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "hint_used"
+        ]
+      }
+    }
+  ],
+  "reporting": {
+    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "masteryBands": [
+      {
+        "key": "stable",
+        "min": 85,
+        "max": 100,
+        "labelKo": "안정"
+      },
+      {
+        "key": "developing",
+        "min": 70,
+        "max": 84,
+        "labelKo": "발달 중"
+      },
+      {
+        "key": "shaky",
+        "min": 50,
+        "max": 69,
+        "labelKo": "흔들림"
+      },
+      {
+        "key": "focus",
+        "min": 0,
+        "max": 49,
+        "labelKo": "집중 보완"
+      }
+    ]
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-v3-logic",
+    "promptVersion": "story_grammar_v3",
+    "createdAt": "2026-07-08",
+    "notes": "Generated directly from Resources_0708."
+  }
+}
