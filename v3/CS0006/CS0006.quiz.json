@@ -778,31 +778,31 @@
       "resources": {
         "images": [
           {
-            "id": "SC18",
-            "path": "CS0006_SC18_I.webp",
+            "id": "SC09",
+            "path": "CS0006_SC09_I.webp",
             "kind": "image",
-            "sceneId": "SC18"
+            "sceneId": "SC09"
           }
         ],
-        "scene": "SC18"
+        "scene": "SC09"
       },
       "interaction": {
         "promptMode": "word_unscramble",
         "items": [
-          "mouse.",
-          "the",
-          "on",
-          "jumped",
-          "Cat",
-          "The"
+          "a stone.",
+          "under",
+          "clothes",
+          "his",
+          "hid",
+          "The Cat"
         ],
         "correct": [
-          "The",
-          "Cat",
-          "jumped",
-          "on",
-          "the",
-          "mouse."
+          "The Cat",
+          "hid",
+          "his",
+          "clothes",
+          "under",
+          "a stone."
         ]
       },
       "scoring": {
@@ -811,42 +811,42 @@
         "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
         "components": [
           {
-            "key": "The",
+            "key": "The Cat",
             "weight": 2.5,
             "rule": "exact_position",
             "correctValue": 1,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "Cat",
+            "key": "hid",
             "weight": 2.5,
             "rule": "exact_position",
             "correctValue": 2,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "jumped",
+            "key": "his",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 3,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "on",
+            "key": "clothes",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 4,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "the",
+            "key": "under",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 5,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "mouse.",
+            "key": "a stone.",
             "weight": 2.5,
             "rule": "exact_position",
             "correctValue": 6,

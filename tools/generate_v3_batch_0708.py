@@ -79,7 +79,18 @@ def parse_story(path: Path) -> tuple[str, dict[str, list[dict[str, str]]], dict[
 
 
 def word_tokens(sentence: str) -> list[str]:
-    return re.findall(r"[A-Za-z']+[,\.!?]?", clean_text(sentence))
+    raw_tokens = re.findall(r"[A-Za-z']+[,\.!?]?", clean_text(sentence))
+    grouped: list[str] = []
+    i = 0
+    while i < len(raw_tokens):
+        token = raw_tokens[i]
+        if token.lower() in {"a", "an", "the"} and i + 1 < len(raw_tokens):
+            grouped.append(f"{token} {raw_tokens[i + 1]}")
+            i += 2
+        else:
+            grouped.append(token)
+            i += 1
+    return grouped
 
 
 def ensure_dirs(base: Path) -> None:
@@ -192,7 +203,7 @@ def make_quiz(story: StoryDef, scenes: dict[str, list[dict[str, str]]], emotions
     character_names = {
         "OG0021": {"reaction": "Milo", "internal": "Milo"},
         "OG0036": {"reaction": "Judy", "internal": "Judy"},
-        "OG0049": {"reaction": "the anglerfish", "internal": "Toby"},
+        "OG0049": {"reaction": "the anglerfish", "internal": "Kira"},
         "CS0003": {"reaction": "Hans", "internal": "Hans"},
         "CS0006": {"reaction": "the Cat", "internal": "the Cat"},
         "OG0005": {"reaction": "Didi", "internal": "Didi"},
@@ -840,9 +851,9 @@ STORIES = [
         sequence=["SC01", "SC06", "SC09", "SC12", "SC16"],
         sequence_titles={"SC01": "The deep ocean is dark", "SC06": "A bag covers the fish", "SC09": "Kira and Toby act", "SC12": "The bag comes off", "SC16": "The light guides the way"},
         setting={
-            "who": {"correct": "kira_toby", "items": [{"key": "kira_toby", "text": "Kira and Toby"}, {"key": "anglerfish", "text": "the anglerfish", "diagnostic": "도움을 받는 대상을 초반 탐사 인물로 혼동함"}]},
-            "where": {"correct": "deep_ocean", "items": [{"key": "deep_ocean", "text": "deep in the ocean"}, {"key": "jagged_cave", "text": "near a jagged cave", "diagnostic": "위기 장소를 이야기의 처음 배경으로 혼동함"}]},
-            "at_first": {"correct": "see_light", "items": [{"key": "see_light", "text": "see a tiny golden light"}, {"key": "remove_bag", "text": "remove the plastic bag", "diagnostic": "해결 행동을 처음 상황으로 혼동함"}]},
+            "who": {"correct": "aurora_submarine", "items": [{"key": "aurora_submarine", "text": "the Aurora submarine"}, {"key": "anglerfish", "text": "the anglerfish", "diagnostic": "도움을 받는 대상을 초반 탐사 주체로 혼동함"}]},
+            "where": {"correct": "dark_canyon", "items": [{"key": "dark_canyon", "text": "into the dark canyon"}, {"key": "jagged_cave", "text": "near a jagged cave", "diagnostic": "위기 장소를 이야기의 처음 배경으로 혼동함"}]},
+            "at_first": {"correct": "followed_light", "items": [{"key": "followed_light", "text": "followed the light"}, {"key": "remove_bag", "text": "remove the plastic bag", "diagnostic": "해결 행동을 처음 상황으로 혼동함"}]},
         },
         event_scene="SC06",
         event_sentence="SC06_ST01_N",
@@ -861,15 +872,15 @@ STORIES = [
             {"key": "C", "text": "angry", "score": 30, "diagnostic": "위기감은 파악했지만 두려움과 분노를 혼동함"},
             {"key": "D", "text": "proud", "score": 10, "diagnostic": "구조 이후의 감정을 현재 장면에 투영함"},
         ],
-        internal_scene="SC09",
+        internal_scene="SC15",
         internal_options=[
-            {"key": "A", "text": "We must act now!", "score": 100, "isCorrect": True},
-            {"key": "B", "text": "The light is not important.", "score": 0, "diagnostic": "중심 문제를 놓치고 반대되는 생각을 선택함"},
-            {"key": "C", "text": "The fish can fix it alone.", "score": 20, "diagnostic": "도움이 필요한 상황과 인물의 의도를 연결하지 못함"},
-            {"key": "D", "text": "The cave is beautiful.", "score": 10, "diagnostic": "위험 단서를 배경 묘사로만 이해함"},
+            {"key": "A", "text": "We should keep the ocean clean.", "score": 100, "isCorrect": True},
+            {"key": "B", "text": "Plastic bags are not dangerous.", "score": 0, "diagnostic": "이야기의 핵심 깨달음과 반대되는 생각을 선택함"},
+            {"key": "C", "text": "One fish is not important.", "score": 10, "diagnostic": "인물의 책임감과 생명 보호 의도를 약하게 이해함"},
+            {"key": "D", "text": "We should leave the trash in the sea.", "score": 0, "diagnostic": "환경 보호 메시지와 반대되는 생각을 선택함"},
         ],
-        hints=["A deep-sea fish loses her light, and the team helps her.", "Who is there? Where does the story start?", "Listen for the real problem.", "Build the sentence about Toby's rescue action.", "The fish is near danger. How does she feel?", "Think about what Toby wants to do now."],
-        setting_scene="SC03",
+        hints=["A deep-sea fish loses her light, and the team helps her.", "Who is there? Where does the story start?", "Listen for the real problem.", "Build the sentence about Toby's rescue action.", "The fish is near danger. How does she feel?", "Think about what Kira learns about trash."],
+        setting_scene="SC04",
     ),
     StoryDef(
         code="CS0003",
@@ -929,8 +940,8 @@ STORIES = [
             {"key": "C", "scene": "SC10", "text": "The Cat cries for help.", "score": 25, "diagnostic": "중간 계획 장면을 시작 사건으로 혼동함"},
             {"key": "D", "scene": "SC18", "text": "The Cat catches the mouse.", "score": 10, "diagnostic": "해결 장면을 시작 사건으로 혼동함"},
         ],
-        attempt_scene="SC18",
-        attempt_sentence="The Cat jumped on the mouse.",
+        attempt_scene="SC09",
+        attempt_sentence="The Cat hid his clothes under a stone.",
         reaction_scene="SC16",
         reaction_options=[
             {"key": "A", "text": "afraid", "score": 100, "isCorrect": True},

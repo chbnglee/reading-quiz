@@ -405,13 +405,13 @@
       "resources": {
         "images": [
           {
-            "id": "SC03",
-            "path": "OG0049_SC03_I.webp",
+            "id": "SC04",
+            "path": "OG0049_SC04_I.webp",
             "kind": "image",
-            "sceneId": "SC03"
+            "sceneId": "SC04"
           }
         ],
-        "scene": "SC03"
+        "scene": "SC04"
       },
       "interaction": {
         "promptMode": "slot_drag",
@@ -419,26 +419,26 @@
           {
             "key": "who",
             "label": "Who?",
-            "correct": "kira_toby",
+            "correct": "aurora_submarine",
             "weight": 2.5
           },
           {
             "key": "where",
             "label": "Where?",
-            "correct": "deep_ocean",
+            "correct": "dark_canyon",
             "weight": 2.0
           },
           {
             "key": "at_first",
             "label": "At first...",
-            "correct": "see_light",
+            "correct": "followed_light",
             "weight": 1.5
           }
         ],
         "items": [
           {
-            "key": "kira_toby",
-            "text": "Kira and Toby",
+            "key": "aurora_submarine",
+            "text": "the Aurora submarine",
             "slot": "who",
             "diagnostic": ""
           },
@@ -446,11 +446,11 @@
             "key": "anglerfish",
             "text": "the anglerfish",
             "slot": "who",
-            "diagnostic": "도움을 받는 대상을 초반 탐사 인물로 혼동합니다."
+            "diagnostic": "도움을 받는 대상을 초반 탐사 주체로 혼동합니다."
           },
           {
-            "key": "deep_ocean",
-            "text": "deep in the ocean",
+            "key": "dark_canyon",
+            "text": "into the dark canyon",
             "slot": "where",
             "diagnostic": ""
           },
@@ -461,8 +461,8 @@
             "diagnostic": "위기 장소를 이야기의 처음 배경으로 혼동합니다."
           },
           {
-            "key": "see_light",
-            "text": "see a tiny golden light",
+            "key": "followed_light",
+            "text": "followed the light",
             "slot": "at_first",
             "diagnostic": ""
           },
@@ -474,9 +474,9 @@
           }
         ],
         "correct": {
-          "who": "kira_toby",
-          "where": "deep_ocean",
-          "at_first": "see_light"
+          "who": "aurora_submarine",
+          "where": "dark_canyon",
+          "at_first": "followed_light"
         }
       },
       "scoring": {
@@ -488,7 +488,7 @@
             "key": "who",
             "weight": 2.5,
             "rule": "slot_match",
-            "correctValue": "kira_toby",
+            "correctValue": "aurora_submarine",
             "partialCredit": 0.35,
             "rationale": "Identifies Who? in the opening setting."
           },
@@ -496,7 +496,7 @@
             "key": "where",
             "weight": 2.0,
             "rule": "slot_match",
-            "correctValue": "deep_ocean",
+            "correctValue": "dark_canyon",
             "partialCredit": 0.35,
             "rationale": "Identifies Where? in the opening setting."
           },
@@ -504,7 +504,7 @@
             "key": "at_first",
             "weight": 1.5,
             "rule": "slot_match",
-            "correctValue": "see_light",
+            "correctValue": "followed_light",
             "partialCredit": 0.35,
             "rationale": "Identifies At first... in the opening setting."
           }
@@ -684,8 +684,7 @@
           "arms.",
           "robot",
           "silver",
-          "submarine's",
-          "the",
+          "the submarine's",
           "opened",
           "Toby",
           "Diver"
@@ -694,8 +693,7 @@
           "Diver",
           "Toby",
           "opened",
-          "the",
-          "submarine's",
+          "the submarine's",
           "silver",
           "robot",
           "arms."
@@ -728,38 +726,31 @@
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "the",
+            "key": "the submarine's",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 4,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "submarine's",
+            "key": "silver",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 5,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "silver",
+            "key": "robot",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 6,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "robot",
-            "weight": 1.0,
-            "rule": "exact_position",
-            "correctValue": 7,
-            "rationale": "Actor/action/result word order."
-          },
-          {
             "key": "arms.",
             "weight": 2.5,
             "rule": "exact_position",
-            "correctValue": 8,
+            "correctValue": 7,
             "rationale": "Actor/action/result word order."
           }
         ]
@@ -891,49 +882,49 @@
       "number": 6,
       "type": "internal_response_mcq",
       "storyGrammar": "internal_response",
-      "instruction": "What is Toby thinking?",
-      "hint": "Think about what Toby wants to do now.",
+      "instruction": "What is Kira thinking?",
+      "hint": "Think about what Kira learns about trash.",
       "resources": {
         "images": [
           {
-            "id": "SC09",
-            "path": "OG0049_SC09_I.webp",
+            "id": "SC15",
+            "path": "OG0049_SC15_I.webp",
             "kind": "image",
-            "sceneId": "SC09"
+            "sceneId": "SC15"
           }
         ],
-        "scene": "SC09"
+        "scene": "SC15"
       },
       "interaction": {
         "promptMode": "text_mcq",
         "options": [
           {
             "key": "A",
-            "text": "We must act now!",
+            "text": "We should keep the ocean clean.",
             "score": 100,
             "isCorrect": true,
             "diagnostic": ""
           },
           {
             "key": "B",
-            "text": "The light is not important.",
+            "text": "Plastic bags are not dangerous.",
             "score": 0,
             "isCorrect": false,
-            "diagnostic": "중심 문제를 놓치고 반대되는 생각을 선택합니다."
+            "diagnostic": "이야기의 핵심 깨달음과 반대되는 생각을 선택합니다."
           },
           {
             "key": "C",
-            "text": "The fish can fix it alone.",
-            "score": 20,
+            "text": "One fish is not important.",
+            "score": 10,
             "isCorrect": false,
-            "diagnostic": "도움이 필요한 상황과 인물의 의도를 연결하지 못합니다."
+            "diagnostic": "인물의 책임감과 생명 보호 의도를 약하게 이해함"
           },
           {
             "key": "D",
-            "text": "The cave is beautiful.",
-            "score": 10,
+            "text": "We should leave the trash in the sea.",
+            "score": 0,
             "isCorrect": false,
-            "diagnostic": "위험 단서를 배경 묘사로만 이해함"
+            "diagnostic": "환경 보호 메시지와 반대되는 생각을 선택합니다."
           }
         ],
         "correct": "A"
@@ -955,21 +946,21 @@
             "weight": 0,
             "rule": "option_score",
             "correctValue": false,
-            "rationale": "중심 문제를 놓치고 반대되는 생각을 선택합니다."
+            "rationale": "이야기의 핵심 깨달음과 반대되는 생각을 선택합니다."
           },
           {
             "key": "C",
-            "weight": 20,
-            "rule": "option_score",
-            "correctValue": false,
-            "rationale": "도움이 필요한 상황과 인물의 의도를 연결하지 못합니다."
-          },
-          {
-            "key": "D",
             "weight": 10,
             "rule": "option_score",
             "correctValue": false,
-            "rationale": "위험 단서를 배경 묘사로만 이해함"
+            "rationale": "인물의 책임감과 생명 보호 의도를 약하게 이해함"
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "option_score",
+            "correctValue": false,
+            "rationale": "환경 보호 메시지와 반대되는 생각을 선택합니다."
           }
         ]
       },

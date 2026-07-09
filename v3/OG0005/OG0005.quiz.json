@@ -670,8 +670,7 @@
           "back",
           "ran",
           "and",
-          "box",
-          "the",
+          "the box",
           "up",
           "picked",
           "He"
@@ -680,8 +679,7 @@
           "He",
           "picked",
           "up",
-          "the",
-          "box",
+          "the box",
           "and",
           "ran",
           "back",
@@ -715,45 +713,38 @@
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "the",
+            "key": "the box",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 4,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "box",
+            "key": "and",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 5,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "and",
+            "key": "ran",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 6,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "ran",
+            "key": "back",
             "weight": 1.0,
             "rule": "exact_position",
             "correctValue": 7,
             "rationale": "Actor/action/result word order."
           },
           {
-            "key": "back",
-            "weight": 1.0,
-            "rule": "exact_position",
-            "correctValue": 8,
-            "rationale": "Actor/action/result word order."
-          },
-          {
             "key": "outside.",
             "weight": 2.5,
             "rule": "exact_position",
-            "correctValue": 9,
+            "correctValue": 8,
             "rationale": "Actor/action/result word order."
           }
         ]
