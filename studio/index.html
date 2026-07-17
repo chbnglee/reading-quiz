@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260717-1">
+<link rel="stylesheet" href="static/studio.css?v=20260717-2">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -21,16 +21,23 @@
   <aside class="panel input-panel">
     <section class="batch-box">
       <div class="panel-head compact">
-        <h2>Story Batch</h2>
+        <h2>Story Resource</h2>
       </div>
-      <div class="mini-actions batch-format-actions">
-        <button class="icon-btn" id="batch-template-btn" title="Download batch template">📄 <span>Format Download</span></button>
-        <label class="icon-btn file-label centered" title="Upload completed batch format">
-          📂 <span>Format Upload</span>
-          <input type="file" id="batch-file" accept=".xlsx,.xls,.csv">
-        </label>
+
+      <label class="upload-drop">
+        <strong>Upload Story Folder</strong>
+        <span>TXT, cover, background, scene images, and audio files</span>
+        <input type="file" id="story-package" multiple webkitdirectory directory>
+      </label>
+
+      <div class="asset-status" id="package-status">No story folder loaded.</div>
+      <div class="resource-summary" id="resource-summary">
+        <div class="resource-empty">Upload one OG/CS story folder to classify its files.</div>
       </div>
-      <div class="asset-status" id="batch-input-status">No batch format uploaded.</div>
+      <label class="icon-btn file-label centered replace-files" title="Replace or add selected resource files">
+        ↻ <span>Replace Files</span>
+        <input type="file" id="story-file-replace" multiple>
+      </label>
 
       <label class="field compact-field">
         <span>AI Provider</span>
@@ -43,37 +50,24 @@
       <label class="field compact-field">
         <span>API Key</span>
         <input id="api-key" type="password" placeholder="Required for web AI generation">
-        <small class="field-note">웹에서는 브라우저가 API를 직접 호출합니다. 키는 저장하지 않습니다.</small>
+        <small class="field-note">The key is used only for this browser request and is not saved.</small>
       </label>
 
-      <button class="primary-btn compact-primary" id="batch-ai-generate-btn">✨ AI Batch Generate</button>
-      <div class="batch-output-box" id="batch-output-box" hidden>
-        <div class="output-title">Generated Outputs</div>
-        <div class="mini-actions output-actions">
-          <button class="icon-btn" id="batch-download-json-btn" title="Download generated batch JSON">⬇️ <span>Batch JSON</span></button>
-          <button class="icon-btn" id="batch-download-zip-btn" title="Download Reading Quiz, Dev Spec, JSON, HTML">📦 <span>Quiz ZIP</span></button>
-        </div>
-      </div>
+      <button class="primary-btn compact-primary" id="generate-ai-btn">AI Generate Quiz</button>
     </section>
 
     <section class="select-story-box">
       <div class="panel-head compact">
-        <h2>Select Story</h2>
-        <span class="pill" id="batch-count">0 stories</span>
+        <h2>Open Existing Quiz</h2>
       </div>
       <div class="mini-actions select-actions">
         <label class="icon-btn file-label centered" title="Upload generated quiz JSON/XLSX/ZIP">
           📂 <span>Quiz Upload</span>
           <input type="file" id="quiz-file" accept=".json,.xlsx,.xls,.zip,application/json" multiple>
         </label>
-        <label class="icon-btn file-label centered" title="Load image/audio folders for preview">
-          🖼️ <span>Assets</span>
-          <input type="file" id="asset-folder" multiple webkitdirectory directory>
-        </label>
-        <button class="icon-btn" id="load-sample-btn" title="Load OG0021 sample">⭐ <span>Sample</span></button>
+        <button class="icon-btn" id="load-sample-btn" title="Load OG0021 sample">★<span>Sample</span></button>
       </div>
-      <div class="asset-status" id="asset-status">No asset folder loaded.</div>
-      <div class="batch-list" id="batch-list"></div>
+      <div class="asset-status" id="asset-status">No existing quiz loaded.</div>
     </section>
 
     <section class="story-detail-box">
@@ -100,13 +94,11 @@
         <span>Story Text</span>
         <textarea id="story-text" placeholder="SC01_ST01_N = ..."></textarea>
       </label>
-
-      <button class="secondary-btn" id="generate-ai-btn">✨ AI Generate Selected</button>
     </section>
 
     <div class="note-box">
-      <strong>권장 흐름</strong>
-      <p>Story Batch에서 산출물을 만든 뒤, Select Story의 Quiz Upload로 불러와 미리보기와 편집을 진행합니다.</p>
+      <strong>Recommended Flow</strong>
+      <p>Upload one story folder, check the classified files, generate the quiz, then review it in Preview and Quiz Editor.</p>
     </div>
   </aside>
 
@@ -183,15 +175,11 @@
       <textarea class="json-area short" id="diagnostics-json"></textarea>
     </label>
 
-    <button class="primary-btn" id="apply-btn">변경 반영</button>
+    <button class="primary-btn" id="apply-btn">Apply Changes</button>
 
     <div class="review-box">
-      <h3>Batch Review</h3>
-      <div class="review-actions">
-        <button class="secondary-btn" id="mark-review-btn">Needs Review</button>
-        <button class="primary-btn" id="approve-btn">Approve</button>
-      </div>
-      <div class="issue-list" id="issue-list">Batch 항목을 선택하면 검수 이슈가 표시됩니다.</div>
+      <h3>Validation</h3>
+      <div class="issue-list" id="issue-list">Generate or upload a quiz to see validation notes.</div>
     </div>
 
     <div class="export-box">
@@ -205,6 +193,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260717-1"></script>
+<script src="static/studio.js?v=20260717-2"></script>
 </body>
 </html>

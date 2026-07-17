@@ -6,6 +6,7 @@ let batchGeneratedItems = [];
 let currentBatchIndex = -1;
 let assetFiles = new Map();
 let assetObjectUrls = [];
+let currentStoryPackage = null;
 
 const SG_LABELS = {
   setting: 'Setting',
@@ -225,6 +226,9 @@ async function loadSample() {
     console.error(error);
     return;
   }
+  currentStoryPackage = null;
+  renderResourceSummary(null);
+  if ($('package-status')) $('package-status').textContent = 'Sample loaded. Upload a story folder to replace it.';
   currentBatchIndex = -1;
   syncStoryInputs();
   currentQuestionIndex = 0;
@@ -436,6 +440,19 @@ function updateStoryFromInputs() {
   }
 }
 
+function currentStoryRow() {
+  const row = {
+    story_id: $('story-id')?.value.trim() || currentStoryPackage?.storyId || 'OG0000',
+    title: $('story-title')?.value.trim() || currentStoryPackage?.title || 'Untitled Story',
+    level: $('story-level')?.value.trim() || 'Draft Level',
+    story_text: $('story-text')?.value || currentStoryPackage?.storyText || '',
+    notes: ''
+  };
+  if (currentStoryPackage?.backgroundFile) row.background_image = currentStoryPackage.backgroundFile.name;
+  if (currentStoryPackage?.coverFiles?.[0]) row.cover_image = currentStoryPackage.coverFiles[0].name;
+  return row;
+}
+
 async function generateRuleDraft() {
   syncCurrentBatchItem();
   updateStoryFromInputs();
@@ -467,13 +484,18 @@ async function generateAiDraft() {
   syncCurrentBatchItem();
   updateStoryFromInputs();
   const apiKey = $('api-key').value.trim();
+  const row = currentStoryRow();
+  if (!row.story_text.trim()) {
+    toast('Upload a story TXT file or paste story text first.');
+    return;
+  }
   const payload = {
     provider: $('ai-provider').value,
     input: {
-      storyId: $('story-id').value.trim(),
-      title: $('story-title').value.trim(),
-      level: $('story-level').value.trim(),
-      storyText: $('story-text').value,
+      storyId: row.story_id,
+      title: row.title,
+      level: row.level,
+      storyText: row.story_text,
       assetNaming: {
         image: '{storyId}_SC##_I.webp or {storyId}_SC##_I_1920x1080.webp',
         audio: '{storyId}_SC##_ST##_N_A.mp3',
@@ -496,21 +518,11 @@ async function generateAiDraft() {
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
-      quiz = completeGeneratedQuiz(data.quiz, {
-        story_id: payload.input.storyId,
-        title: payload.input.title,
-        level: payload.input.level,
-        story_text: payload.input.storyText
-      });
+      quiz = completeGeneratedQuiz(data.quiz, row);
     } else {
       const prompt = await loadGenerationPrompt();
       const generated = await callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
-      quiz = completeGeneratedQuiz(generated, {
-        story_id: payload.input.storyId,
-        title: payload.input.title,
-        level: payload.input.level,
-        story_text: payload.input.storyText
-      });
+      quiz = completeGeneratedQuiz(generated, row);
     }
     currentBatchIndex = -1;
     currentQuestionIndex = 0;
@@ -785,6 +797,7 @@ function quizFromBatchRow(row) {
   draft.assets.audioBasePath = row.audio_base_path || draft.assets.audioBasePath;
   draft.assets.coverBasePath = row.cover_base_path || draft.assets.coverBasePath;
   draft.assets.backgroundImage = row.background_image || draft.assets.backgroundImage;
+  draft.assets.coverImage = row.cover_image || draft.assets.coverImage;
   draft.assets.hintCharacter = row.hint_character || draft.assets.hintCharacter;
   draft.generation.notes = row.notes || draft.generation.notes;
   return draft;
@@ -864,6 +877,169 @@ function registerAssetFile(file, relativePath = '') {
   assetFiles.set(name, { file, url });
   if (stem) assetFiles.set(`stem:${stem}`, { file, url });
   if (relativeStem) assetFiles.set(`stem:${relativeStem}`, { file, url });
+}
+
+function storyCodeFromPath(pathValue) {
+  const match = String(pathValue || '').match(/(?:^|[\\/])?((?:OG|CS)\d{4})(?=[_\\/.-]|$)/i);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function titleFromStoryFile(fileNameValue, storyId) {
+  const stem = fileName(fileNameValue).replace(/\.[^.]+$/, '');
+  const cleaned = stem
+    .replace(new RegExp(`^${storyId}[_\\s-]*`, 'i'), '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\bstorytitle\b/i, '')
+    .trim();
+  return cleaned || storyId || 'Untitled Story';
+}
+
+function classifyStoryFiles(files) {
+  const pkg = {
+    storyId: '',
+    title: '',
+    storyFile: null,
+    storyText: '',
+    coverFiles: [],
+    backgroundFile: null,
+    sceneImages: new Map(),
+    audioFiles: new Map(),
+    otherFiles: []
+  };
+  Array.from(files || []).forEach(file => {
+    const rel = file.webkitRelativePath || file.name;
+    const name = file.name;
+    const lower = name.toLowerCase();
+    const storyId = storyCodeFromPath(rel) || storyCodeFromPath(name);
+    if (!pkg.storyId && storyId) pkg.storyId = storyId;
+
+    if (/\.txt$/i.test(name)) {
+      if (!pkg.storyFile || storyId === pkg.storyId) pkg.storyFile = file;
+      return;
+    }
+
+    if (/\.(webp|png|jpe?g|gif)$/i.test(name) && /_cover_[lp]_i(?:_\d{3,4}x\d{3,4})?/i.test(name)) {
+      pkg.coverFiles.push(file);
+      return;
+    }
+
+    if (/\.(webp|png|jpe?g|gif)$/i.test(name) && /_talking_bg_i(?:_\d{3,4}x\d{3,4})?/i.test(name)) {
+      pkg.backgroundFile = file;
+      return;
+    }
+
+    const sceneMatch = name.match(/_(SC\d{2})_I(?:_\d{3,4}x\d{3,4})?\.(webp|png|jpe?g|gif)$/i);
+    if (sceneMatch) {
+      pkg.sceneImages.set(sceneMatch[1].toUpperCase(), file);
+      return;
+    }
+
+    const audioMatch = name.match(/_(SC\d{2}_ST\d{2}_N_A)\.(mp3|wav|m4a|ogg)$/i);
+    if (audioMatch) {
+      pkg.audioFiles.set(audioMatch[1].toUpperCase(), file);
+      return;
+    }
+
+    pkg.otherFiles.push(file);
+  });
+  pkg.title = titleFromStoryFile(pkg.storyFile?.name || pkg.storyId, pkg.storyId);
+  return pkg;
+}
+
+function renderResourceSummary(pkg) {
+  const box = $('resource-summary');
+  if (!box) return;
+  if (!pkg) {
+    box.innerHTML = '<div class="resource-empty">Upload one OG/CS story folder to classify its files.</div>';
+    return;
+  }
+  const sceneList = [...pkg.sceneImages.keys()].sort();
+  const audioList = [...pkg.audioFiles.keys()].sort();
+  const row = (label, value, ok = true) => `
+    <div class="resource-row ${ok ? 'ok' : 'warn'}">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
+    </div>`;
+  box.innerHTML = [
+    row('Story ID', pkg.storyId || 'Not detected', !!pkg.storyId),
+    row('Story TXT', pkg.storyFile?.name || 'Missing', !!pkg.storyFile),
+    row('Cover', pkg.coverFiles[0]?.name || 'Missing', !!pkg.coverFiles.length),
+    row('Background', pkg.backgroundFile?.name || 'Missing', !!pkg.backgroundFile),
+    row('Scene Images', `${sceneList.length} files${sceneList.length ? ` (${sceneList.slice(0, 6).join(', ')}${sceneList.length > 6 ? '...' : ''})` : ''}`, sceneList.length > 0),
+    row('Audio', `${audioList.length} files${audioList.length ? ` (${audioList.slice(0, 4).join(', ')}${audioList.length > 4 ? '...' : ''})` : ''}`, true)
+  ].join('');
+}
+
+async function loadStoryPackage(files) {
+  const fileList = Array.from(files || []);
+  if (!fileList.length) return;
+  assetObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  assetObjectUrls = [];
+  assetFiles = new Map();
+  fileList.forEach(file => registerAssetFile(file, file.webkitRelativePath || file.name));
+
+  const pkg = classifyStoryFiles(fileList);
+  if (pkg.storyFile) {
+    pkg.storyText = await readFileAsText(pkg.storyFile);
+  }
+  currentStoryPackage = pkg;
+
+  $('story-id').value = pkg.storyId || $('story-id').value || 'OG0000';
+  $('story-title').value = pkg.title || $('story-title').value || pkg.storyId || '';
+  if (!$('story-level').value.trim()) $('story-level').value = 'Level 1';
+  $('story-text').value = pkg.storyText || $('story-text').value;
+
+  renderResourceSummary(pkg);
+  const status = $('package-status');
+  if (status) {
+    status.textContent = `${assetCount()} files loaded. ${pkg.sceneImages.size} scene images, ${pkg.audioFiles.size} audio files.`;
+  }
+
+  const row = currentStoryRow();
+  quiz = quizFromBatchRow(row);
+  currentQuestionIndex = 0;
+  currentBatchIndex = -1;
+  renderAll();
+  toast(`${row.story_id} resource folder loaded.`);
+}
+
+async function replaceStoryPackageFiles(files) {
+  const fileList = Array.from(files || []);
+  if (!fileList.length) return;
+  if (!currentStoryPackage) {
+    await loadStoryPackage(fileList);
+    return;
+  }
+  fileList.forEach(file => registerAssetFile(file, file.webkitRelativePath || file.name));
+  const incoming = classifyStoryFiles(fileList);
+  if (!currentStoryPackage.storyId && incoming.storyId) currentStoryPackage.storyId = incoming.storyId;
+  if (incoming.storyFile) {
+    currentStoryPackage.storyFile = incoming.storyFile;
+    currentStoryPackage.storyText = await readFileAsText(incoming.storyFile);
+    $('story-text').value = currentStoryPackage.storyText;
+  }
+  if (incoming.coverFiles.length) currentStoryPackage.coverFiles = incoming.coverFiles;
+  if (incoming.backgroundFile) currentStoryPackage.backgroundFile = incoming.backgroundFile;
+  incoming.sceneImages.forEach((file, sceneId) => currentStoryPackage.sceneImages.set(sceneId, file));
+  incoming.audioFiles.forEach((file, audioId) => currentStoryPackage.audioFiles.set(audioId, file));
+  currentStoryPackage.otherFiles.push(...incoming.otherFiles);
+
+  if (!$('story-id').value.trim() && currentStoryPackage.storyId) $('story-id').value = currentStoryPackage.storyId;
+  if (!$('story-title').value.trim()) $('story-title').value = currentStoryPackage.title || currentStoryPackage.storyId || '';
+  renderResourceSummary(currentStoryPackage);
+  if ($('package-status')) {
+    $('package-status').textContent = `${assetCount()} files loaded. ${currentStoryPackage.sceneImages.size} scene images, ${currentStoryPackage.audioFiles.size} audio files.`;
+  }
+  if (quiz) {
+    const row = currentStoryRow();
+    quiz.assets = {
+      ...(quiz.assets || {}),
+      backgroundImage: row.background_image || quiz.assets?.backgroundImage,
+      coverImage: row.cover_image || quiz.assets?.coverImage
+    };
+    renderAll();
+  }
+  toast(`${fileList.length} resource file(s) updated.`);
 }
 
 async function generateBatchAiDrafts() {
@@ -963,17 +1139,16 @@ function renderBatchList() {
 function renderReviewPanel() {
   const issueList = $('issue-list');
   if (!issueList) return;
-  if (currentBatchIndex < 0 || !batchItems[currentBatchIndex]) {
-    issueList.textContent = 'Batch 항목을 선택하면 검수 이슈가 표시됩니다.';
+  if (!quiz) {
+    issueList.textContent = 'Generate or upload a quiz to see validation notes.';
     return;
   }
-  const item = batchItems[currentBatchIndex];
-  const issues = item.issues || [];
+  const issues = validateQuizDraft(quiz, currentStoryRow());
   if (!issues.length) {
-    issueList.innerHTML = '<strong>자동 검증 통과</strong><br>필요하면 문항 내용을 검수한 뒤 Approve를 눌러 주세요.';
+    issueList.innerHTML = '<strong>Validation passed</strong><br>Review the quiz content and export when ready.';
     return;
   }
-  issueList.innerHTML = `<strong>검수 필요</strong><ul>${issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}</ul>`;
+  issueList.innerHTML = `<strong>Needs review</strong><ul>${issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}</ul>`;
 }
 
 function selectBatchItem(index, saveCurrent = true) {
@@ -1281,6 +1456,9 @@ async function loadQuizUploadFiles(files) {
       return;
     }
     const uniqueItems = dedupeLoadedQuizItems(loadedItems);
+    currentStoryPackage = null;
+    renderResourceSummary(null);
+    if ($('package-status')) $('package-status').textContent = 'Existing quiz loaded. Upload a story folder to create a new quiz.';
     loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', items: uniqueItems });
     const status = $('asset-status');
     if (status && assetFiles.size) status.textContent = `${assetCount()} asset files loaded for preview/export.`;
@@ -1590,18 +1768,20 @@ function escapeAttr(value) {
 }
 
 function bindEvents() {
-  $('load-sample-btn').onclick = loadSample;
-  $('quiz-file').onchange = e => loadQuizUploadFiles(e.target.files);
-  $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);
-  $('asset-folder').onchange = e => loadAssetFolder(e.target.files);
-  $('batch-template-btn').onclick = downloadBatchTemplate;
-  $('batch-ai-generate-btn').onclick = generateBatchAiDrafts;
-  $('batch-download-json-btn').onclick = exportBatchJson;
-  $('batch-download-zip-btn').onclick = exportApprovedZip;
-  $('generate-ai-btn').onclick = generateAiDraft;
-  $('apply-btn').onclick = applyEditorChanges;
-  $('mark-review-btn').onclick = () => setCurrentBatchStatus('Needs Review');
-  $('approve-btn').onclick = () => setCurrentBatchStatus('Approved');
+  if ($('story-package')) $('story-package').onchange = e => loadStoryPackage(e.target.files);
+  if ($('story-file-replace')) $('story-file-replace').onchange = e => replaceStoryPackageFiles(e.target.files);
+  if ($('load-sample-btn')) $('load-sample-btn').onclick = loadSample;
+  if ($('quiz-file')) $('quiz-file').onchange = e => loadQuizUploadFiles(e.target.files);
+  if ($('batch-file')) $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);
+  if ($('asset-folder')) $('asset-folder').onchange = e => loadAssetFolder(e.target.files);
+  if ($('batch-template-btn')) $('batch-template-btn').onclick = downloadBatchTemplate;
+  if ($('batch-ai-generate-btn')) $('batch-ai-generate-btn').onclick = generateBatchAiDrafts;
+  if ($('batch-download-json-btn')) $('batch-download-json-btn').onclick = exportBatchJson;
+  if ($('batch-download-zip-btn')) $('batch-download-zip-btn').onclick = exportApprovedZip;
+  if ($('generate-ai-btn')) $('generate-ai-btn').onclick = generateAiDraft;
+  if ($('apply-btn')) $('apply-btn').onclick = applyEditorChanges;
+  if ($('mark-review-btn')) $('mark-review-btn').onclick = () => setCurrentBatchStatus('Needs Review');
+  if ($('approve-btn')) $('approve-btn').onclick = () => setCurrentBatchStatus('Approved');
   $('question-select').onchange = e => {
     currentQuestionIndex = Number(e.target.value);
     renderAll();
