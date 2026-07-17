@@ -63,6 +63,21 @@ def choose_scene(scene_ids: list[str], ratio: float) -> str:
     return scene_ids[max(0, min(idx, len(scene_ids) - 1))]
 
 
+def word_tokens(sentence: str) -> list[str]:
+    raw_tokens = re.findall(r"[A-Za-z']+[,\.!?]?", sentence or "")
+    grouped: list[str] = []
+    i = 0
+    while i < len(raw_tokens):
+        token = raw_tokens[i]
+        if token.lower() in {"a", "an", "the"} and i + 1 < len(raw_tokens):
+            grouped.append(f"{token} {raw_tokens[i + 1]}")
+            i += 2
+        else:
+            grouped.append(token)
+            i += 1
+    return grouped
+
+
 def rule_based_quiz(payload: dict) -> dict:
     story_id = payload.get("storyId") or "OG0000"
     title = payload.get("title") or "Untitled Story"
@@ -80,7 +95,7 @@ def rule_based_quiz(payload: dict) -> dict:
         sequence.append(scene_ids[min(len(sequence), len(scene_ids) - 1)])
 
     def image(scene: str) -> dict:
-        return {"id": scene, "path": f"{story_id}_{scene}_I.png", "kind": "image", "sceneId": scene}
+        return {"id": scene, "path": f"{story_id}_{scene}_I.webp", "kind": "image", "sceneId": scene}
 
     def first_sentence(scene: str) -> tuple[str, str]:
         for item in scenes:
@@ -90,7 +105,7 @@ def rule_based_quiz(payload: dict) -> dict:
         return f"{scene}_ST01_N", ""
 
     attempt_sentence_id, attempt_sentence = first_sentence(attempt_scene)
-    words = re.findall(r"[A-Za-z']+[,\.!?]?", attempt_sentence)[:7] or ["Put", "the", "words", "in", "order."]
+    words = word_tokens(attempt_sentence)[:8] or ["Put", "the words", "in", "order."]
 
     axes = [
         ["setting", "Setting", "배경 이해", "이야기의 시간, 장소, 상황적 배경을 이해하는 능력"],
@@ -129,17 +144,17 @@ def rule_based_quiz(payload: dict) -> dict:
                 "slots": [
                     {"key": "who", "label": "Who?", "correct": "main_character", "weight": 2.5},
                     {"key": "where", "label": "Where?", "correct": "main_place", "weight": 2.0},
-                    {"key": "what", "label": "At first...", "correct": "opening_state", "weight": 1.5}
+                    {"key": "at_first", "label": "At first...", "correct": "opening_state", "weight": 1.5}
                 ],
                 "items": [
                     {"key": "main_place", "text": "story place", "slot": "where"},
                     {"key": "main_character", "text": "main character", "slot": "who"},
-                    {"key": "later_problem", "text": "later problem", "slot": "what", "diagnostic": "문제 장면을 처음 상황으로 혼동함"},
+                    {"key": "later_problem", "text": "later problem", "slot": "at_first", "diagnostic": "문제 장면을 처음 상황으로 혼동함"},
                     {"key": "other_character", "text": "other character", "slot": "who", "diagnostic": "주인공과 주변 인물을 혼동함"},
-                    {"key": "opening_state", "text": "first action", "slot": "what"},
+                    {"key": "opening_state", "text": "first action", "slot": "at_first"},
                     {"key": "other_place", "text": "other place", "slot": "where", "diagnostic": "다른 장소를 시작 배경으로 혼동함"}
                 ],
-                "correct": {"who": "main_character", "where": "main_place", "what": "opening_state"}
+                "correct": {"who": "main_character", "where": "main_place", "at_first": "opening_state"}
             },
             "scoring": {
                 "type": "weighted_slot_match", "maxScore": 100,
@@ -147,7 +162,7 @@ def rule_based_quiz(payload: dict) -> dict:
                 "components": [
                     {"key": "who", "weight": 2.5, "rule": "slot_match", "correctValue": "main_character", "partialCredit": 0.35, "rationale": "Identifies the main character."},
                     {"key": "where", "weight": 2.0, "rule": "slot_match", "correctValue": "main_place", "partialCredit": 0.35, "rationale": "Identifies the story place."},
-                    {"key": "what", "weight": 1.5, "rule": "slot_match", "correctValue": "opening_state", "partialCredit": 0.35, "rationale": "Identifies the opening state."}
+                    {"key": "at_first", "weight": 1.5, "rule": "slot_match", "correctValue": "opening_state", "partialCredit": 0.35, "rationale": "Identifies the opening state."}
                 ]
             },
             "diagnostics": [{"code": "setting_slot_gap", "threshold": 70, "messageKo": "인물, 장소, 처음 상황을 나누어 읽는 연습이 필요합니다."}],
@@ -226,8 +241,9 @@ def rule_based_quiz(payload: dict) -> dict:
             "imageBasePath": f"../v3/{story_id}/Image/",
             "audioBasePath": f"../v3/{story_id}/Audio/",
             "coverBasePath": f"../v3/{story_id}/Cover/",
-            "backgroundImage": f"../v3/{story_id}/Image/{story_id}_Talking_BG_I.png",
-            "hintCharacter": "../v3/Assets/BKTK_Characters_Bookey.png"
+            "backgroundImage": f"../v3/{story_id}/Image/{story_id}_Talking_BG_I.webp",
+            "coverImage": f"../v3/{story_id}/Cover/{story_id}_Cover_L_I.webp",
+            "hintCharacter": f"../v3/{story_id}/Assets/BKTK_Characters_Bookey.png"
         },
         "storyGrammarAxes": [{"key": k, "labelEn": en, "labelKo": ko, "descriptionKo": desc} for k, en, ko, desc in axes],
         "questions": questions,
@@ -324,14 +340,17 @@ def story_payload_from_row(row: dict, index: int) -> dict:
         "level": row.get("level") or row.get("Level") or "Draft Level",
         "storyText": row.get("story_text") or row.get("storyText") or row.get("Story Text") or "",
         "assetNaming": {
-            "image": "{storyId}_SC##_I.png",
-            "audio": "{storyId}_SC##_ST##_N_A.mp3"
+            "image": "{storyId}_SC##_I.webp or {storyId}_SC##_I_1920x1080.webp",
+            "audio": "{storyId}_SC##_ST##_N_A.mp3",
+            "cover": "{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp",
+            "background": "{storyId}_Talking_BG_I.webp"
         },
         "assets": {
             "imageBasePath": row.get("image_base_path") or "",
             "audioBasePath": row.get("audio_base_path") or "",
             "coverBasePath": row.get("cover_base_path") or "",
             "backgroundImage": row.get("background_image") or "",
+            "coverImage": row.get("cover_image") or "",
             "hintCharacter": row.get("hint_character") or ""
         }
     }
@@ -347,6 +366,8 @@ def apply_row_assets(quiz: dict, row: dict) -> dict:
         assets["coverBasePath"] = row["cover_base_path"]
     if row.get("background_image"):
         assets["backgroundImage"] = row["background_image"]
+    if row.get("cover_image"):
+        assets["coverImage"] = row["cover_image"]
     if row.get("hint_character"):
         assets["hintCharacter"] = row["hint_character"]
     return quiz

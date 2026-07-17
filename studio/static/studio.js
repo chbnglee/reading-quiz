@@ -84,9 +84,10 @@ function aiInputFromRow(row, index = 0) {
     level: row.level || row.Level || 'Draft Level',
     storyText: row.story_text || row.storyText || row['Story Text'] || '',
     assetNaming: {
-      image: '{storyId}_SC##_I.png',
+      image: '{storyId}_SC##_I.webp or {storyId}_SC##_I_1920x1080.webp',
       audio: '{storyId}_SC##_ST##_N_A.mp3',
-      cover: '{storyId}_Cover_L_I.png'
+      cover: '{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp',
+      background: '{storyId}_Talking_BG_I.webp'
     }
   };
 }
@@ -104,8 +105,9 @@ function applyDefaultAssetsToQuiz(sourceQuiz, row = {}) {
   qz.assets.imageBasePath = row.image_base_path || qz.assets.imageBasePath || `../v3/${qz.story.storyId}/Image/`;
   qz.assets.audioBasePath = row.audio_base_path || qz.assets.audioBasePath || `../v3/${qz.story.storyId}/Audio/`;
   qz.assets.coverBasePath = row.cover_base_path || qz.assets.coverBasePath || `../v3/${qz.story.storyId}/Cover/`;
-  qz.assets.backgroundImage = row.background_image || qz.assets.backgroundImage || `../v3/${qz.story.storyId}/Image/${qz.story.storyId}_Talking_BG_I.png`;
-  qz.assets.hintCharacter = row.hint_character || qz.assets.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
+  qz.assets.backgroundImage = row.background_image || qz.assets.backgroundImage || `../v3/${qz.story.storyId}/Image/${qz.story.storyId}_Talking_BG_I.webp`;
+  qz.assets.coverImage = row.cover_image || qz.assets.coverImage || `../v3/${qz.story.storyId}/Cover/${qz.story.storyId}_Cover_L_I.webp`;
+  qz.assets.hintCharacter = row.hint_character || qz.assets.hintCharacter || `../v3/${qz.story.storyId}/Assets/BKTK_Characters_Bookey.png`;
   return qz;
 }
 
@@ -295,16 +297,42 @@ function basename(pathValue) {
   return fileName(pathValue).toLowerCase();
 }
 
-function findLocalAssetUrl(pathValue) {
+function assetStem(pathValue) {
+  return basename(pathValue)
+    .replace(/\.(png|jpe?g|webp|gif|mp3|wav|m4a|ogg)$/i, '')
+    .replace(/_(?:\d{3,4}x\d{3,4}|[0-9]+p)$/i, '');
+}
+
+function assetCount() {
+  return new Set([...assetFiles.values()].map(value => value.file)).size;
+}
+
+function findLocalAsset(pathValue) {
   if (!pathValue || !assetFiles.size) return '';
   const normalized = String(pathValue).replace(/\\/g, '/').toLowerCase();
   const name = basename(normalized);
-  if (assetFiles.has(normalized)) return assetFiles.get(normalized).url;
-  if (assetFiles.has(name)) return assetFiles.get(name).url;
+  const stem = assetStem(normalized);
+  if (assetFiles.has(normalized)) return assetFiles.get(normalized);
+  if (assetFiles.has(name)) return assetFiles.get(name);
+  if (stem && assetFiles.has(`stem:${stem}`)) return assetFiles.get(`stem:${stem}`);
   for (const [key, value] of assetFiles.entries()) {
-    if (key.endsWith('/' + name) || normalized.endsWith('/' + key)) return value.url;
+    if (key.startsWith('stem:')) continue;
+    if (key.endsWith('/' + name) || normalized.endsWith('/' + key)) return value;
+    if (stem && assetStem(key) === stem) return value;
   }
-  return '';
+  return null;
+}
+
+function findLocalAssetUrl(pathValue) {
+  return findLocalAsset(pathValue)?.url || '';
+}
+
+function findLocalAssetFile(pathValue) {
+  return findLocalAsset(pathValue)?.file || null;
+}
+
+function resolvedAssetFileName(pathValue) {
+  return findLocalAssetFile(pathValue)?.name || fileName(pathValue);
 }
 
 function imageHtml(resource, className = '') {
@@ -323,7 +351,7 @@ function renderPreview() {
   stage.style.setProperty('--preview-bg', bgUrl ? `url("${bgUrl}")` : 'linear-gradient(140deg,#F7F4FF,#EBF7FF)');
   const q = quiz.questions[currentQuestionIndex];
   const images = q.resources?.images || [];
-  const hintAvatarPath = quiz.assets?.hintCharacter || '../v3/Assets/BKTK_Characters_Bookey.png';
+  const hintAvatarPath = quiz.assets?.hintCharacter || `../v3/${quiz.story?.storyId || 'OG0021'}/Assets/BKTK_Characters_Bookey.png`;
   const hintAvatar = findLocalAssetUrl(hintAvatarPath) || hintAvatarPath;
   const parts = [];
   parts.push(`<article class="quiz-card">`);
@@ -447,8 +475,10 @@ async function generateAiDraft() {
       level: $('story-level').value.trim(),
       storyText: $('story-text').value,
       assetNaming: {
-        image: '{storyId}_SC##_I.png',
-        audio: '{storyId}_SC##_ST##_N_A.mp3'
+        image: '{storyId}_SC##_I.webp or {storyId}_SC##_I_1920x1080.webp',
+        audio: '{storyId}_SC##_ST##_N_A.mp3',
+        cover: '{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp',
+        background: '{storyId}_Talking_BG_I.webp'
       }
     }
   };
@@ -506,6 +536,21 @@ function parseStory(storyText) {
   return [...scenes.entries()].map(([sceneId, sentences]) => ({ sceneId, sentences }));
 }
 
+function storyWordTokens(sentence) {
+  const raw = String(sentence || '').match(/[A-Za-z']+[,\.!?]?/g) || [];
+  const grouped = [];
+  for (let i = 0; i < raw.length; i += 1) {
+    const token = raw[i];
+    if (/^(a|an|the)$/i.test(token) && raw[i + 1]) {
+      grouped.push(`${token} ${raw[i + 1]}`);
+      i += 1;
+    } else {
+      grouped.push(token);
+    }
+  }
+  return grouped;
+}
+
 function buildRuleDraft(payload) {
   const storyId = payload.storyId || 'OG0000';
   const title = payload.title || 'Untitled Story';
@@ -521,10 +566,10 @@ function buildRuleDraft(payload) {
   const reaction = sceneAt(.62);
   const sequence = [...new Set([first, event, attempt, reaction, usable[usable.length - 1]])];
   while (sequence.length < 5) sequence.push(usable[Math.min(sequence.length, usable.length - 1)]);
-  const image = scene => ({ id: scene, path: `${storyId}_${scene}_I.png`, kind: 'image', sceneId: scene });
+  const image = scene => ({ id: scene, path: `${storyId}_${scene}_I.webp`, kind: 'image', sceneId: scene });
   const findSentence = scene => (scenes.find(s => s.sceneId === scene)?.sentences?.[0]) || { sentenceId: `${scene}_ST01_N`, text: 'Put the words in order.' };
   const attemptSentence = findSentence(attempt);
-  const words = (attemptSentence.text.match(/[A-Za-z']+[,\.!?]?/g) || ['Put','the','words','in','order.']).slice(0, 7);
+  const words = (storyWordTokens(attemptSentence.text).length ? storyWordTokens(attemptSentence.text) : ['Put','the words','in','order.']).slice(0, 8);
   const mkQ = (number, type, axis, instruction, hint, resources, interaction, scoring, diagnostics) => ({
     qId: `${storyId}_V3_Q${String(number).padStart(2, '0')}`,
     number, type, storyGrammar: axis, instruction, hint, resources, interaction, scoring,
@@ -538,8 +583,9 @@ function buildRuleDraft(payload) {
       imageBasePath: `../v3/${storyId}/Image/`,
       audioBasePath: `../v3/${storyId}/Audio/`,
       coverBasePath: `../v3/${storyId}/Cover/`,
-      backgroundImage: `../v3/${storyId}/Image/${storyId}_Talking_BG_I.png`,
-      hintCharacter: '../v3/Assets/BKTK_Characters_Bookey.png'
+      backgroundImage: `../v3/${storyId}/Image/${storyId}_Talking_BG_I.webp`,
+      coverImage: `../v3/${storyId}/Cover/${storyId}_Cover_L_I.webp`,
+      hintCharacter: `../v3/${storyId}/Assets/BKTK_Characters_Bookey.png`
     },
     storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
     questions: [
@@ -570,17 +616,17 @@ function settingInteraction() {
     slots: [
       { key: 'who', label: 'Who?', correct: 'main_character', weight: 2.5 },
       { key: 'where', label: 'Where?', correct: 'main_place', weight: 2 },
-      { key: 'what', label: 'At first...', correct: 'opening_state', weight: 1.5 }
+      { key: 'at_first', label: 'At first...', correct: 'opening_state', weight: 1.5 }
     ],
     items: [
       { key: 'main_place', text: 'story place', slot: 'where' },
       { key: 'other_character', text: 'other character', slot: 'who', diagnostic: '주변 인물을 주인공으로 혼동함' },
-      { key: 'opening_state', text: 'first action', slot: 'what' },
+      { key: 'opening_state', text: 'first action', slot: 'at_first' },
       { key: 'main_character', text: 'main character', slot: 'who' },
       { key: 'other_place', text: 'other place', slot: 'where', diagnostic: '다른 장소를 시작 배경으로 혼동함' },
-      { key: 'later_problem', text: 'later problem', slot: 'what', diagnostic: '문제 장면을 처음 상황으로 혼동함' }
+      { key: 'later_problem', text: 'later problem', slot: 'at_first', diagnostic: '문제 장면을 처음 상황으로 혼동함' }
     ],
-    correct: { who: 'main_character', where: 'main_place', what: 'opening_state' }
+    correct: { who: 'main_character', where: 'main_place', at_first: 'opening_state' }
   };
 }
 
@@ -592,7 +638,7 @@ function settingScoring() {
     components: [
       { key: 'who', weight: 2.5, rule: 'slot_match', correctValue: 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
       { key: 'where', weight: 2, rule: 'slot_match', correctValue: 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
-      { key: 'what', weight: 1.5, rule: 'slot_match', correctValue: 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
+      { key: 'at_first', weight: 1.5, rule: 'slot_match', correctValue: 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
     ]
   };
 }
@@ -801,9 +847,10 @@ function loadAssetFolder(files) {
   assetFiles = new Map();
   Array.from(files || []).forEach(file => registerAssetFile(file, file.webkitRelativePath || file.name));
   const status = $('asset-status');
-  if (status) status.textContent = assetFiles.size ? `${Math.floor(assetFiles.size / 2)} asset files loaded for preview/export.` : 'No asset folder loaded.';
+  const count = assetCount();
+  if (status) status.textContent = count ? `${count} asset files loaded for preview/export.` : 'No asset folder loaded.';
   renderPreview();
-  toast(`${Math.floor(assetFiles.size / 2)}개 에셋 파일을 연결했습니다.`);
+  toast(`${count}개 에셋 파일을 연결했습니다.`);
 }
 
 function registerAssetFile(file, relativePath = '') {
@@ -811,8 +858,12 @@ function registerAssetFile(file, relativePath = '') {
   assetObjectUrls.push(url);
   const relative = String(relativePath || file.name).replace(/\\/g, '/').toLowerCase();
   const name = file.name.toLowerCase();
+  const stem = assetStem(name);
+  const relativeStem = assetStem(relative);
   assetFiles.set(relative, { file, url });
   assetFiles.set(name, { file, url });
+  if (stem) assetFiles.set(`stem:${stem}`, { file, url });
+  if (relativeStem) assetFiles.set(`stem:${relativeStem}`, { file, url });
 }
 
 async function generateBatchAiDrafts() {
@@ -1120,6 +1171,7 @@ function quizFromDevWorkbook(wb, fallbackName = 'Uploaded Quiz') {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets.QUESTIONS, { defval: '' });
   if (!rows.length) return null;
   const storyId = rows[0].story_id || fallbackName.replace(/\.[^.]+$/, '') || 'UPLOADED';
+  const storyLevel = rows[0].story_level || rows[0].level || rows[0].Level || 'Uploaded Level';
   const resources = XLSX.utils.sheet_to_json(wb.Sheets.RESOURCES || {}, { defval: '' });
   const options = XLSX.utils.sheet_to_json(wb.Sheets.OPTIONS || {}, { defval: '' });
   const rules = XLSX.utils.sheet_to_json(wb.Sheets.SCORING_RULES || {}, { defval: '' });
@@ -1148,13 +1200,39 @@ function quizFromDevWorkbook(wb, fallbackName = 'Uploaded Quiz') {
   });
   return applyDefaultAssetsToQuiz({
     schemaVersion: 'quiz-v3.0',
-    story: { storyId, title: storyId, level: 'Uploaded Level', text: '', scenes: [] },
+    story: { storyId, title: storyId, level: storyLevel, text: '', scenes: [] },
     assets: {},
     storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
     questions,
     reporting: defaultReporting(),
     generation: { provider: 'imported_devspec', model: 'xlsx-parser', promptVersion: 'story_grammar_v3', createdAt: new Date().toISOString().slice(0, 10), notes: 'Imported from Dev Spec XLSX.' }
-  }, { story_id: storyId, title: storyId, level: 'Uploaded Level', story_text: '' });
+  }, { story_id: storyId, title: storyId, level: storyLevel, story_text: '' });
+}
+
+function quizCompletenessScore(qz) {
+  if (!qz?.questions?.length) return 0;
+  return qz.questions.reduce((total, q) => {
+    const hasImages = (q.resources?.images || []).length > 0 ? 1 : 0;
+    const hasAudio = q.resources?.audio ? 1 : 0;
+    return total
+      + (hasMeaningfulInteraction(q) ? 4 : 0)
+      + (hasMeaningfulScoring(q) ? 3 : 0)
+      + hasImages
+      + hasAudio;
+  }, qz.questions.length);
+}
+
+function dedupeLoadedQuizItems(items) {
+  const byStory = new Map();
+  items.forEach((item, idx) => {
+    const storyId = item.quiz?.story?.storyId || item.row?.story_id || `uploaded_${idx}`;
+    const candidateScore = quizCompletenessScore(item.quiz);
+    const current = byStory.get(storyId);
+    if (!current || candidateScore > current.score) {
+      byStory.set(storyId, { item, score: candidateScore });
+    }
+  });
+  return [...byStory.values()].map(entry => entry.item);
 }
 
 async function loadQuizUploadFiles(files) {
@@ -1202,10 +1280,11 @@ async function loadQuizUploadFiles(files) {
       toast('불러올 수 있는 퀴즈 파일이 없습니다.');
       return;
     }
-    loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', items: loadedItems });
+    const uniqueItems = dedupeLoadedQuizItems(loadedItems);
+    loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', items: uniqueItems });
     const status = $('asset-status');
-    if (status && assetFiles.size) status.textContent = `${Math.floor(assetFiles.size / 2)} asset files loaded for preview/export.`;
-    toast(`${loadedItems.length}개 Quiz 항목을 불러왔습니다.`);
+    if (status && assetFiles.size) status.textContent = `${assetCount()} asset files loaded for preview/export.`;
+    toast(`${uniqueItems.length}개 Quiz 항목을 불러왔습니다.`);
   } catch (error) {
     console.error(error);
     toast(`Quiz Upload 실패: ${error.message}`);
@@ -1237,9 +1316,9 @@ function downloadBatchTemplate() {
     ['notes', 'N', 'Internal memo'],
     [],
     ['Asset Rule', 'Description', 'Example'],
-    ['Images', 'Do not enter local file paths in this sheet. Studio matches images by filename after you load an Assets folder.', 'OG0021_SC01_I.png'],
+    ['Images', 'Do not enter local file paths in this sheet. Studio matches images by filename after you load an Assets folder.', 'OG0021_SC01_I.webp or OG0021_SC01_I_1920x1080.webp'],
     ['Audio', 'Do not enter local file paths in this sheet. Studio matches audio by filename after you load an Assets folder.', 'OG0021_SC02_ST01_N_A.mp3'],
-    ['Cover', 'Cover images are matched by filename when included in the selected Assets folder or exported package.', 'OG0021_Cover_L_I.png'],
+    ['Cover', 'Cover images are matched by filename when included in the selected Assets folder or exported package.', 'OG0021_Cover_L_I.webp or OG0021_Cover_L_I_1920x1080.webp'],
     ['Reopen', 'Use QuizBatch.json or an individual *.quiz.json as the editable source. XLSX files are export deliverables.', 'QuizBatch.json']
   ]);
   XLSX.writeFile(wb, 'StoryBatch_Input_Template.xlsx');
@@ -1281,13 +1360,14 @@ function packageQuizForExport(sourceQuiz) {
   packaged.assets.imageBasePath = 'Image/';
   packaged.assets.audioBasePath = 'Audio/';
   packaged.assets.coverBasePath = 'Cover/';
-  if (packaged.assets.backgroundImage) packaged.assets.backgroundImage = `Image/${fileName(packaged.assets.backgroundImage)}`;
-  if (packaged.assets.hintCharacter) packaged.assets.hintCharacter = `Assets/${fileName(packaged.assets.hintCharacter)}`;
+  if (packaged.assets.backgroundImage) packaged.assets.backgroundImage = `Image/${resolvedAssetFileName(packaged.assets.backgroundImage)}`;
+  if (packaged.assets.coverImage) packaged.assets.coverImage = `Cover/${resolvedAssetFileName(packaged.assets.coverImage)}`;
+  if (packaged.assets.hintCharacter) packaged.assets.hintCharacter = `Assets/${resolvedAssetFileName(packaged.assets.hintCharacter)}`;
   (packaged.questions || []).forEach(q => {
     (q.resources?.images || []).forEach(img => {
-      if (img.path) img.path = fileName(img.path);
+      if (img.path) img.path = resolvedAssetFileName(img.path);
     });
-    if (q.resources?.audio?.path) q.resources.audio.path = fileName(q.resources.audio.path);
+    if (q.resources?.audio?.path) q.resources.audio.path = resolvedAssetFileName(q.resources.audio.path);
   });
   return packaged;
 }
@@ -1300,6 +1380,7 @@ function previewHtmlForQuiz(sourceQuiz) {
 function collectQuizAssetEntries(sourceQuiz) {
   const entries = [];
   if (sourceQuiz.assets?.backgroundImage) entries.push({ path: sourceQuiz.assets.backgroundImage, folder: 'Image' });
+  if (sourceQuiz.assets?.coverImage) entries.push({ path: sourceQuiz.assets.coverImage, folder: 'Cover', optional: true });
   if (sourceQuiz.assets?.hintCharacter) entries.push({ path: sourceQuiz.assets.hintCharacter, folder: 'Assets' });
   (sourceQuiz.questions || []).forEach(q => {
     (q.resources?.images || []).forEach(img => img.path && entries.push({ path: img.path, folder: 'Image' }));
@@ -1307,28 +1388,19 @@ function collectQuizAssetEntries(sourceQuiz) {
   });
   const storyId = sourceQuiz.story?.storyId || '';
   if (storyId) {
+    entries.push({ path: `${storyId}_Cover_L_I.webp`, folder: 'Cover', optional: true });
+    entries.push({ path: `${storyId}_Cover_L_I_1920x1080.webp`, folder: 'Cover', optional: true });
+    entries.push({ path: `${storyId}_Cover_P_I.webp`, folder: 'Cover', optional: true });
     entries.push({ path: `${storyId}_Cover_L_I.png`, folder: 'Cover', optional: true });
     entries.push({ path: `${storyId}_Cover_P_I.png`, folder: 'Cover', optional: true });
   }
   const seen = new Set();
   return entries.filter(entry => {
-    const key = `${entry.folder}/${basename(entry.path)}`;
+    const key = `${entry.folder}/${resolvedAssetFileName(entry.path).toLowerCase()}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-}
-
-function findLocalAssetFile(pathValue) {
-  if (!pathValue || !assetFiles.size) return null;
-  const normalized = String(pathValue).replace(/\\/g, '/').toLowerCase();
-  const name = basename(normalized);
-  if (assetFiles.has(normalized)) return assetFiles.get(normalized).file;
-  if (assetFiles.has(name)) return assetFiles.get(name).file;
-  for (const [key, value] of assetFiles.entries()) {
-    if (key.endsWith('/' + name) || normalized.endsWith('/' + key)) return value.file;
-  }
-  return null;
 }
 
 async function exportApprovedZip() {
@@ -1446,8 +1518,8 @@ function buildReadingWorkbook(wb) {
 
 function buildDevWorkbook(wb) {
   aoaSheet(wb, 'QUESTIONS', [
-    ['q_id','story_id','number','story_grammar','question_type','instruction','hint','max_score','formula'],
-    ...quiz.questions.map(q => [q.qId, quiz.story.storyId, q.number, q.storyGrammar, q.type, q.instruction, q.hint, q.scoring?.maxScore || 100, q.scoring?.formula || ''])
+    ['q_id','story_id','story_level','number','story_grammar','question_type','instruction','hint','max_score','formula'],
+    ...quiz.questions.map(q => [q.qId, quiz.story.storyId, quiz.story.level || '', q.number, q.storyGrammar, q.type, q.instruction, q.hint, q.scoring?.maxScore || 100, q.scoring?.formula || ''])
   ]);
   aoaSheet(wb, 'RESOURCES', [
     ['q_id','resource_kind','resource_id','path','scene_id','sentence_id'],

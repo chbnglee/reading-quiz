@@ -30,8 +30,9 @@ The user provides:
 - `title`
 - `level`
 - story text split by scene codes such as `SC01_ST01_N`
-- available image filenames such as `{storyId}_SC01_I.png`
+- available image filenames such as `{storyId}_SC01_I.webp`, `{storyId}_SC01_I_1920x1080.webp`, or equivalent `.png` files
 - available audio filenames such as `{storyId}_SC02_ST01_N_A.mp3`
+- available cover/background filenames such as `{storyId}_Cover_L_I_1920x1080.webp` and `{storyId}_Talking_BG_I.webp`
 
 Use only `_N` story sentences as source text.
 Ignore `_E` and `_D` versions if present.
@@ -51,6 +52,7 @@ Ignore `_E` and `_D` versions if present.
 - Hints must be short A1-level English.
 - Hints should guide thinking, not reveal the answer directly.
 - Use story sentences exactly for word unscramble questions.
+- For word unscramble questions, keep articles with the following noun when possible. For example, use `the forest.`, `a stone.`, or `The Cat` as one token instead of splitting the article into a separate card.
 - Use image and audio filenames that match the provided assets.
 
 ## Scoring Rules
@@ -139,7 +141,7 @@ Use this shape for each question:
   "hint": "Think about the story from start to end.",
   "resources": {
     "images": [
-      { "id": "SC01", "path": "OG0000_SC01_I.png", "kind": "image", "sceneId": "SC01" }
+      { "id": "SC01", "path": "OG0000_SC01_I.webp", "kind": "image", "sceneId": "SC01" }
     ]
   },
   "interaction": {

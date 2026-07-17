@@ -43,9 +43,14 @@ Do not enter local image/audio paths in the batch sheet. The Studio derives reso
 
 Expected asset filenames:
 
-- Image: `OG0021_SC01_I.png`
+- Image: `OG0021_SC01_I.webp`, `OG0021_SC01_I_1920x1080.webp`, or equivalent `.png`
 - Audio: `OG0021_SC02_ST01_N_A.mp3`
-- Cover: `OG0021_Cover_L_I.png`
+- Cover: `OG0021_Cover_L_I.webp`, `OG0021_Cover_L_I_1920x1080.webp`, or equivalent `.png`
+- Background: `OG0021_Talking_BG_I.webp`
+
+Studio matches assets by normalized filename stem, so `OG0021_SC01_I.webp` and
+`OG0021_SC01_I_1920x1080.webp` are treated as the same scene asset for preview
+and ZIP export.
 
 For visual preview in Studio, use the `Assets` button and select the folder that contains images/audio/cover files. The browser can only access files selected by the user, so an XLSX cell containing `C:\...` or another local path is not enough.
 
