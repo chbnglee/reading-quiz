@@ -14,24 +14,24 @@ const SG_LABELS = {
   setting: 'Setting',
   initiating_event: 'Initiating Event',
   attempt: 'Attempt',
-  reaction: 'Reaction',
-  internal_response: 'Internal Response',
-  consequence: 'Consequence'
+  reaction: '\uAC10\uC815 \uBC18\uC751',
+  internal_response: '\uB0B4\uBA74 \uCD94\uB860',
+  consequence: '\uACB0\uACFC \uC774\uD574'
 };
 
 const SG_KO = {
-  setting: '배경 이해',
-  initiating_event: '사건 시작',
-  attempt: '해결 행동',
-  reaction: '감정 반응',
-  internal_response: '내면 추론',
-  consequence: '결과 이해'
+  setting: '\uBC30\uACBD \uC774\uD574',
+  initiating_event: '\uC0AC\uAC74 \uC2DC\uC791',
+  attempt: '\uD574\uACB0 \uD589\uB3D9',
+  reaction: '\uAC10\uC815 \uBC18\uC751',
+  internal_response: '\uB0B4\uBA74 \uCD94\uB860',
+  consequence: '\uACB0\uACFC \uC774\uD574'
 };
 
 const $ = (id) => document.getElementById(id);
 const OPENAI_MODEL = 'gpt-4.1-mini';
 const GEMINI_MODEL = 'gemini-2.5-flash';
-const OPTION_LABELS = ['ⓐ', 'ⓑ', 'ⓒ', 'ⓓ', 'ⓔ', 'ⓕ'];
+const OPTION_LABELS = ['\u24D0', '\u24D1', '\u24D2', '\u24D3', '\u24D4', '\u24D5'];
 
 const QUESTION_BLUEPRINT = [
   { number: 1, storyGrammar: 'consequence', type: 'story_sequence_drag', instruction: 'Put the story scenes in order.', promptMode: 'drag_sequence' },
@@ -66,7 +66,7 @@ function safeJsonParse(value, label) {
   try {
     return JSON.parse(value || 'null');
   } catch (error) {
-    throw new Error(`${label} JSON 형식을 확인해 주세요.`);
+    throw new Error(`${label} JSON format needs review.`);
   }
 }
 
@@ -211,7 +211,7 @@ function templateScoringForQuestion(q) {
       : (q.interaction?.items || []);
     return weightedPosition(sequence);
   }
-  if (q.type === 'setting_slot_drag') return settingScoring(q.interaction?.correct);
+  if (q.type === 'setting_slot_drag') return settingScoring(q.interaction?.correct, q.interaction?.slots);
   if (q.type === 'scene_word_unscramble') {
     const words = Array.isArray(q.interaction?.correct) ? q.interaction.correct : [];
     return wordScoring(words);
@@ -303,7 +303,7 @@ function normalizeSettingInteraction(interaction = {}) {
       correctValue = key;
     }
     correct[slot.key] = correctValue || slot.correct || `${slot.key}_correct`;
-    return { ...slot, ...aiSlot, key: slot.key, label: slot.label, correct: correct[slot.key], weight: slot.weight };
+    return { ...slot, ...aiSlot, key: slot.key, label: slot.label, correct: correct[slot.key], weight: Number(aiSlot.weight) || slot.weight };
   });
   return {
     ...interaction,
@@ -459,11 +459,74 @@ function fixCharacterInstructionForScene(q, storyText = '') {
   }
 }
 
+function ensurePartialOptionScores(q) {
+  if (!Array.isArray(q?.interaction?.options)) return;
+  const needsPartial = q.type === 'emotion_mcq' || q.type === 'internal_response_mcq';
+  q.interaction.options.forEach(opt => {
+    opt.score = Math.max(0, Math.min(100, Number(opt.score) || 0));
+    opt.isCorrect = opt.isCorrect || opt.score === 100 || opt.key === q.interaction.correct;
+  });
+  const correct = q.interaction.options.find(opt => opt.isCorrect) || q.interaction.options.find(opt => opt.score === 100);
+  if (correct) {
+    correct.score = 100;
+    correct.isCorrect = true;
+    q.interaction.correct = correct.key;
+  }
+  if (!needsPartial) return;
+  const wrong = q.interaction.options.filter(opt => !opt.isCorrect);
+  if (wrong.length && wrong.every(opt => Number(opt.score) === 0)) {
+    wrong.forEach((opt, idx) => {
+      opt.score = idx === 0 ? 40 : idx === 1 ? 20 : 0;
+      opt.diagnostic = opt.diagnostic || (idx === 0
+        ? '정답과 가까운 단서가 있지만 감정이나 내면 상태를 더 정확히 확인해야 합니다.'
+        : '일부 장면 단서는 보았지만 겉으로 보이는 반응과 속마음을 구분하는 연습이 필요합니다.');
+    });
+  }
+}
+
+function ensureImageResourcesForQuiz(qz) {
+  const storyId = qz?.story?.storyId || 'OG0000';
+  const storyText = qz?.story?.text || '';
+  const parsedScenes = parseStory(storyText || '').map(scene => scene.sceneId);
+  (qz?.questions || []).forEach(q => {
+    q.resources = q.resources || {};
+    const existing = Array.isArray(q.resources.images) ? q.resources.images : [];
+    q.resources.images = existing
+      .map(img => {
+        const scene = sceneIdFromValue(img.sceneId) || sceneIdFromValue(img.id) || sceneIdFromPath(img.path);
+        return scene ? { ...img, id: img.id || scene, sceneId: scene, path: img.path || `${storyId}_${scene}_I.webp` } : img;
+      })
+      .filter(img => img?.path || img?.sceneId || img?.id);
+    if (q.resources.images.length) return;
+    let scenes = [];
+    if (q.type === 'story_sequence_drag') {
+      scenes = (q.interaction?.correct || q.interaction?.items || []).map(sceneIdFromValue).filter(Boolean);
+    } else if (q.type === 'setting_slot_drag') {
+      const scene = sceneIdFromValue(q.resources?.scene) || parsedScenes[0];
+      if (scene) scenes = [scene];
+    } else if (q.type === 'listen_scene_mcq') {
+      scenes = (q.interaction?.options || []).map(sceneIdFromOption).filter(Boolean);
+      const audioScene = sceneIdFromValue(q.resources?.audio?.sceneId) || sceneIdFromPath(q.resources?.audio?.path);
+      if (!scenes.length && audioScene) scenes = sceneOptionsAround(storyText, audioScene, 4);
+    } else if (q.type === 'scene_word_unscramble') {
+      const sentenceScene = sceneIdFromValue(q.resources?.scene) || sceneIdFromValue(q.resources?.sentenceId);
+      const attemptScene = chooseAttemptSentence(storyText)?.sceneId;
+      const scene = sentenceScene || attemptScene;
+      if (scene) scenes = [scene];
+    } else {
+      const scene = sceneIdFromValue(q.resources?.scene) || sceneIdFromPath(q.resources?.images?.[0]?.path);
+      if (scene) scenes = [scene];
+    }
+    if (scenes.length) q.resources.images = scenes.map(scene => imageResourceForScene(storyId, scene));
+  });
+  return qz;
+}
+
 function normalizeQuestionForTemplate(q, storyText = '') {
   const normalized = deepClone(q);
   if (normalized.type === 'setting_slot_drag') {
     normalized.interaction = normalizeSettingInteraction(normalized.interaction || {});
-    normalized.scoring = settingScoring(normalized.interaction.correct);
+    normalized.scoring = settingScoring(normalized.interaction.correct, normalized.interaction.slots);
   }
   if (normalized.type === 'listen_scene_mcq') {
     const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
@@ -505,6 +568,10 @@ function normalizeQuestionForTemplate(q, storyText = '') {
       normalized.scoring = wordScoring(tokens);
     }
   }
+  if (Array.isArray(normalized.interaction?.options)) {
+    ensurePartialOptionScores(normalized);
+    normalized.scoring = templateScoringForQuestion(normalized);
+  }
   return normalized;
 }
 
@@ -542,7 +609,7 @@ function firstSceneText(storyText = '') {
 }
 
 function storyNamesFromText(text = '') {
-  const cleaned = String(text || '').replace(/["“”]/g, ' ');
+  const cleaned = String(text || '').replace(/["']/g, ' ');
   const namedMatch = cleaned.match(/\bnamed\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/);
   if (namedMatch) return [namedMatch[1], namedMatch[2]].filter(Boolean).join(' and ');
   const objectName = cleaned.match(/\b(the\s+[A-Z][a-z]+(?:\s+[a-z]+)?)/i);
@@ -687,7 +754,7 @@ function sanitizeGeneratedQuiz(qz) {
       const dirtyItem = items.some(item => contaminatedVisibleText(item.text || item.key, storyText));
       if (settingInteractionLooksWeak(q.interaction || {}) || placeholderCount >= Math.ceil(items.length / 2) || dirtyItem) {
         q.interaction = fallbackSettingInteraction(storyText);
-        q.scoring = settingScoring(q.interaction.correct);
+        q.scoring = settingScoring(q.interaction.correct, q.interaction.slots);
       }
     }
     if (q.type === 'listen_scene_mcq') {
@@ -723,10 +790,12 @@ function sanitizeGeneratedQuiz(qz) {
         q.interaction = q.type === 'emotion_mcq' ? emotionOptions() : internalOptions();
         q.scoring = templateScoringForQuestion(q);
       }
+      ensurePartialOptionScores(q);
+      q.scoring = templateScoringForQuestion(q);
       fixCharacterInstructionForScene(q, storyText);
     }
   });
-  return reconcileQuizResourcesWithPackage(qz);
+  return reconcileQuizResourcesWithPackage(ensureImageResourcesForQuiz(qz));
 }
 
 function completeGeneratedQuiz(generatedQuiz, row = {}) {
@@ -748,7 +817,7 @@ function completeGeneratedQuiz(generatedQuiz, row = {}) {
 }
 
 async function callOpenAiInBrowser(prompt, userPayload, apiKey) {
-  if (!apiKey) throw new Error('OpenAI API Key를 입력해 주세요.');
+  if (!apiKey) throw new Error('Enter an OpenAI API key.');
   const body = {
     model: OPENAI_MODEL,
     input: [
@@ -778,7 +847,7 @@ async function callOpenAiInBrowser(prompt, userPayload, apiKey) {
 }
 
 async function callGeminiInBrowser(prompt, userPayload, apiKey) {
-  if (!apiKey) throw new Error('Gemini API Key를 입력해 주세요.');
+  if (!apiKey) throw new Error('Enter a Gemini API key.');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(apiKey)}`;
   const body = {
     contents: [{
@@ -827,6 +896,7 @@ function generationQualityIssues(qz) {
   const q3 = qz?.questions?.find(q => Number(q.number) === 3);
   const q4 = qz?.questions?.find(q => Number(q.number) === 4);
   const q5 = qz?.questions?.find(q => Number(q.number) === 5);
+  const q6 = qz?.questions?.find(q => Number(q.number) === 6);
   if (q1 && contaminatedHint(q1.hint, storyText)) issues.push('Q1 hint contains prompt/example text or is missing.');
   if (q2 && settingInteractionLooksWeak(q2.interaction || {})) issues.push('Q2 setting cards must contain six real story-specific cards.');
   if (q3) {
@@ -846,6 +916,14 @@ function generationQualityIssues(qz) {
     if (name && !/^the character$/i.test(name) && scene && !sceneTextById(storyText, scene).toLowerCase().includes(name.toLowerCase())) {
       issues.push('Q5 named character does not match the selected scene.');
     }
+    if ((q5.interaction?.options || []).filter(opt => !opt.isCorrect).every(opt => Number(opt.score) === 0)) {
+      issues.push('Q5 needs at least one partial-score distractor.');
+    }
+  }
+  if (q6) {
+    if ((q6.interaction?.options || []).filter(opt => !opt.isCorrect).every(opt => Number(opt.score) === 0)) {
+      issues.push('Q6 needs at least one partial-score distractor.');
+    }
   }
   return issues;
 }
@@ -856,7 +934,7 @@ async function loadSample() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     quiz = await res.json();
   } catch (error) {
-    toast('샘플 파일을 읽지 못했습니다.');
+    toast('Sample file could not be loaded.');
     console.error(error);
     return;
   }
@@ -867,7 +945,7 @@ async function loadSample() {
   syncStoryInputs();
   currentQuestionIndex = 0;
   renderAll();
-  toast('OG0021 샘플을 불러왔습니다.');
+  toast('OG0021 sample loaded.');
 }
 
 function syncStoryInputs() {
@@ -919,7 +997,7 @@ function renderQuestionSelect() {
   quiz.questions.forEach((q, idx) => {
     const opt = document.createElement('option');
     opt.value = String(idx);
-    opt.textContent = `Q${q.number || idx + 1} · ${SG_LABELS[q.storyGrammar] || q.storyGrammar}`;
+    opt.textContent = `Q${q.number || idx + 1}`;
     select.appendChild(opt);
   });
   select.value = quiz.questions[Number(previous)] ? previous : String(currentQuestionIndex);
@@ -986,6 +1064,20 @@ function sceneIdFromPath(pathValue) {
   return match ? match[1].toUpperCase() : '';
 }
 
+function sceneIdFromValue(value) {
+  const text = String(value || '').trim();
+  if (/^SC\d{2}$/i.test(text)) return text.toUpperCase();
+  return sceneIdFromPath(text);
+}
+
+function sceneIdFromOption(opt = {}) {
+  return sceneIdFromValue(opt.sceneId)
+    || sceneIdFromValue(opt.id)
+    || sceneIdFromValue(opt.value)
+    || sceneIdFromValue(opt.path)
+    || sceneIdFromValue(opt.text);
+}
+
 function sentenceAudioIdFromPath(pathValue) {
   const match = String(pathValue || '').match(/(SC\d{2}_ST\d{2}_N_A)/i);
   return match ? match[1].toUpperCase() : '';
@@ -1002,18 +1094,39 @@ function packageAudioFileForId(audioId) {
 }
 
 function imagesForQuestion(q) {
-  const images = Array.isArray(q?.resources?.images) ? q.resources.images : [];
-  if (images.length) return images;
-  const scene = q?.resources?.scene;
   const storyId = quiz?.story?.storyId || 'OG0000';
-  if (scene) return [{ id: scene, path: `${storyId}_${scene}_I.webp`, kind: 'image', sceneId: scene }];
+  const imageFor = scene => imageResourceForScene(storyId, scene);
+  const normalizedImages = (Array.isArray(q?.resources?.images) ? q.resources.images : [])
+    .map(img => {
+      const scene = sceneIdFromValue(img?.sceneId) || sceneIdFromValue(img?.id) || sceneIdFromValue(img?.path);
+      return scene ? { ...img, id: img.id || scene, sceneId: scene, path: img.path || `${storyId}_${scene}_I.webp` } : img;
+    })
+    .filter(img => img?.path || img?.sceneId || img?.id);
+  if (normalizedImages.length) return normalizedImages;
+  if (q?.type === 'story_sequence_drag') {
+    const scenes = (q.interaction?.correct || q.interaction?.items || []).map(sceneIdFromValue).filter(Boolean);
+    if (scenes.length) return scenes.map(imageFor);
+  }
+  if (q?.type === 'listen_scene_mcq') {
+    const optionScenes = (q.interaction?.options || []).map(sceneIdFromOption).filter(Boolean);
+    if (optionScenes.length) return optionScenes.map(imageFor);
+    const audioScene = sceneIdFromValue(q.resources?.audio?.sceneId) || sceneIdFromPath(q.resources?.audio?.path);
+    if (audioScene) return sceneOptionsAround(quiz?.story?.text || '', audioScene, 4).map(imageFor);
+  }
+  const scene = sceneIdFromValue(q?.resources?.scene) || sceneIdFromPath(q?.resources?.images?.[0]?.path);
+  if (scene) return [imageFor(scene)];
   return [];
 }
 
 function imageHtml(resource, className = '') {
-  const scene = resource?.sceneId || resource?.id || sceneIdFromPath(resource?.path) || 'Scene';
+  const scene = sceneIdFromValue(resource?.sceneId) || sceneIdFromValue(resource?.id) || sceneIdFromPath(resource?.path) || 'Scene';
   const packageFile = packageImageFileForScene(scene);
-  const url = packageFile ? findLocalAssetUrl(packageFile.name) : assetUrl(resource?.path, 'image');
+  const fallbackPath = scene !== 'Scene' ? `${quiz?.story?.storyId || 'OG0000'}_${scene}_I.webp` : resource?.path;
+  const url = (packageFile ? findLocalAssetUrl(packageFile.name) : '')
+    || assetUrl(resource?.path || fallbackPath, 'image')
+    || assetUrl(fallbackPath, 'image')
+    || fallbackPath
+    || '';
   return `<div class="scene-card ${className}">
     <img src="${escapeAttr(url)}" alt="${escapeAttr(scene)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
     <div class="scene-fallback" style="display:none">${escapeHtml(scene)}</div>
@@ -1045,7 +1158,7 @@ function renderPreview() {
   const hintAvatarPath = quiz.assets?.hintCharacter || `../v3/${quiz.story?.storyId || 'OG0021'}/Assets/BKTK_Characters_Bookey.png`;
   const hintAvatar = findLocalAssetUrl(hintAvatarPath) || hintAvatarPath;
   const parts = [];
-  parts.push(`<article class="quiz-card">`);
+  parts.push(`<article class="quiz-card q-type-${escapeAttr(q.type || 'unknown')}">`);
   parts.push(`<div class="quiz-meta"><span class="q-badge">Q${q.number || currentQuestionIndex + 1}</span><span class="sg-tag">${escapeHtml(SG_LABELS[q.storyGrammar] || q.storyGrammar)}</span></div>`);
   parts.push(`<div class="instruction">${escapeHtml(q.instruction || '')}</div>`);
   const hintHtml = `<div class="hint-row"><img class="hint-avatar" src="${escapeAttr(hintAvatar)}" alt="Bookey"><span>${escapeHtml(q.hint || '')}</span></div>`;
@@ -1093,21 +1206,30 @@ function renderChoiceEditor(q) {
   if (!box) return;
   if (!q) {
     box.innerHTML = '<div class="choice-note">No question selected.</div>';
+    updateWeightSummary(null);
     return;
   }
   if (Array.isArray(q.interaction?.options) && q.interaction.options.length) {
-    box.innerHTML = q.interaction.options.map((opt, idx) => `
+    box.innerHTML = `<div class="choice-table">${q.interaction.options.map((opt, idx) => `
       <div class="choice-row">
         <div class="choice-key">${OPTION_LABELS[idx] || escapeHtml(opt.key || String(idx + 1))}</div>
         <input value="${escapeAttr(opt.text || '')}" oninput="updateOptionText(${idx}, this.value)" aria-label="Option ${escapeAttr(opt.key || idx + 1)} text">
         <input type="number" min="0" max="100" step="1" value="${Number(opt.score) || 0}" oninput="updateOptionScore(${idx}, this.value)" aria-label="Option ${escapeAttr(opt.key || idx + 1)} score">
       </div>
-    `).join('');
+    `).join('')}</div>`;
+    updateWeightSummary(q);
     return;
   }
   if (q.type === 'setting_slot_drag' && Array.isArray(q.interaction?.items)) {
-    box.innerHTML = q.interaction.items.map((item, idx) => `
-      <div class="choice-row">
+    const slotRows = (q.interaction?.slots || []).map(slot => `
+      <div class="choice-row slot-weight-row">
+        <div class="choice-key">${escapeHtml(slot.label || slot.key)}</div>
+        <input value="${escapeAttr(q.interaction?.correct?.[slot.key] || slot.correct || '')}" readonly aria-label="${escapeAttr(slot.key)} correct item">
+        <input type="number" min="0" max="5" step=".5" value="${Number(slot.weight) || 0}" oninput="updateSettingSlotWeight('${escapeAttr(slot.key)}', this.value)" aria-label="${escapeAttr(slot.key)} weight">
+      </div>
+    `).join('');
+    box.innerHTML = `<div class="choice-table"><div class="choice-section">${q.interaction.items.map((item, idx) => `
+      <div class="choice-row setting-row">
         <div class="choice-key">${idx + 1}</div>
         <input value="${escapeAttr(item.text || '')}" oninput="updateSettingItem(${idx}, 'text', this.value)" aria-label="Setting card ${idx + 1} text">
         <select onchange="updateSettingItem(${idx}, 'slot', this.value)" aria-label="Setting card ${idx + 1} slot">
@@ -1115,34 +1237,75 @@ function renderChoiceEditor(q) {
           <option value="where"${item.slot === 'where' ? ' selected' : ''}>Where</option>
           <option value="at_first"${item.slot === 'at_first' ? ' selected' : ''}>At first</option>
         </select>
+        <input type="number" value="${slotWeightForSetting(q, item.slot)}" readonly aria-label="Linked slot weight">
       </div>
-    `).join('');
+    `).join('')}</div><div class="choice-subhead">Slot weights</div><div class="choice-section">${slotRows}</div></div>`;
+    updateWeightSummary(q);
     return;
   }
   if (q.type === 'scene_word_unscramble' && Array.isArray(q.interaction?.correct)) {
     const weightByKey = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
-    box.innerHTML = q.interaction.correct.map((word, idx) => `
+    box.innerHTML = `<div class="choice-table">${q.interaction.correct.map((word, idx) => `
       <div class="choice-row">
         <div class="choice-key">${idx + 1}</div>
         <input value="${escapeAttr(word)}" oninput="updateWordToken(${idx}, this.value)" aria-label="Word ${idx + 1}">
         <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(word)) || 1}" oninput="updateWordWeight(${idx}, this.value)" aria-label="Word ${idx + 1} weight">
       </div>
-    `).join('');
+    `).join('')}</div>`;
+    updateWeightSummary(q);
     return;
   }
   if (q.type === 'story_sequence_drag') {
     const sequence = Array.isArray(q.interaction?.correct) ? q.interaction.correct : [];
     const weightByKey = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
-    box.innerHTML = sequence.map((scene, idx) => `
+    box.innerHTML = `<div class="choice-table">${sequence.map((scene, idx) => `
       <div class="choice-row sequence-row">
         <div class="choice-key">${escapeHtml(scene)}</div>
         <input value="${escapeAttr(scene)}" oninput="updateSequenceScene(${idx}, this.value)" aria-label="Scene ${idx + 1}">
         <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(scene)) || 1}" oninput="updateSequenceWeight(${idx}, this.value)" aria-label="Scene ${idx + 1} weight">
       </div>
-    `).join('');
+    `).join('')}</div>`;
+    updateWeightSummary(q);
     return;
   }
   box.innerHTML = '<div class="choice-note">This question has no editable choices.</div>';
+  updateWeightSummary(q);
+}
+
+function slotWeightForSetting(q, slotKey) {
+  return Number((q?.interaction?.slots || []).find(slot => slot.key === slotKey)?.weight)
+    || Number((q?.scoring?.components || []).find(c => c.key === slotKey)?.weight)
+    || 0;
+}
+
+function weightMetricsForQuestion(q) {
+  if (!q) return { text: '', warn: false };
+  if (Array.isArray(q.interaction?.options) && q.interaction.options.length) {
+    const scores = q.interaction.options.map(opt => Number(opt.score) || 0);
+    const total = scores.reduce((sum, score) => sum + score, 0);
+    const highest = Math.max(...scores);
+    const wrongScores = q.interaction.options.filter(opt => !opt.isCorrect && Number(opt.score) < 100).map(opt => Number(opt.score) || 0);
+    const hasPartial = wrongScores.some(score => score > 0);
+    const needsPartial = q.type === 'emotion_mcq' || q.type === 'internal_response_mcq';
+    return {
+      text: `Selectable max: ${highest} / 100 - option score total: ${total}${needsPartial ? ' - partial score required' : ''}`,
+      warn: highest !== 100 || scores.some(score => score > 100 || score < 0) || (needsPartial && !hasPartial)
+    };
+  }
+  const components = Array.isArray(q.scoring?.components) ? q.scoring.components : [];
+  const total = components.reduce((sum, c) => sum + (Number(c.weight) || 0), 0);
+  return {
+    text: `Weight total: ${Number(total.toFixed(2))} / 10`,
+    warn: total >= 10
+  };
+}
+
+function updateWeightSummary(q = quiz?.questions?.[currentQuestionIndex]) {
+  const box = $('weight-summary');
+  if (!box) return;
+  const metrics = weightMetricsForQuestion(q);
+  box.textContent = metrics.text || '';
+  box.classList.toggle('warn', !!metrics.warn);
 }
 
 function refreshQuestionAfterLightEdit() {
@@ -1152,6 +1315,7 @@ function refreshQuestionAfterLightEdit() {
   renderPreview();
   renderQuestionNav();
   renderReviewPanel();
+  updateWeightSummary(q);
   $('interaction-json').value = JSON.stringify(q.interaction || {}, null, 2);
   $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
 }
@@ -1181,6 +1345,18 @@ function updateSettingItem(index, field, value) {
   refreshQuestionAfterLightEdit();
 }
 
+function updateSettingSlotWeight(slotKey, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  const slot = (q?.interaction?.slots || []).find(item => item.key === slotKey);
+  if (!slot) return;
+  slot.weight = Math.max(0, Number(value) || 0);
+  q.scoring = settingScoring(q.interaction.correct, q.interaction.slots);
+  syncCurrentBatchItem();
+  updateWeightSummary(q);
+  $('interaction-json').value = JSON.stringify(q.interaction || {}, null, 2);
+  $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
+}
+
 function updateWordToken(index, value) {
   const q = quiz?.questions?.[currentQuestionIndex];
   if (!Array.isArray(q?.interaction?.correct)) return;
@@ -1195,6 +1371,7 @@ function updateWordWeight(index, value) {
   const component = (q?.scoring?.components || []).find(c => String(c.key) === String(word));
   if (component) component.weight = Math.max(0, Number(value) || 0);
   syncCurrentBatchItem();
+  updateWeightSummary(q);
   $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
 }
 
@@ -1213,6 +1390,7 @@ function updateSequenceWeight(index, value) {
   const component = (q?.scoring?.components || []).find(c => String(c.key) === String(scene));
   if (component) component.weight = Math.max(0, Number(value) || 0);
   syncCurrentBatchItem();
+  updateWeightSummary(q);
   $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
 }
 
@@ -1230,7 +1408,7 @@ function applyEditorChanges() {
     q.diagnostics = safeJsonParse($('diagnostics-json').value, 'Diagnostics') || [];
     syncCurrentBatchItem();
     renderAll();
-    toast('변경을 반영했습니다.');
+    toast('蹂寃쎌쓣 諛섏쁺?덉뒿?덈떎.');
   } catch (error) {
     toast(error.message);
   }
@@ -1286,14 +1464,14 @@ async function generateRuleDraft() {
     });
     if (!res.ok) throw new Error('local api unavailable');
     const data = await res.json();
-    quiz = data.quiz;
+    quiz = sanitizeGeneratedQuiz(data.quiz);
   } catch {
     quiz = buildRuleDraft(payload);
   }
   currentBatchIndex = -1;
   currentQuestionIndex = 0;
   renderAll();
-  toast('초안을 생성했습니다. 오른쪽에서 검수해 주세요.');
+  toast('Rule draft generated. Review the quiz on the right.');
 }
 
 async function generateAiDraft() {
@@ -1364,7 +1542,7 @@ function parseStory(storyText) {
     if (!match) return;
     const [, sceneId, st, text] = match;
     if (!scenes.has(sceneId)) scenes.set(sceneId, []);
-    scenes.get(sceneId).push({ sentenceId: `${sceneId}_${st}_N`, text: text.replace(/^["“]|["”]$/g, '').trim() });
+    scenes.get(sceneId).push({ sentenceId: `${sceneId}_${st}_N`, text: text.replace(/^["']+|["']+$/g, '').trim() });
   });
   return [...scenes.entries()].map(([sceneId, sentences]) => ({ sceneId, sentences }));
 }
@@ -1437,7 +1615,7 @@ function buildRuleDraft(payload) {
   const mkQ = (number, type, axis, instruction, hint, resources, interaction, scoring, diagnostics) => ({
     qId: `${storyId}_V3_Q${String(number).padStart(2, '0')}`,
     number, type, storyGrammar: axis, instruction, hint, resources, interaction, scoring,
-    diagnostics: diagnostics || [{ code: `${axis}_gap`, threshold: 70, messageKo: `${SG_KO[axis]} 항목을 다시 확인할 필요가 있습니다.` }],
+    diagnostics: diagnostics || [{ code: axis + '_gap', threshold: 70, messageKo: SG_KO[axis] + ' \uD56D\uBAA9\uC744 \uB2E4\uC2DC \uD655\uC778\uD560 \uD544\uC694\uAC00 \uC788\uC2B5\uB2C8\uB2E4.' }],
     lrs: { verb: 'answered', objectId: `quiz_${storyId}_v3_Q${String(number).padStart(2, '0')}_${axis}`, resultFields: ['score_raw', 'hint_used'] }
   });
   return {
@@ -1454,7 +1632,7 @@ function buildRuleDraft(payload) {
     storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
     questions: [
       mkQ(1, 'story_sequence_drag', 'consequence', 'Put the story scenes in order.', fallbackHint({ type: 'story_sequence_drag' }, storyText), { images: sequence.map(image) }, { promptMode: 'drag_sequence', items: sequence, correct: sequence }, weightedPosition(sequence)),
-      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the picture. Fill in the boxes.', fallbackHint({ type: 'setting_slot_drag' }, storyText), { images: [image(first)], scene: first }, settingDraft, settingScoring(settingDraft.correct)),
+      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the picture. Fill in the boxes.', fallbackHint({ type: 'setting_slot_drag' }, storyText), { images: [image(first)], scene: first }, settingDraft, settingScoring(settingDraft.correct, settingDraft.slots)),
       mkQ(3, 'listen_scene_mcq', 'initiating_event', 'Listen. Which scene starts the problem?', fallbackHint({ type: 'listen_scene_mcq' }, storyText), { images: sceneOptionsAround(storyText, eventScene, 4).map(image), audio: { id: `${eventSentence.sentenceId}_A`, path: `${storyId}_${eventSentence.sentenceId}_A.mp3`, kind: 'audio', sceneId: eventScene, sentenceId: eventSentence.sentenceId } }, imageOptions(sceneOptionsAround(storyText, eventScene, 4), eventScene), fixedScoring()),
       mkQ(4, 'scene_word_unscramble', 'attempt', 'Put the story words in order.', fallbackHint({ type: 'scene_word_unscramble' }, storyText), { images: [image(attemptScene)], scene: attemptScene, sentenceId: attemptSentence.sentenceId }, { promptMode: 'word_unscramble', items: [...words].reverse(), correct: words }, wordScoring(words)),
       mkQ(5, 'emotion_mcq', 'reaction', 'How does the character feel here?', fallbackHint({ type: 'emotion_mcq' }, storyText), { images: [image(reaction)], scene: reaction }, emotionOptions(), fixedScoring()),
@@ -1484,25 +1662,26 @@ function settingInteraction() {
     ],
     items: [
       { key: 'main_place', text: 'story place', slot: 'where' },
-      { key: 'other_character', text: 'other character', slot: 'who', diagnostic: '주변 인물을 주인공으로 혼동함' },
+      { key: 'other_character', text: 'other character', slot: 'who', diagnostic: '주요 인물과 다른 인물을 혼동합니다.' },
       { key: 'opening_state', text: 'first action', slot: 'at_first' },
       { key: 'main_character', text: 'main character', slot: 'who' },
-      { key: 'other_place', text: 'other place', slot: 'where', diagnostic: '다른 장소를 시작 배경으로 혼동함' },
-      { key: 'later_problem', text: 'later problem', slot: 'at_first', diagnostic: '문제 장면을 처음 상황으로 혼동함' }
+      { key: 'other_place', text: 'other place', slot: 'where', diagnostic: '이야기가 시작된 장소와 다른 장소를 혼동합니다.' },
+      { key: 'later_problem', text: 'later problem', slot: 'at_first', diagnostic: '처음 상황과 뒤에 생긴 문제를 혼동합니다.' }
     ],
     correct: { who: 'main_character', where: 'main_place', at_first: 'opening_state' }
   };
 }
 
-function settingScoring(correct = {}) {
+function settingScoring(correct = {}, slots = []) {
+  const slotWeight = (key, fallback) => Number((slots || []).find(slot => slot.key === key)?.weight) || fallback;
   return {
     type: 'weighted_slot_match',
     maxScore: 100,
     formula: 'full slot weight if exact target; 35% slot credit if same category but wrong card; 0 for wrong category',
     components: [
-      { key: 'who', weight: 2.5, rule: 'slot_match', correctValue: correct.who || 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
-      { key: 'where', weight: 2, rule: 'slot_match', correctValue: correct.where || 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
-      { key: 'at_first', weight: 1.5, rule: 'slot_match', correctValue: correct.at_first || 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
+      { key: 'who', weight: slotWeight('who', 2.5), rule: 'slot_match', correctValue: correct.who || 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
+      { key: 'where', weight: slotWeight('where', 2), rule: 'slot_match', correctValue: correct.where || 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
+      { key: 'at_first', weight: slotWeight('at_first', 1.5), rule: 'slot_match', correctValue: correct.at_first || 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
     ]
   };
 }
@@ -1510,7 +1689,13 @@ function settingScoring(correct = {}) {
 function imageOptions(scenes, correctScene) {
   return {
     promptMode: 'image_mcq',
-    options: scenes.map((sc, idx) => ({ key: String.fromCharCode(65 + idx), text: sc, score: sc === correctScene ? 100 : Math.max(0, 30 - idx * 5), isCorrect: sc === correctScene, diagnostic: '사건 시작 장면과 다른 장면을 혼동함' })),
+    options: scenes.map((sc, idx) => ({
+      key: String.fromCharCode(65 + idx),
+      text: sc,
+      score: sc === correctScene ? 100 : Math.max(0, 30 - idx * 5),
+      isCorrect: sc === correctScene,
+      diagnostic: '사건 시작 장면과 다른 장면을 혼동합니다.'
+    })),
     correct: String.fromCharCode(65 + Math.max(0, scenes.indexOf(correctScene)))
   };
 }
@@ -1530,19 +1715,19 @@ function fixedScoring() {
 
 function emotionOptions() {
   return { promptMode: 'text_mcq', options: [
-    { key: 'A', text: 'Happy', score: 20, isCorrect: false, diagnostic: '장면의 감정을 반대로 이해함' },
+    { key: 'A', text: 'Happy', score: 20, isCorrect: false, diagnostic: '장면의 감정을 반대로 이해합니다.' },
     { key: 'B', text: 'Sad', score: 100, isCorrect: true },
-    { key: 'C', text: 'Angry', score: 40, isCorrect: false, diagnostic: '비슷한 부정 감정을 혼동함' },
-    { key: 'D', text: 'Surprised', score: 20, isCorrect: false, diagnostic: '갑작스러운 반응과 감정을 혼동함' }
+    { key: 'C', text: 'Angry', score: 40, isCorrect: false, diagnostic: '비슷한 부정 감정을 혼동합니다.' },
+    { key: 'D', text: 'Surprised', score: 20, isCorrect: false, diagnostic: '갑작스러운 반응과 감정을 혼동합니다.' }
   ], correct: 'B' };
 }
 
 function internalOptions() {
   return { promptMode: 'text_mcq', options: [
     { key: 'A', text: 'I understand something now.', score: 100, isCorrect: true },
-    { key: 'B', text: 'I want a new toy.', score: 0, isCorrect: false, diagnostic: '이야기와 무관한 생각을 선택함' },
-    { key: 'C', text: 'The place is pretty.', score: 40, isCorrect: false, diagnostic: '표면 정보에 머무름' },
-    { key: 'D', text: 'I want to go away.', score: 20, isCorrect: false, diagnostic: '행동과 내면의 이유를 혼동함' }
+    { key: 'B', text: 'I want a new toy.', score: 0, isCorrect: false, diagnostic: '이야기와 무관한 생각을 선택합니다.' },
+    { key: 'C', text: 'The place is pretty.', score: 40, isCorrect: false, diagnostic: '장면 정보에 머무릅니다.' },
+    { key: 'D', text: 'I want to go away.', score: 20, isCorrect: false, diagnostic: '행동과 내면의 이유를 혼동합니다.' }
   ], correct: 'A' };
 }
 
@@ -1550,16 +1735,16 @@ function defaultReporting() {
   return {
     overallFormula: 'overall = average(setting, initiating_event, attempt, reaction, internal_response, consequence)',
     masteryBands: [
-      { key: 'stable', min: 85, max: 100, labelKo: '안정' },
-      { key: 'developing', min: 70, max: 84, labelKo: '발달 중' },
-      { key: 'shaky', min: 50, max: 69, labelKo: '흔들림' },
-      { key: 'focus', min: 0, max: 49, labelKo: '집중 보완' }
+      { key: 'stable', min: 85, max: 100, labelKo: '\uC548\uC815' },
+      { key: 'developing', min: 70, max: 84, labelKo: '\uBC1C\uB2EC \uC911' },
+      { key: 'shaky', min: 50, max: 69, labelKo: '\uD754\uB4E4\uB9BC' },
+      { key: 'focus', min: 0, max: 49, labelKo: '\uC9D1\uC911 \uBCF4\uC644' }
     ],
     parentFeedback: Object.fromEntries(Object.keys(SG_LABELS).map(key => [key, {
-      stable: `${SG_KO[key]} 항목을 안정적으로 이해했습니다.`,
-      developing: `${SG_KO[key]} 항목은 대체로 이해하고 있습니다.`,
-      shaky: `${SG_KO[key]} 항목의 근거를 더 확인할 필요가 있습니다.`,
-      focus: `${SG_KO[key]} 항목을 짧은 문장과 장면으로 다시 연습하세요.`
+      stable: SG_KO[key] + ' 항목을 안정적으로 이해합니다.',
+      developing: SG_KO[key] + ' 항목은 대체로 이해하지만 일부 단서 확인이 필요합니다.',
+      shaky: SG_KO[key] + ' 항목의 근거를 다시 확인하는 연습이 필요합니다.',
+      focus: SG_KO[key] + ' 항목은 짧은 문장과 장면으로 다시 연습하는 것이 좋습니다.'
     }]))
   };
 }
@@ -1580,9 +1765,9 @@ function downloadBlob(filename, mime, content) {
 
 function normalizeStatus(status) {
   const value = String(status || '').trim().toLowerCase();
-  if (['approved', 'approve', '승인'].includes(value)) return 'Approved';
-  if (['needs review', 'needs_review', 'review', '검수 필요'].includes(value)) return 'Needs Review';
-  if (['generated', '생성'].includes(value)) return 'Generated';
+  if (['approved', 'approve'].includes(value)) return 'Approved';
+  if (['needs review', 'needs_review', 'review'].includes(value)) return 'Needs Review';
+  if (['generated'].includes(value)) return 'Generated';
   return 'Input';
 }
 
@@ -1597,19 +1782,19 @@ function normalizeBatchRow(raw, index) {
     }
     return '';
   };
-  const storyId = read('story_id', 'storyId', 'Story ID', 'StoryID', '스토리ID', '스토리 코드') || `STORY_${String(index + 1).padStart(3, '0')}`;
+  const storyId = read('story_id', 'storyId', 'Story ID', 'StoryID') || 'STORY_' + String(index + 1).padStart(3, '0');
   return {
     story_id: storyId,
-    title: read('title', 'Title', 'story_title', 'Story Title', '제목') || storyId,
-    level: read('level', 'Level', '레벨') || 'Draft Level',
-    story_text: read('story_text', 'storyText', 'Story Text', 'text', 'Text', '스토리 전문', '본문'),
+    title: read('title', 'Title', 'story_title', 'Story Title') || storyId,
+    level: read('level', 'Level') || 'Draft Level',
+    story_text: read('story_text', 'storyText', 'Story Text', 'text', 'Text'),
     image_base_path: read('image_base_path', 'imageBasePath', 'Image Base Path', 'image_folder', 'Image Folder'),
     audio_base_path: read('audio_base_path', 'audioBasePath', 'Audio Base Path', 'audio_folder', 'Audio Folder'),
     cover_base_path: read('cover_base_path', 'coverBasePath', 'Cover Base Path', 'cover_folder', 'Cover Folder'),
     background_image: read('background_image', 'backgroundImage', 'Background Image'),
     hint_character: read('hint_character', 'hintCharacter', 'Hint Character'),
-    status: normalizeStatus(read('status', 'Status', '상태')),
-    notes: read('notes', 'Notes', '메모')
+    status: normalizeStatus(read('status', 'Status')),
+    notes: read('notes', 'Notes')
   };
 }
 
@@ -1658,28 +1843,28 @@ function quizFromBatchRow(row) {
 function validateQuizDraft(sourceQuiz, row = {}) {
   const issues = [];
   const scenes = sourceQuiz.story?.scenes || [];
-  if (!row.story_text && !sourceQuiz.story?.text) issues.push('스토리 전문이 비어 있습니다.');
-  if (scenes.length < 5) issues.push('장면이 5개 미만입니다. 시퀀싱 문항 검수가 필요합니다.');
-  if ((sourceQuiz.questions || []).length !== 6) issues.push('문항 수가 6개가 아닙니다.');
+  if (!row.story_text && !sourceQuiz.story?.text) issues.push('?ㅽ넗由??꾨Ц??鍮꾩뼱 ?덉뒿?덈떎.');
+  if (scenes.length < 5) issues.push('?λ㈃??5媛?誘몃쭔?낅땲?? ?쒗??臾명빆 寃?섍? ?꾩슂?⑸땲??');
+  if ((sourceQuiz.questions || []).length !== 6) issues.push('臾명빆 ?섍? 6媛쒓? ?꾨떃?덈떎.');
   const expectedAxes = Object.keys(SG_LABELS);
   const foundAxes = new Set((sourceQuiz.questions || []).map(q => q.storyGrammar));
   expectedAxes.forEach(axis => {
-    if (!foundAxes.has(axis)) issues.push(`${SG_LABELS[axis]} 항목이 없습니다.`);
+    if (!foundAxes.has(axis)) issues.push(`${SG_LABELS[axis]} ??ぉ???놁뒿?덈떎.`);
   });
   (sourceQuiz.questions || []).forEach(q => {
-    if (!q.instruction) issues.push(`${q.qId}: 지시문이 없습니다.`);
-    if (!q.hint) issues.push(`${q.qId}: 힌트가 없습니다.`);
-    if (!q.resources || (!q.resources.images && !q.resources.audio && !q.resources.scene)) issues.push(`${q.qId}: 리소스 정보가 없습니다.`);
-    if (!hasMeaningfulInteraction(q)) issues.push(`${q.qId}: 선택지/배치 항목 등 interaction 정보가 없습니다.`);
-    if (!q.scoring?.formula) issues.push(`${q.qId}: 계산식이 없습니다.`);
-    if (!Array.isArray(q.scoring?.components) || !q.scoring.components.length) issues.push(`${q.qId}: 가중치/채점 구성요소가 없습니다.`);
+    if (!q.instruction) issues.push(`${q.qId}: 吏?쒕Ц???놁뒿?덈떎.`);
+    if (!q.hint) issues.push(`${q.qId}: ?뚰듃媛 ?놁뒿?덈떎.`);
+    if (!q.resources || (!q.resources.images && !q.resources.audio && !q.resources.scene)) issues.push(`${q.qId}: 由ъ냼???뺣낫媛 ?놁뒿?덈떎.`);
+    if (!hasMeaningfulInteraction(q)) issues.push(`${q.qId}: ?좏깮吏/諛곗튂 ??ぉ ??interaction ?뺣낫媛 ?놁뒿?덈떎.`);
+    if (!q.scoring?.formula) issues.push(`${q.qId}: 怨꾩궛?앹씠 ?놁뒿?덈떎.`);
+    if (!Array.isArray(q.scoring?.components) || !q.scoring.components.length) issues.push(`${q.qId}: 媛以묒튂/梨꾩젏 援ъ꽦?붿냼媛 ?놁뒿?덈떎.`);
     if ((q.type || '').includes('mcq') && (!Array.isArray(q.interaction?.options) || q.interaction.options.length < 2)) {
-      issues.push(`${q.qId}: 객관식 선택지가 부족합니다.`);
+      issues.push(`${q.qId}: 媛앷????좏깮吏媛 遺議깊빀?덈떎.`);
     }
     if (q.type === 'scene_word_unscramble') {
       const sentenceId = q.resources?.sentenceId;
       const sentenceFound = scenes.some(scene => (scene.sentences || []).some(s => s.sentenceId === sentenceId));
-      if (sentenceId && !sentenceFound) issues.push(`${q.qId}: 언스크램블 sentenceId가 원문에서 확인되지 않습니다.`);
+      if (sentenceId && !sentenceFound) issues.push(`${q.qId}: ?몄뒪?щ옩釉?sentenceId媛 ?먮Ц?먯꽌 ?뺤씤?섏? ?딆뒿?덈떎.`);
     }
   });
   return issues;
@@ -1687,7 +1872,7 @@ function validateQuizDraft(sourceQuiz, row = {}) {
 
 function generateBatchDrafts() {
   if (!batchItems.length) {
-    toast('먼저 Batch XLSX/JSON을 불러와 주세요.');
+    toast('癒쇱? Batch XLSX/JSON??遺덈윭? 二쇱꽭??');
     return;
   }
   syncCurrentBatchItem();
@@ -1703,7 +1888,7 @@ function generateBatchDrafts() {
     };
   });
   selectBatchItem(0, false);
-  toast(`${batchItems.length}개 스토리 초안을 생성했습니다.`);
+  toast(`${batchItems.length}媛??ㅽ넗由?珥덉븞???앹꽦?덉뒿?덈떎.`);
 }
 
 function loadAssetFolder(files) {
@@ -1715,7 +1900,7 @@ function loadAssetFolder(files) {
   const count = assetCount();
   if (status) status.textContent = count ? `${count} asset files loaded for preview/export.` : 'No asset folder loaded.';
   renderPreview();
-  toast(`${count}개 에셋 파일을 연결했습니다.`);
+  toast(`${count}媛??먯뀑 ?뚯씪???곌껐?덉뒿?덈떎.`);
 }
 
 function registerAssetFile(file, relativePath = '') {
@@ -1831,7 +2016,7 @@ function renderResourceSummary(pkg) {
   const audioList = [...pkg.audioFiles.keys()].sort();
   const row = (label, value, ok = true, kind = '', key = '') => {
     const title = kind === 'story_id' ? 'Edit' : 'Replace';
-    const icon = kind === 'story_id' ? '✎' : '⇧';
+    const icon = kind === 'story_id' ? '\u270E' : '\u21E7';
     return `
     <button type="button" class="resource-row ${ok ? 'ok' : 'warn'}" onclick="startResourceReplace('${escapeAttr(kind)}','${escapeAttr(key)}')">
       <span>${escapeHtml(label)}</span>
@@ -2035,7 +2220,7 @@ async function replaceStoryPackageFiles(files) {
 async function generateBatchAiDrafts() {
   const sourceRows = batchInputRows.length ? batchInputRows : [];
   if (!sourceRows.length) {
-    toast('먼저 Story Batch에서 Format XLSX를 업로드해 주세요.');
+    toast('癒쇱? Story Batch?먯꽌 Format XLSX瑜??낅줈?쒗빐 二쇱꽭??');
     return;
   }
   const apiKey = $('api-key').value.trim();
@@ -2065,7 +2250,7 @@ async function generateBatchAiDrafts() {
         return { row, status: issues.length ? 'Needs Review' : normalizeStatus(entry.status || 'Generated'), issues, quiz: qz };
       });
     } else {
-      if (!apiKey) throw new Error('웹에서는 API Key를 입력해 주세요.');
+      if (!apiKey) throw new Error('?뱀뿉?쒕뒗 API Key瑜??낅젰??二쇱꽭??');
       const prompt = await loadGenerationPrompt();
       const generatedItems = [];
       for (let index = 0; index < sourceRows.length; index += 1) {
@@ -2095,9 +2280,9 @@ async function generateBatchAiDrafts() {
       batchGeneratedItems = generatedItems;
     }
     showBatchOutputs(true);
-    toast(`${provider}로 ${batchGeneratedItems.length}개 초안을 생성했습니다. 아래에서 산출물을 다운로드할 수 있습니다.`);
+    toast(`${provider}濡?${batchGeneratedItems.length}媛?珥덉븞???앹꽦?덉뒿?덈떎. ?꾨옒?먯꽌 ?곗텧臾쇱쓣 ?ㅼ슫濡쒕뱶?????덉뒿?덈떎.`);
   } catch (error) {
-    toast(`AI Batch 실패: ${error.message}`);
+    toast(`AI Batch ?ㅽ뙣: ${error.message}`);
   } finally {
     btn.disabled = false;
     btn.textContent = originalText;
@@ -2110,7 +2295,7 @@ function renderBatchList() {
   if (!list || !count) return;
   count.textContent = `${batchItems.length} stories`;
   if (!batchItems.length) {
-    list.innerHTML = '<div class="batch-empty">Story Batch에서 Batch XLSX를 불러오거나, 여기에서 Quiz/Batch JSON을 불러오면 스토리를 선택할 수 있습니다.</div>';
+    list.innerHTML = '<div class="batch-empty">Story Batch?먯꽌 Batch XLSX瑜?遺덈윭?ㅺ굅?? ?ш린?먯꽌 Quiz/Batch JSON??遺덈윭?ㅻ㈃ ?ㅽ넗由щ? ?좏깮?????덉뒿?덈떎.</div>';
     return;
   }
   list.innerHTML = batchItems.map((item, index) => {
@@ -2172,12 +2357,12 @@ function syncCurrentBatchItem() {
 function setCurrentBatchStatus(status) {
   syncCurrentBatchItem();
   if (currentBatchIndex < 0 || !batchItems[currentBatchIndex]) {
-    toast('먼저 Batch 항목을 선택해 주세요.');
+    toast('癒쇱? Batch ??ぉ???좏깮??二쇱꽭??');
     return;
   }
   batchItems[currentBatchIndex].status = normalizeStatus(status);
   renderAll();
-  toast(`${batchItems[currentBatchIndex].row.story_id} 상태를 ${normalizeStatus(status)}로 바꿨습니다.`);
+  toast(`${batchItems[currentBatchIndex].row.story_id} ?곹깭瑜?${normalizeStatus(status)}濡?諛붽엥?듬땲??`);
 }
 
 function loadBatchBundle(parsed) {
@@ -2201,7 +2386,7 @@ function loadBatchBundle(parsed) {
 function loadBatchFile(file) {
   if (!file) return;
   if (!window.XLSX) {
-    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    toast('XLSX ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
     return;
   }
   const reader = new FileReader();
@@ -2214,10 +2399,10 @@ function loadBatchFile(file) {
       batchGeneratedItems = [];
       showBatchOutputs(false);
       updateBatchInputStatus();
-      toast(`${batchInputRows.length}개 Story Batch 입력을 불러왔습니다.`);
+      toast(`${batchInputRows.length}媛?Story Batch ?낅젰??遺덈윭?붿뒿?덈떎.`);
     } catch (error) {
       console.error(error);
-      toast('Batch 파일 형식을 확인해 주세요.');
+      toast('Batch ?뚯씪 ?뺤떇???뺤씤??二쇱꽭??');
     }
   };
   reader.readAsArrayBuffer(file);
@@ -2409,7 +2594,7 @@ async function loadQuizUploadFiles(files) {
     for (const file of fileList) {
       const lower = file.name.toLowerCase();
       if (lower.endsWith('.zip')) {
-        if (!window.JSZip) throw new Error('ZIP 라이브러리를 불러오지 못했습니다.');
+        if (!window.JSZip) throw new Error('ZIP ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
         const zip = await JSZip.loadAsync(await readFileAsArrayBuffer(file));
         const zipEntries = Object.values(zip.files).filter(entry => !entry.dir);
         const jsonEntries = zipEntries.filter(entry => entry.name.toLowerCase().endsWith('.json'));
@@ -2443,7 +2628,7 @@ async function loadQuizUploadFiles(files) {
       }
     }
     if (!loadedItems.length) {
-      toast('불러올 수 있는 퀴즈 파일이 없습니다.');
+      toast('遺덈윭?????덈뒗 ?댁쫰 ?뚯씪???놁뒿?덈떎.');
       return;
     }
     const uniqueItems = dedupeLoadedQuizItems(loadedItems);
@@ -2453,16 +2638,16 @@ async function loadQuizUploadFiles(files) {
     loadBatchBundle({ schemaVersion: 'quiz-batch-v1.0', items: uniqueItems });
     const status = $('asset-status');
     if (status && assetFiles.size) status.textContent = `${assetCount()} asset files loaded for preview/export.`;
-    toast(`${uniqueItems.length}개 Quiz 항목을 불러왔습니다.`);
+    toast(`${uniqueItems.length}媛?Quiz ??ぉ??遺덈윭?붿뒿?덈떎.`);
   } catch (error) {
     console.error(error);
-    toast(`Quiz Upload 실패: ${error.message}`);
+    toast(`Quiz Upload ?ㅽ뙣: ${error.message}`);
   }
 }
 
 function downloadBatchTemplate() {
   if (!window.XLSX) {
-    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    toast('XLSX ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
     return;
   }
   const wb = XLSX.utils.book_new();
@@ -2497,7 +2682,7 @@ function exportBatchJson() {
   syncCurrentBatchItem();
   const items = batchGeneratedItems.length ? batchGeneratedItems : batchItems;
   if (!items.length) {
-    toast('다운로드할 생성 결과가 없습니다.');
+    toast('?ㅼ슫濡쒕뱶???앹꽦 寃곌낵媛 ?놁뒿?덈떎.');
     return;
   }
   const payload = {
@@ -2575,18 +2760,18 @@ function collectQuizAssetEntries(sourceQuiz) {
 async function exportApprovedZip() {
   syncCurrentBatchItem();
   if (!window.XLSX) {
-    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    toast('XLSX ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
     return;
   }
   const exportItems = batchGeneratedItems.length
     ? batchGeneratedItems.filter(item => item.quiz)
     : batchItems.filter(item => normalizeStatus(item.status) === 'Approved' && item.quiz);
   if (!exportItems.length) {
-    toast(batchGeneratedItems.length ? '다운로드할 생성 결과가 없습니다.' : 'Approved 상태의 Batch 항목이 없습니다.');
+    toast(batchGeneratedItems.length ? '?ㅼ슫濡쒕뱶???앹꽦 寃곌낵媛 ?놁뒿?덈떎.' : 'Approved ?곹깭??Batch ??ぉ???놁뒿?덈떎.');
     return;
   }
   if (!window.JSZip) {
-    toast('ZIP 라이브러리를 불러오지 못했습니다. Batch JSON만 내보냅니다.');
+    toast('ZIP ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲?? Batch JSON留??대낫?낅땲??');
     exportBatchJson();
     return;
   }
@@ -2606,7 +2791,7 @@ async function exportApprovedZip() {
   });
   const blob = await zip.generateAsync({ type: 'blob' });
   downloadBlob(batchGeneratedItems.length ? 'Generated_Quiz_Outputs.zip' : 'Approved_Quiz_Exports.zip', 'application/zip', blob);
-  toast(`${exportItems.length}개 항목을 ZIP으로 내보냈습니다.`);
+  toast(`${exportItems.length}媛???ぉ??ZIP?쇰줈 ?대낫?덉뒿?덈떎.`);
 }
 
 function exportJson() {
@@ -2616,7 +2801,7 @@ function exportJson() {
 
 function exportWorkbook(kind) {
   if (!window.XLSX) {
-    toast('XLSX 라이브러리를 불러오지 못했습니다.');
+    toast('XLSX ?쇱씠釉뚮윭由щ? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
     return;
   }
   updateStoryFromInputs();
@@ -2650,24 +2835,24 @@ function buildReadingWorkbook(wb) {
   ]);
   quiz.questions.forEach(q => {
     const rows = [
-      [`Q${String(q.number).padStart(2, '0')} — ${q.storyGrammar}`],
+      [`Q${String(q.number).padStart(2, '0')} ??${q.storyGrammar}`],
       ['Q_ID', q.qId],
       ['Type', q.type],
       ['Instruction', q.instruction],
       ['Hint', q.hint],
       [],
-      ['SECTION A — Resources'],
+      ['SECTION A ??Resources'],
       ['Kind','ID','Path','Scene ID','Sentence ID'],
       ...resourceRows(q),
       [],
-      ['SECTION B — Interaction'],
+      ['SECTION B ??Interaction'],
       ['JSON', JSON.stringify(q.interaction || {}, null, 2)],
       [],
-      ['SECTION C — Scoring Components'],
+      ['SECTION C ??Scoring Components'],
       ['Key','Weight','Rule','Correct Value','Partial Credit','Rationale'],
       ...(q.scoring?.components || []).map(c => [c.key, c.weight, c.rule, c.correctValue, c.partialCredit ?? '', c.rationale || '']),
       [],
-      ['SECTION D — Diagnostics'],
+      ['SECTION D ??Diagnostics'],
       ['Code','Threshold','Message'],
       ...(q.diagnostics || []).map(d => [d.code, d.threshold, d.messageKo])
     ];
@@ -2733,7 +2918,7 @@ function loadJsonFile(file) {
       const parsed = JSON.parse(reader.result);
       if (parsed.schemaVersion === 'quiz-batch-v1.0' || Array.isArray(parsed.quizzes) || Array.isArray(parsed.items)) {
         loadBatchBundle(parsed);
-        toast('Batch JSON을 불러왔습니다.');
+        toast('Batch JSON??遺덈윭?붿뒿?덈떎.');
       } else {
         syncCurrentBatchItem();
         quiz = parsed;
@@ -2741,10 +2926,10 @@ function loadJsonFile(file) {
         currentQuestionIndex = 0;
         syncStoryInputs();
         renderAll();
-        toast('JSON을 불러왔습니다.');
+        toast('JSON??遺덈윭?붿뒿?덈떎.');
       }
     } catch {
-      toast('JSON 파일 형식을 확인해 주세요.');
+      toast('JSON ?뚯씪 ?뺤떇???뺤씤??二쇱꽭??');
     }
   };
   reader.readAsText(file, 'utf-8');

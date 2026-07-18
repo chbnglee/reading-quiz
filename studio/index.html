@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260718-5">
+  <link rel="stylesheet" href="static/studio.css?v=20260718-7">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -126,50 +126,55 @@
       <span class="pill" id="schema-pill">quiz-v3.0</span>
     </div>
 
-    <label class="field">
-      <span>Question</span>
-      <select id="question-select"></select>
-    </label>
+    <section class="editor-group meta-editor-group">
+      <label class="field">
+        <span>Question No.</span>
+        <select id="question-select"></select>
+      </label>
 
-    <label class="field">
-      <span>Story Grammar</span>
-      <select id="sg-select">
-        <option value="setting">Setting</option>
-        <option value="initiating_event">Initiating Event</option>
-        <option value="attempt">Attempt</option>
-        <option value="reaction">Reaction</option>
-        <option value="internal_response">Internal Response</option>
-        <option value="consequence">Consequence</option>
-      </select>
-    </label>
+      <label class="field">
+        <span>Story Grammar</span>
+        <select id="sg-select">
+          <option value="setting">Setting</option>
+          <option value="initiating_event">Initiating Event</option>
+          <option value="attempt">Attempt</option>
+          <option value="reaction">Reaction</option>
+          <option value="internal_response">Internal Response</option>
+          <option value="consequence">Consequence</option>
+        </select>
+      </label>
 
-    <label class="field">
-      <span>Question Type</span>
-      <select id="type-select">
-        <option value="story_sequence_drag">story_sequence_drag</option>
-        <option value="setting_slot_drag">setting_slot_drag</option>
-        <option value="listen_scene_mcq">listen_scene_mcq</option>
-        <option value="scene_word_unscramble">scene_word_unscramble</option>
-        <option value="emotion_mcq">emotion_mcq</option>
-        <option value="internal_response_mcq">internal_response_mcq</option>
-      </select>
-    </label>
+      <label class="field">
+        <span>Question Type</span>
+        <select id="type-select">
+          <option value="story_sequence_drag">story_sequence_drag</option>
+          <option value="setting_slot_drag">setting_slot_drag</option>
+          <option value="listen_scene_mcq">listen_scene_mcq</option>
+          <option value="scene_word_unscramble">scene_word_unscramble</option>
+          <option value="emotion_mcq">emotion_mcq</option>
+          <option value="internal_response_mcq">internal_response_mcq</option>
+        </select>
+      </label>
+    </section>
 
-    <label class="field">
-      <span>Instruction</span>
-      <input id="instruction-input">
-    </label>
+    <section class="editor-group content-editor-group">
+      <label class="field">
+        <span>Instruction</span>
+        <input id="instruction-input">
+      </label>
 
-    <label class="field">
-      <span>Hint</span>
-      <input id="hint-input">
-    </label>
+      <section class="choice-editor-box">
+        <div class="panel-head compact">
+          <h3>Choices & Weights</h3>
+        </div>
+        <div id="choice-editor" class="choice-editor"></div>
+        <div id="weight-summary" class="weight-summary"></div>
+      </section>
 
-    <section class="choice-editor-box">
-      <div class="panel-head compact">
-        <h3>Choices & Weights</h3>
-      </div>
-      <div id="choice-editor" class="choice-editor"></div>
+      <label class="field">
+        <span>Hint</span>
+        <input id="hint-input">
+      </label>
     </section>
 
     <label class="field">
@@ -210,6 +215,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260718-5"></script>
+<script src="static/studio.js?v=20260718-7"></script>
 </body>
 </html>

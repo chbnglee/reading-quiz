@@ -73,6 +73,7 @@ Asset filenames should follow these patterns:
 ### Q1 Consequence / Sequencing
 
 - Select 5 scenes that show the full story arc.
+- `resources.images` must include one image resource for every selected scene.
 - Do not select scenes clustered only near the ending.
 - Prefer:
   - opening state
@@ -88,6 +89,7 @@ Asset filenames should follow these patterns:
 ### Q2 Setting / Slot Fill
 
 - Use the first meaningful setting scene, usually SC01.
+- `resources.images` must include the selected setting scene image.
 - Use exactly 3 slots:
   - `who` label `Who?`
   - `where` label `Where?`
@@ -116,6 +118,8 @@ Asset filenames should follow these patterns:
 - Do NOT choose weak attention-getters or short lines such as `Look there!`, `Wow!`, `Oh no!`, `Got it!`, or other sentences with no problem information.
 - Prefer a sentence with at least 5 words and a clear problem/change clue.
 - Use image options with no duplicate-answer risk.
+- `resources.images` must include one image resource for every image option.
+- Each option should include a clear scene reference such as `sceneId` or visible text `SC03`.
 - If two images could both look correct, replace one with a clearer distractor.
 - Correct option score is 100.
 - Plausible nearby-event distractors may receive partial score.
@@ -124,6 +128,7 @@ Asset filenames should follow these patterns:
 ### Q4 Attempt / Scene Word Unscramble
 
 - Use an exact story sentence from the story text.
+- `resources.images` must include the scene image for the selected sentence.
 - The sentence must show an action/attempt by the character.
 - Do not invent a new sentence.
 - Keep articles with the following noun when possible:
@@ -144,6 +149,7 @@ Asset filenames should follow these patterns:
 ### Q5 Reaction / Emotion
 
 - Use a scene where the character's emotion is visible or inferable.
+- `resources.images` must include the selected emotion scene image.
 - Use the character's name in the instruction if the name is clear.
 - The named character in the instruction must be present in the selected scene.
 - If the visible/emotional character is unclear, use `How does the character feel here?` rather than naming the wrong character.
@@ -151,14 +157,17 @@ Asset filenames should follow these patterns:
 - Correct option score is 100.
 - Similar emotions may receive partial score.
 - Opposite or unrelated emotions receive low or 0 score.
+- Do not make all incorrect options 0. At least one plausible or confusable distractor should receive a partial score such as 20-50.
 
 ### Q6 Internal Response
 
 - Use a scene where the character thinks, realizes, decides, or understands something.
+- `resources.images` must include the selected internal-response scene image.
 - Use the character's name in the instruction if the name is clear.
 - Use 4 options.
 - The correct answer should be clear without requiring hidden context.
 - Avoid vague pronouns such as `they`, `it`, or `that` when they are unclear.
+- Do not make all incorrect options 0. At least one near-miss option should receive a partial score such as 20-50.
 
 ## Hints
 
@@ -191,7 +200,7 @@ These are style examples only. Do NOT copy these exact example hints into the ou
 For each incorrect or partial option, include a short Korean diagnostic.
 Diagnostics should explain the likely comprehension gap.
 
-Use polite report style ending such as `혼동합니다.`, `확인이 필요합니다.`, or `보완이 필요합니다.`
+Use polite Korean report-style endings such as `혼동합니다.`, `확인할 필요가 있습니다.`, or `보완이 필요합니다.`
 Do not end diagnostics with only a noun phrase or `혼동함`.
 
 ## Scoring

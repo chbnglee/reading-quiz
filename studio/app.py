@@ -191,10 +191,10 @@ def rule_based_quiz(payload: dict) -> dict:
                 "items": [
                     {"key": "main_place", "text": "story place", "slot": "where"},
                     {"key": "main_character", "text": "main character", "slot": "who"},
-                    {"key": "later_problem", "text": "later problem", "slot": "at_first", "diagnostic": "문제 장면을 처음 상황으로 혼동함"},
-                    {"key": "other_character", "text": "other character", "slot": "who", "diagnostic": "주인공과 주변 인물을 혼동함"},
+                    {"key": "later_problem", "text": "later problem", "slot": "at_first", "diagnostic": "문제 장면을 처음 상황으로 혼동합니다."},
+                    {"key": "other_character", "text": "other character", "slot": "who", "diagnostic": "주인공과 주변 인물을 혼동합니다."},
                     {"key": "opening_state", "text": "first action", "slot": "at_first"},
-                    {"key": "other_place", "text": "other place", "slot": "where", "diagnostic": "다른 장소를 시작 배경으로 혼동함"}
+                    {"key": "other_place", "text": "other place", "slot": "where", "diagnostic": "다른 장소를 시작 배경으로 혼동합니다."}
                 ],
                 "correct": {"who": "main_character", "where": "main_place", "at_first": "opening_state"}
             },
@@ -218,7 +218,7 @@ def rule_based_quiz(payload: dict) -> dict:
             "interaction": {
                 "promptMode": "image_mcq",
                 "options": [
-                    {"key": chr(65 + idx), "text": sc, "score": 100 if sc == event_scene else max(0, 30 - idx * 5), "isCorrect": sc == event_scene, "diagnostic": "사건 시작 장면과 다른 장면을 혼동함"}
+                    {"key": chr(65 + idx), "text": sc, "score": 100 if sc == event_scene else max(0, 30 - idx * 5), "isCorrect": sc == event_scene, "diagnostic": "사건 시작 장면과 다른 장면을 혼동합니다."}
                     for idx, sc in enumerate(sequence[:4])
                 ],
                 "correct": chr(65 + max(0, sequence[:4].index(event_scene) if event_scene in sequence[:4] else 0))
@@ -250,10 +250,10 @@ def rule_based_quiz(payload: dict) -> dict:
             "hint": "Look at the face and the scene.",
             "resources": {"images": [image(reaction_scene)], "scene": reaction_scene},
             "interaction": {"promptMode": "text_mcq", "options": [
-                {"key": "A", "text": "Happy", "score": 20, "isCorrect": False, "diagnostic": "장면의 감정을 반대로 이해함"},
+                {"key": "A", "text": "Happy", "score": 20, "isCorrect": False, "diagnostic": "장면의 감정을 반대로 이해합니다."},
                 {"key": "B", "text": "Sad", "score": 100, "isCorrect": True},
-                {"key": "C", "text": "Angry", "score": 40, "isCorrect": False, "diagnostic": "비슷한 부정 감정을 혼동함"},
-                {"key": "D", "text": "Surprised", "score": 20, "isCorrect": False, "diagnostic": "갑작스러운 반응과 감정을 혼동함"}
+                {"key": "C", "text": "Angry", "score": 40, "isCorrect": False, "diagnostic": "비슷한 부정 감정을 혼동합니다."},
+                {"key": "D", "text": "Surprised", "score": 20, "isCorrect": False, "diagnostic": "갑작스러운 반응과 감정을 혼동합니다."}
             ], "correct": "B"},
             "scoring": {"type": "fixed_option_score", "maxScore": 100, "formula": "score = selected_option.score", "components": [{"key": "B", "weight": 100, "rule": "option_score", "correctValue": True, "rationale": "Identifies the character reaction."}]},
             "diagnostics": [{"code": "reaction_emotion_gap", "threshold": 70, "messageKo": "장면 근거를 보고 감정을 고르는 연습이 필요합니다."}],
@@ -266,9 +266,9 @@ def rule_based_quiz(payload: dict) -> dict:
             "resources": {"images": [image(reaction_scene)], "scene": reaction_scene},
             "interaction": {"promptMode": "text_mcq", "options": [
                 {"key": "A", "text": "I understand something now.", "score": 100, "isCorrect": True},
-                {"key": "B", "text": "I want a new toy.", "score": 0, "isCorrect": False, "diagnostic": "이야기와 무관한 생각을 선택함"},
-                {"key": "C", "text": "The place is pretty.", "score": 40, "isCorrect": False, "diagnostic": "표면 정보에 머무름"},
-                {"key": "D", "text": "I want to go away.", "score": 20, "isCorrect": False, "diagnostic": "행동과 내면의 이유를 혼동함"}
+                {"key": "B", "text": "I want a new toy.", "score": 0, "isCorrect": False, "diagnostic": "이야기와 무관한 생각을 선택합니다."},
+                {"key": "C", "text": "The place is pretty.", "score": 40, "isCorrect": False, "diagnostic": "표면 정보에 머무릅니다."},
+                {"key": "D", "text": "I want to go away.", "score": 20, "isCorrect": False, "diagnostic": "행동과 내면의 이유를 혼동합니다."}
             ], "correct": "A"},
             "scoring": {"type": "fixed_option_score", "maxScore": 100, "formula": "score = selected_option.score", "components": [{"key": "A", "weight": 100, "rule": "option_score", "correctValue": True, "rationale": "Infers internal response."}]},
             "diagnostics": [{"code": "internal_response_gap", "threshold": 70, "messageKo": "인물의 생각과 내면 상태를 추론하는 연습이 필요합니다."}],
