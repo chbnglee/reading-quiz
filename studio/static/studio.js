@@ -7,6 +7,8 @@ let currentBatchIndex = -1;
 let assetFiles = new Map();
 let assetObjectUrls = [];
 let currentStoryPackage = null;
+let pendingResourceReplaceKind = '';
+let pendingResourceReplaceKey = '';
 
 const SG_LABELS = {
   setting: 'Setting',
@@ -181,6 +183,24 @@ function isInstructionCompatible(baseQ, instruction) {
   return value === baseQ.instruction;
 }
 
+function matchingQuestionScore(baseQ, aiQ) {
+  if (!aiQ) return 0;
+  let score = 0;
+  if (Number(aiQ.number) === Number(baseQ.number)) score += 40;
+  if (aiQ.storyGrammar === baseQ.storyGrammar) score += 35;
+  if (aiQ.type === baseQ.type) score += 20;
+  if ((aiQ.interaction?.promptMode || '') === (baseQ.interaction?.promptMode || '')) score += 10;
+  if (isTemplateCompatible(baseQ, aiQ)) score += 40;
+  return score;
+}
+
+function bestAiQuestionForTemplate(baseQ, incomingQuestions) {
+  return [...(incomingQuestions || [])]
+    .map(q => ({ q, score: matchingQuestionScore(baseQ, q) }))
+    .filter(entry => entry.score > 0)
+    .sort((a, b) => b.score - a.score)[0]?.q || null;
+}
+
 function templateScoringForQuestion(q) {
   if (q.type === 'story_sequence_drag') {
     const sequence = Array.isArray(q.interaction?.correct) && q.interaction.correct.length
@@ -213,15 +233,15 @@ function templateScoringForQuestion(q) {
 function mergeQuestionDraft(baseQ, aiQ) {
   if (!aiQ) return baseQ;
   const merged = deepClone(baseQ);
-  if (!isTemplateCompatible(baseQ, aiQ)) return merged;
+  const compatible = isTemplateCompatible(baseQ, aiQ);
   merged.qId = baseQ.qId;
   merged.number = baseQ.number;
   merged.storyGrammar = baseQ.storyGrammar;
   merged.type = baseQ.type;
   merged.instruction = isInstructionCompatible(baseQ, aiQ.instruction) ? aiQ.instruction : baseQ.instruction;
   if (aiQ.hint) merged.hint = aiQ.hint;
-  if (aiQ.resources && (aiQ.resources.images || aiQ.resources.audio || aiQ.resources.scene)) merged.resources = aiQ.resources;
-  if (hasMeaningfulInteraction(aiQ)) merged.interaction = aiQ.interaction;
+  if (compatible && aiQ.resources && (aiQ.resources.images || aiQ.resources.audio || aiQ.resources.scene)) merged.resources = aiQ.resources;
+  if (compatible && hasMeaningfulInteraction(aiQ)) merged.interaction = aiQ.interaction;
   if (Array.isArray(aiQ.diagnostics) && aiQ.diagnostics.length) merged.diagnostics = aiQ.diagnostics;
   merged.scoring = templateScoringForQuestion(merged);
   merged.lrs = baseQ.lrs;
@@ -238,13 +258,7 @@ function completeGeneratedQuiz(generatedQuiz, row = {}) {
   completed.assets = { ...base.assets, ...(incoming.assets || {}) };
   completed.storyGrammarAxes = Array.isArray(incoming.storyGrammarAxes) && incoming.storyGrammarAxes.length ? incoming.storyGrammarAxes : base.storyGrammarAxes;
   completed.questions = base.questions.map(baseQ => {
-    const candidates = [
-      ...incomingQuestions.filter(q => Number(q.number) === baseQ.number && q.storyGrammar === baseQ.storyGrammar),
-      ...incomingQuestions.filter(q => q.storyGrammar === baseQ.storyGrammar),
-      ...incomingQuestions.filter(q => Number(q.number) === baseQ.number),
-      ...incomingQuestions.filter(q => q.type === baseQ.type)
-    ];
-    const aiQ = candidates.find(q => isTemplateCompatible(baseQ, q));
+    const aiQ = bestAiQuestionForTemplate(baseQ, incomingQuestions);
     return mergeQuestionDraft(baseQ, aiQ);
   });
   completed.reporting = incoming.reporting || base.reporting;
@@ -618,12 +632,13 @@ async function generateAiDraft() {
       const generated = await callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
       quiz = completeGeneratedQuiz(generated, row);
     }
+    const hintCount = (quiz.questions || []).filter(q => String(q.hint || '').trim()).length;
     currentBatchIndex = -1;
     currentQuestionIndex = 0;
     renderAll();
-    toast(`${payload.provider} 초안을 생성했습니다.`);
+    toast(`Quiz generated with ${payload.provider}. ${hintCount}/6 hints ready.`);
   } catch (error) {
-    toast(`AI 생성 실패: ${error.message}`);
+    toast(`AI generation failed: ${error.message}`);
   } finally {
     btn.disabled = false;
     btn.textContent = originalText;
@@ -978,6 +993,20 @@ function storyCodeFromPath(pathValue) {
   return match ? match[1].toUpperCase() : '';
 }
 
+function storyTextIdFromFileName(fileNameValue) {
+  const name = fileName(fileNameValue);
+  if (!/\.txt$/i.test(name)) return '';
+  if (/(^|[_-])processing[_-]?log|_log[_-]?\d|\blog\b/i.test(name)) return '';
+  const match = name.match(/^((?:OG|CS)\d{4})_.+\.txt$/i);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function isStoryTextFile(file, expectedStoryId = '') {
+  const storyId = storyTextIdFromFileName(file?.name || '');
+  if (!storyId) return false;
+  return !expectedStoryId || storyId === String(expectedStoryId).toUpperCase();
+}
+
 function titleFromStoryFile(fileNameValue, storyId) {
   const stem = fileName(fileNameValue).replace(/\.[^.]+$/, '');
   const cleaned = stem
@@ -989,6 +1018,7 @@ function titleFromStoryFile(fileNameValue, storyId) {
 }
 
 function classifyStoryFiles(files) {
+  const fileList = Array.from(files || []);
   const pkg = {
     storyId: '',
     title: '',
@@ -1000,15 +1030,22 @@ function classifyStoryFiles(files) {
     audioFiles: new Map(),
     otherFiles: []
   };
-  Array.from(files || []).forEach(file => {
+
+  fileList.forEach(file => {
+    const rel = file.webkitRelativePath || file.name;
+    const storyTextId = storyTextIdFromFileName(file.name);
+    const storyId = storyTextId || storyCodeFromPath(rel) || storyCodeFromPath(file.name);
+    if (!pkg.storyId && storyId) pkg.storyId = storyId;
+  });
+
+  fileList.forEach(file => {
     const rel = file.webkitRelativePath || file.name;
     const name = file.name;
-    const lower = name.toLowerCase();
     const storyId = storyCodeFromPath(rel) || storyCodeFromPath(name);
-    if (!pkg.storyId && storyId) pkg.storyId = storyId;
 
     if (/\.txt$/i.test(name)) {
-      if (!pkg.storyFile || storyId === pkg.storyId) pkg.storyFile = file;
+      if (isStoryTextFile(file, pkg.storyId)) pkg.storyFile = file;
+      else pkg.otherFiles.push(file);
       return;
     }
 
@@ -1049,19 +1086,126 @@ function renderResourceSummary(pkg) {
   }
   const sceneList = [...pkg.sceneImages.keys()].sort();
   const audioList = [...pkg.audioFiles.keys()].sort();
-  const row = (label, value, ok = true) => `
-    <div class="resource-row ${ok ? 'ok' : 'warn'}">
+  const row = (label, value, ok = true, kind = '', key = '') => `
+    <button type="button" class="resource-row ${ok ? 'ok' : 'warn'}" onclick="startResourceReplace('${escapeAttr(kind)}','${escapeAttr(key)}')">
       <span>${escapeHtml(label)}</span>
       <strong>${escapeHtml(value)}</strong>
-    </div>`;
+      <em>${kind === 'story_id' ? 'Edit' : 'Replace'}</em>
+    </button>`;
+  const sceneRows = sceneList.slice(0, 8).map(sceneId =>
+    row(sceneId, pkg.sceneImages.get(sceneId)?.name || 'Missing', true, 'scene', sceneId)
+  );
+  const audioRows = audioList.slice(0, 6).map(audioId =>
+    row(audioId.replace(/_N_A$/i, ''), pkg.audioFiles.get(audioId)?.name || 'Missing', true, 'audio', audioId)
+  );
   box.innerHTML = [
-    row('Story ID', pkg.storyId || 'Not detected', !!pkg.storyId),
-    row('Story TXT', pkg.storyFile?.name || 'Missing', !!pkg.storyFile),
-    row('Cover', pkg.coverFiles[0]?.name || 'Missing', !!pkg.coverFiles.length),
-    row('Background', pkg.backgroundFile?.name || 'Missing', !!pkg.backgroundFile),
-    row('Scene Images', `${sceneList.length} files${sceneList.length ? ` (${sceneList.slice(0, 6).join(', ')}${sceneList.length > 6 ? '...' : ''})` : ''}`, sceneList.length > 0),
-    row('Audio', `${audioList.length} files${audioList.length ? ` (${audioList.slice(0, 4).join(', ')}${audioList.length > 4 ? '...' : ''})` : ''}`, true)
+    row('Story ID', pkg.storyId || 'Not detected', !!pkg.storyId, 'story_id'),
+    row('Story TXT', pkg.storyFile?.name || 'Missing', !!pkg.storyFile, 'story'),
+    row('Cover', pkg.coverFiles[0]?.name || 'Missing', !!pkg.coverFiles.length, 'cover'),
+    row('Background', pkg.backgroundFile?.name || 'Missing', !!pkg.backgroundFile, 'background'),
+    row('Scene Images', `${sceneList.length} files`, sceneList.length > 0, 'scene_any'),
+    ...sceneRows,
+    row('Audio', `${audioList.length} files`, true, 'audio_any'),
+    ...audioRows
   ].join('');
+}
+
+function replaceInputAccept(kind) {
+  if (kind === 'story') return '.txt,text/plain';
+  if (kind === 'audio' || kind === 'audio_any') return '.mp3,.wav,.m4a,.ogg,audio/*';
+  return '.webp,.png,.jpg,.jpeg,.gif,image/*';
+}
+
+function startResourceReplace(kind, key = '') {
+  if (kind === 'story_id') {
+    const current = $('story-id')?.value.trim() || currentStoryPackage?.storyId || '';
+    const next = prompt('Story ID', current);
+    if (next === null) return;
+    const cleaned = next.trim().toUpperCase();
+    if (!/^(OG|CS)\d{4}$/.test(cleaned)) {
+      toast('Use a Story ID such as OG0021 or CS0003.');
+      return;
+    }
+    if (!currentStoryPackage) currentStoryPackage = classifyStoryFiles([]);
+    currentStoryPackage.storyId = cleaned;
+    $('story-id').value = cleaned;
+    updateStoryFromInputs();
+    renderResourceSummary(currentStoryPackage);
+    renderAll();
+    toast(`Story ID updated to ${cleaned}.`);
+    return;
+  }
+  pendingResourceReplaceKind = kind;
+  pendingResourceReplaceKey = key;
+  const input = $('resource-replace-file');
+  if (!input) return;
+  input.accept = replaceInputAccept(kind);
+  input.value = '';
+  input.click();
+}
+
+async function replaceSpecificResourceFile(file) {
+  if (!file || !pendingResourceReplaceKind) return;
+  if (!currentStoryPackage) currentStoryPackage = classifyStoryFiles([]);
+  const kind = pendingResourceReplaceKind;
+  const key = pendingResourceReplaceKey;
+  registerAssetFile(file, file.webkitRelativePath || file.name);
+
+  if (kind === 'story') {
+    if (!isStoryTextFile(file, currentStoryPackage.storyId || storyTextIdFromFileName(file.name))) {
+      toast('Choose a story TXT named like OG0021_Title.txt.');
+      return;
+    }
+    currentStoryPackage.storyFile = file;
+    currentStoryPackage.storyId = storyTextIdFromFileName(file.name) || currentStoryPackage.storyId;
+    currentStoryPackage.title = titleFromStoryFile(file.name, currentStoryPackage.storyId);
+    currentStoryPackage.storyText = await readFileAsText(file);
+    $('story-id').value = currentStoryPackage.storyId || $('story-id').value;
+    $('story-title').value = currentStoryPackage.title || $('story-title').value;
+    $('story-text').value = currentStoryPackage.storyText;
+  } else if (kind === 'cover') {
+    currentStoryPackage.coverFiles = [file];
+    if (quiz) quiz.assets = { ...(quiz.assets || {}), coverImage: file.name };
+  } else if (kind === 'background') {
+    currentStoryPackage.backgroundFile = file;
+    if (quiz) quiz.assets = { ...(quiz.assets || {}), backgroundImage: file.name };
+  } else if (kind === 'scene' || kind === 'scene_any') {
+    const sceneMatch = file.name.match(/_(SC\d{2})_I(?:_\d{3,4}x\d{3,4})?\.(webp|png|jpe?g|gif)$/i);
+    const sceneId = (kind === 'scene' ? key : sceneMatch?.[1] || '').toUpperCase();
+    if (!sceneId) {
+      toast('Choose an image named like OG0021_SC01_I.webp.');
+      return;
+    }
+    currentStoryPackage.sceneImages.set(sceneId, file);
+    if (quiz) {
+      (quiz.questions || []).forEach(q => (q.resources?.images || []).forEach(img => {
+        if ((img.sceneId || img.id || '').toUpperCase() === sceneId) img.path = file.name;
+      }));
+    }
+  } else if (kind === 'audio' || kind === 'audio_any') {
+    const audioMatch = file.name.match(/_(SC\d{2}_ST\d{2}_N_A)\.(mp3|wav|m4a|ogg)$/i);
+    const audioId = (kind === 'audio' ? key : audioMatch?.[1] || '').toUpperCase();
+    if (!audioId) {
+      toast('Choose audio named like OG0021_SC02_ST01_N_A.mp3.');
+      return;
+    }
+    currentStoryPackage.audioFiles.set(audioId, file);
+    if (quiz) {
+      (quiz.questions || []).forEach(q => {
+        const audio = q.resources?.audio;
+        if (audio && ((audio.id || '').toUpperCase() === audioId || `${audio.sceneId}_${audio.sentenceId}_A`.toUpperCase().includes(audioId))) {
+          audio.path = file.name;
+        }
+      });
+    }
+  }
+
+  pendingResourceReplaceKind = '';
+  pendingResourceReplaceKey = '';
+  updateStoryFromInputs();
+  renderResourceSummary(currentStoryPackage);
+  renderAll();
+  toast(`${file.name} updated.`);
 }
 
 async function loadStoryPackage(files) {
@@ -1864,6 +2008,7 @@ function escapeAttr(value) {
 function bindEvents() {
   if ($('story-package')) $('story-package').onchange = e => loadStoryPackage(e.target.files);
   if ($('story-file-replace')) $('story-file-replace').onchange = e => replaceStoryPackageFiles(e.target.files);
+  if ($('resource-replace-file')) $('resource-replace-file').onchange = e => replaceSpecificResourceFile(e.target.files[0]);
   if ($('load-sample-btn')) $('load-sample-btn').onclick = loadSample;
   if ($('quiz-file')) $('quiz-file').onchange = e => loadQuizUploadFiles(e.target.files);
   if ($('batch-file')) $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);

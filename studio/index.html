@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260718-1">
+<link rel="stylesheet" href="static/studio.css?v=20260718-2">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -29,6 +29,7 @@
         <span>TXT, cover, background, scene images, and audio files</span>
         <input type="file" id="story-package" multiple webkitdirectory directory>
       </label>
+      <input type="file" id="resource-replace-file" hidden>
 
       <div class="asset-status" id="package-status">No story folder loaded.</div>
       <div class="resource-summary" id="resource-summary">
@@ -42,8 +43,8 @@
       <label class="field compact-field">
         <span>AI Provider</span>
         <select id="ai-provider">
+          <option value="gemini" selected>Gemini</option>
           <option value="openai">OpenAI</option>
-          <option value="gemini">Gemini</option>
         </select>
       </label>
 
@@ -53,7 +54,7 @@
         <small class="field-note">The key is used only for this browser request and is not saved.</small>
       </label>
 
-      <button class="primary-btn compact-primary" id="generate-ai-btn">AI Generate Quiz</button>
+      <button class="primary-btn compact-primary" id="generate-ai-btn">Generate Quiz</button>
     </section>
 
     <section class="select-story-box">
@@ -193,6 +194,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260718-1"></script>
+<script src="static/studio.js?v=20260718-2"></script>
 </body>
 </html>

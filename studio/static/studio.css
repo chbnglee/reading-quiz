@@ -268,14 +268,17 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
 }
 .resource-row{
   display:grid;
-  grid-template-columns:86px minmax(0,1fr);
+  grid-template-columns:86px minmax(0,1fr) auto;
   gap:8px;
   align-items:start;
+  width:100%;
   padding:8px 9px;
   border-radius:8px;
   border:1px solid var(--ui-line-soft);
   background:#fff;
+  text-align:left;
 }
+.resource-row:hover{background:#F9FAFB;border-color:#9CA3AF}
 .resource-row span{
   color:var(--ui-muted);
   font-size:11px;
@@ -288,6 +291,13 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   font-weight:600;
   line-height:1.35;
   overflow-wrap:anywhere;
+}
+.resource-row em{
+  align-self:center;
+  color:#6B7280;
+  font-size:10px;
+  font-style:normal;
+  font-weight:700;
 }
 .resource-row.warn{
   border-color:#FCD34D;

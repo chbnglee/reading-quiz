@@ -12,6 +12,8 @@ Do NOT redesign the quiz.
 Do NOT change question order.
 Do NOT change question type.
 Do NOT change the Story Grammar axis assigned to a question.
+Return Q1 through Q6 in the exact order below.
+If you are unsure, fill the nearest matching content inside the fixed question instead of changing the task.
 
 You are allowed to choose story-specific scenes, sentences, options, hints, diagnostics, and weights inside the fixed template only.
 
@@ -140,15 +142,21 @@ Asset filenames should follow these patterns:
 
 Hints must be short A1-level English.
 Hints should guide thinking, not reveal the answer directly.
+Every question must have a story-specific hint.
+Do not reuse one generic hint for several questions.
+Use one short sentence, or two very short questions.
+Keep the tone friendly for a young learner.
 
 Examples:
 
-- Q1: `Think about the story from start to end.`
+- Q1: `Milo loses his color and looks for it.`
 - Q2: `Who is there? Where is he?`
-- Q3: `Listen for the character's problem.`
+- Q2 with two or more characters: `Who is there? Where are they?`
+- Q2 when the place is the key: `Who is there? Where does the story start?`
+- Q3: `Listen for the first problem.`
 - Q4: `Start with who. Then find the action.`
 - Q5: `Look at the face and the scene.`
-- Q6: `Think about the character's heart.`
+- Q6: `Think about what the character learns.`
 
 ## Diagnostics
 
