@@ -14,6 +14,15 @@ PROMPT_PATH = ROOT / "prompts" / "story_grammar_v3.md"
 SAMPLE_PATH = ROOT / "samples" / "OG0021_v3.quiz.json"
 PORT = int(os.environ.get("QUIZ_STUDIO_PORT", "5177"))
 
+QUESTION_BLUEPRINT = [
+    {"number": 1, "storyGrammar": "consequence", "type": "story_sequence_drag", "instruction": "Put the story scenes in order.", "promptMode": "drag_sequence"},
+    {"number": 2, "storyGrammar": "setting", "type": "setting_slot_drag", "instruction": "Look at the picture. Fill in the boxes.", "promptMode": "slot_drag"},
+    {"number": 3, "storyGrammar": "initiating_event", "type": "listen_scene_mcq", "instruction": "Listen. Which scene starts the problem?", "promptMode": "image_mcq"},
+    {"number": 4, "storyGrammar": "attempt", "type": "scene_word_unscramble", "instruction": "Put the story words in order.", "promptMode": "word_unscramble"},
+    {"number": 5, "storyGrammar": "reaction", "type": "emotion_mcq", "instruction": "How does the character feel here?", "promptMode": "text_mcq"},
+    {"number": 6, "storyGrammar": "internal_response", "type": "internal_response_mcq", "instruction": "What is the character thinking?", "promptMode": "text_mcq"},
+]
+
 
 def load_dotenv() -> None:
     env_path = ROOT / ".env"
@@ -136,7 +145,7 @@ def rule_based_quiz(payload: dict) -> dict:
         },
         {
             "qId": f"{story_id}_V3_Q02", "number": 2, "type": "setting_slot_drag", "storyGrammar": "setting",
-            "instruction": "Look at the first scene. Fill in the boxes.",
+            "instruction": "Look at the picture. Fill in the boxes.",
             "hint": "Who is there? Where are they?",
             "resources": {"images": [image(first_scene)], "scene": first_scene},
             "interaction": {
@@ -345,6 +354,7 @@ def story_payload_from_row(row: dict, index: int) -> dict:
             "cover": "{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp",
             "background": "{storyId}_Talking_BG_I.webp"
         },
+        "questionBlueprint": QUESTION_BLUEPRINT,
         "assets": {
             "imageBasePath": row.get("image_base_path") or "",
             "audioBasePath": row.get("audio_base_path") or "",

@@ -15,6 +15,11 @@ Quiz Studio is a static/local authoring surface for one Story Grammar reading qu
    - Dev Spec XLSX
    - Reading Quiz HTML
 
+AI generation fills the fixed v3 template. It should not change the six-question
+order, question types, or Story Grammar mapping:
+Q1 Consequence sequencing, Q2 Setting slots, Q3 Initiating Event listening,
+Q4 Attempt unscramble, Q5 Reaction emotion, Q6 Internal Response choice.
+
 ## Expected resource folder
 
 The recommended folder structure matches the v3 production workflow:

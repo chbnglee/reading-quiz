@@ -30,6 +30,15 @@ const $ = (id) => document.getElementById(id);
 const OPENAI_MODEL = 'gpt-4.1-mini';
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
+const QUESTION_BLUEPRINT = [
+  { number: 1, storyGrammar: 'consequence', type: 'story_sequence_drag', instruction: 'Put the story scenes in order.', promptMode: 'drag_sequence' },
+  { number: 2, storyGrammar: 'setting', type: 'setting_slot_drag', instruction: 'Look at the picture. Fill in the boxes.', promptMode: 'slot_drag' },
+  { number: 3, storyGrammar: 'initiating_event', type: 'listen_scene_mcq', instruction: 'Listen. Which scene starts the problem?', promptMode: 'image_mcq' },
+  { number: 4, storyGrammar: 'attempt', type: 'scene_word_unscramble', instruction: 'Put the story words in order.', promptMode: 'word_unscramble' },
+  { number: 5, storyGrammar: 'reaction', type: 'emotion_mcq', instruction: 'How does the character feel here?', promptMode: 'text_mcq' },
+  { number: 6, storyGrammar: 'internal_response', type: 'internal_response_mcq', instruction: 'What is the character thinking?', promptMode: 'text_mcq' }
+];
+
 const BATCH_COLUMNS = [
   'story_id',
   'title',
@@ -89,7 +98,8 @@ function aiInputFromRow(row, index = 0) {
       audio: '{storyId}_SC##_ST##_N_A.mp3',
       cover: '{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp',
       background: '{storyId}_Talking_BG_I.webp'
-    }
+    },
+    questionBlueprint: QUESTION_BLUEPRINT
   };
 }
 
@@ -126,34 +136,117 @@ function hasMeaningfulScoring(q) {
   return !!(q?.scoring?.formula && Array.isArray(q.scoring.components) && q.scoring.components.length);
 }
 
+function hasImageResources(q) {
+  return Array.isArray(q?.resources?.images) && q.resources.images.length > 0;
+}
+
+function hasMcqOptions(q) {
+  return Array.isArray(q?.interaction?.options) && q.interaction.options.length >= 2;
+}
+
+function isTemplateCompatible(baseQ, aiQ) {
+  if (!aiQ) return false;
+  const promptMode = aiQ.interaction?.promptMode || '';
+  if (baseQ.type === 'story_sequence_drag') {
+    return Array.isArray(aiQ.interaction?.correct)
+      && aiQ.interaction.correct.length >= 4
+      && aiQ.interaction.correct.every(value => /^SC\d{2}$/i.test(String(value)))
+      && hasImageResources(aiQ);
+  }
+  if (baseQ.type === 'setting_slot_drag') {
+    return Array.isArray(aiQ.interaction?.slots)
+      && Array.isArray(aiQ.interaction?.items)
+      && aiQ.interaction.slots.length >= 3
+      && aiQ.interaction.items.length >= 3;
+  }
+  if (baseQ.type === 'listen_scene_mcq') {
+    return hasMcqOptions(aiQ) && hasImageResources(aiQ);
+  }
+  if (baseQ.type === 'scene_word_unscramble') {
+    return Array.isArray(aiQ.interaction?.correct)
+      && aiQ.interaction.correct.length >= 3
+      && hasImageResources(aiQ);
+  }
+  if (baseQ.type === 'emotion_mcq' || baseQ.type === 'internal_response_mcq') {
+    return hasMcqOptions(aiQ);
+  }
+  return promptMode === baseQ.interaction?.promptMode;
+}
+
+function isInstructionCompatible(baseQ, instruction) {
+  const value = String(instruction || '').trim();
+  if (!value) return false;
+  if (baseQ.type === 'emotion_mcq') return /^How does .+ feel here\?$/i.test(value);
+  if (baseQ.type === 'internal_response_mcq') return /^What is .+ thinking\?$/i.test(value);
+  return value === baseQ.instruction;
+}
+
+function templateScoringForQuestion(q) {
+  if (q.type === 'story_sequence_drag') {
+    const sequence = Array.isArray(q.interaction?.correct) && q.interaction.correct.length
+      ? q.interaction.correct
+      : (q.interaction?.items || []);
+    return weightedPosition(sequence);
+  }
+  if (q.type === 'setting_slot_drag') return settingScoring();
+  if (q.type === 'scene_word_unscramble') {
+    const words = Array.isArray(q.interaction?.correct) ? q.interaction.correct : [];
+    return wordScoring(words);
+  }
+  if (hasMcqOptions(q)) {
+    return {
+      type: 'fixed_option_score',
+      maxScore: 100,
+      formula: 'score = selected_option.score',
+      components: q.interaction.options.map(opt => ({
+        key: opt.key,
+        weight: Number(opt.score) || 0,
+        rule: 'option_score',
+        correctValue: !!opt.isCorrect,
+        rationale: opt.diagnostic || (opt.isCorrect ? 'Correct option.' : 'Distractor option.')
+      }))
+    };
+  }
+  return q.scoring || fixedScoring();
+}
+
 function mergeQuestionDraft(baseQ, aiQ) {
   if (!aiQ) return baseQ;
   const merged = deepClone(baseQ);
-  merged.qId = aiQ.qId || merged.qId;
-  merged.number = aiQ.number || merged.number;
-  merged.storyGrammar = aiQ.storyGrammar || merged.storyGrammar;
-  merged.type = aiQ.type || merged.type;
-  if (aiQ.instruction) merged.instruction = aiQ.instruction;
+  if (!isTemplateCompatible(baseQ, aiQ)) return merged;
+  merged.qId = baseQ.qId;
+  merged.number = baseQ.number;
+  merged.storyGrammar = baseQ.storyGrammar;
+  merged.type = baseQ.type;
+  merged.instruction = isInstructionCompatible(baseQ, aiQ.instruction) ? aiQ.instruction : baseQ.instruction;
   if (aiQ.hint) merged.hint = aiQ.hint;
   if (aiQ.resources && (aiQ.resources.images || aiQ.resources.audio || aiQ.resources.scene)) merged.resources = aiQ.resources;
   if (hasMeaningfulInteraction(aiQ)) merged.interaction = aiQ.interaction;
-  if (hasMeaningfulScoring(aiQ)) merged.scoring = aiQ.scoring;
   if (Array.isArray(aiQ.diagnostics) && aiQ.diagnostics.length) merged.diagnostics = aiQ.diagnostics;
-  if (aiQ.lrs?.objectId) merged.lrs = aiQ.lrs;
+  merged.scoring = templateScoringForQuestion(merged);
+  merged.lrs = baseQ.lrs;
   return merged;
 }
 
 function completeGeneratedQuiz(generatedQuiz, row = {}) {
   const base = quizFromBatchRow(normalizeBatchRow(row, 0));
   const incoming = applyDefaultAssetsToQuiz(generatedQuiz, row);
-  const byAxis = new Map((incoming.questions || []).map(q => [q.storyGrammar, q]));
-  const byNumber = new Map((incoming.questions || []).map(q => [Number(q.number), q]));
+  const incomingQuestions = incoming.questions || [];
   const completed = deepClone(base);
   completed.schemaVersion = incoming.schemaVersion || base.schemaVersion;
   completed.story = { ...base.story, ...(incoming.story || {}) };
   completed.assets = { ...base.assets, ...(incoming.assets || {}) };
   completed.storyGrammarAxes = Array.isArray(incoming.storyGrammarAxes) && incoming.storyGrammarAxes.length ? incoming.storyGrammarAxes : base.storyGrammarAxes;
-  completed.questions = base.questions.map(baseQ => mergeQuestionDraft(baseQ, byAxis.get(baseQ.storyGrammar) || byNumber.get(baseQ.number)));
+  completed.questions = base.questions.map(baseQ => {
+    const candidates = [
+      ...incomingQuestions.filter(q => Number(q.number) === baseQ.number && q.storyGrammar === baseQ.storyGrammar),
+      ...incomingQuestions.filter(q => q.storyGrammar === baseQ.storyGrammar),
+      ...incomingQuestions.filter(q => Number(q.number) === baseQ.number),
+      ...incomingQuestions.filter(q => q.type === baseQ.type)
+    ];
+    const aiQ = candidates.find(q => isTemplateCompatible(baseQ, q));
+    return mergeQuestionDraft(baseQ, aiQ);
+  });
   completed.reporting = incoming.reporting || base.reporting;
   completed.generation = incoming.generation || base.generation;
   return applyDefaultAssetsToQuiz(completed, row);
@@ -501,7 +594,8 @@ async function generateAiDraft() {
         audio: '{storyId}_SC##_ST##_N_A.mp3',
         cover: '{storyId}_Cover_L_I.webp or {storyId}_Cover_L_I_1920x1080.webp',
         background: '{storyId}_Talking_BG_I.webp'
-      }
+      },
+      questionBlueprint: QUESTION_BLUEPRINT
     }
   };
   if (apiKey) payload.apiKey = apiKey;
@@ -602,7 +696,7 @@ function buildRuleDraft(payload) {
     storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
     questions: [
       mkQ(1, 'story_sequence_drag', 'consequence', 'Put the story scenes in order.', 'Think about the story from start to end.', { images: sequence.map(image) }, { promptMode: 'drag_sequence', items: sequence, correct: sequence }, weightedPosition(sequence)),
-      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the first scene. Fill in the boxes.', 'Who is there? Where are they?', { images: [image(first)], scene: first }, settingInteraction(), settingScoring()),
+      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the picture. Fill in the boxes.', 'Who is there? Where are they?', { images: [image(first)], scene: first }, settingInteraction(), settingScoring()),
       mkQ(3, 'listen_scene_mcq', 'initiating_event', 'Listen. Which scene starts the problem?', 'Listen for the first big change.', { images: sequence.slice(0, 4).map(image), audio: { id: `${event}_ST01_N_A`, path: `${storyId}_${event}_ST01_N_A.mp3`, kind: 'audio', sceneId: event, sentenceId: `${event}_ST01_N` } }, imageOptions(sequence.slice(0, 4), event), fixedScoring()),
       mkQ(4, 'scene_word_unscramble', 'attempt', 'Put the story words in order.', 'Find who. Then find the action.', { images: [image(attempt)], scene: attempt, sentenceId: attemptSentence.sentenceId }, { promptMode: 'word_unscramble', items: [...words].reverse(), correct: words }, wordScoring(words)),
       mkQ(5, 'emotion_mcq', 'reaction', 'How does the character feel here?', 'Look at the face and the scene.', { images: [image(reaction)], scene: reaction }, emotionOptions(), fixedScoring()),

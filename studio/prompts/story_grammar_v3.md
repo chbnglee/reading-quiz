@@ -1,26 +1,48 @@
-# Story Grammar Quiz v3 Generation Prompt
+# Story Grammar Quiz v3 Template-Fill Prompt
 
-You are generating a draft reading quiz for a young English learner.
+You are filling a fixed Story Grammar quiz template for a young English learner.
 
-Return ONLY valid JSON that follows `quiz-v3.0`.
+Return ONLY valid JSON.
 Do not wrap the JSON in Markdown.
 Do not add comments.
 
-## Goal
+## Core Rule
 
-Create exactly 6 quiz questions.
-Each question must map to exactly one Story Grammar axis:
+Do NOT redesign the quiz.
+Do NOT change question order.
+Do NOT change question type.
+Do NOT change the Story Grammar axis assigned to a question.
 
-1. `setting`
-2. `initiating_event`
-3. `attempt`
-4. `reaction`
-5. `internal_response`
-6. `consequence`
+You are allowed to choose story-specific scenes, sentences, options, hints, diagnostics, and weights inside the fixed template only.
 
-Do not create Synthesis or a seventh question.
+The final quiz MUST contain exactly this blueprint:
 
-The question order may follow the story flow. The six axes must all be included once.
+1. Q1: `consequence` / `story_sequence_drag`
+   - instruction: `Put the story scenes in order.`
+   - task: choose 5 scenes that show the whole story flow from beginning to outcome.
+
+2. Q2: `setting` / `setting_slot_drag`
+   - instruction: `Look at the picture. Fill in the boxes.`
+   - task: use one opening scene image and 3 slots: `Who?`, `Where?`, `At first...`.
+
+3. Q3: `initiating_event` / `listen_scene_mcq`
+   - instruction: `Listen. Which scene starts the problem?`
+   - task: use one audio sentence from the scene where the problem begins, plus image choices.
+
+4. Q4: `attempt` / `scene_word_unscramble`
+   - instruction: `Put the story words in order.`
+   - task: use an exact story sentence that shows what the character does to handle the problem.
+
+5. Q5: `reaction` / `emotion_mcq`
+   - instruction may use a character name, e.g. `How does Milo feel here?`
+   - task: ask the character's feeling in one scene.
+
+6. Q6: `internal_response` / `internal_response_mcq`
+   - instruction may use a character name, e.g. `What is Milo thinking?`
+   - task: ask what the character thinks, realizes, wants, or understands.
+
+There is no Synthesis question.
+There is no seventh question.
 
 ## Input
 
@@ -29,79 +51,127 @@ The user provides:
 - `storyId`
 - `title`
 - `level`
-- story text split by scene codes such as `SC01_ST01_N`
-- available image filenames such as `{storyId}_SC01_I.webp`, `{storyId}_SC01_I_1920x1080.webp`, or equivalent `.png` files
-- available audio filenames such as `{storyId}_SC02_ST01_N_A.mp3`
-- available cover/background filenames such as `{storyId}_Cover_L_I_1920x1080.webp` and `{storyId}_Talking_BG_I.webp`
+- `storyText`, split by scene codes such as `SC01_ST01_N`
+- `assetNaming`
+- `questionBlueprint`
 
 Use only `_N` story sentences as source text.
 Ignore `_E` and `_D` versions if present.
 
-## Required Design Principles
+Asset filenames should follow these patterns:
 
-- The quiz should feel like a digital activity, not a paper test.
-- Use no more than 3 plain multiple-choice questions.
-- Prefer varied interactions:
-  - scene sequencing
-  - setting slot fill
-  - listening scene choice
-  - scene-based word unscramble
-  - emotion choice
-  - internal response choice
-- Keep learner-facing instructions short, direct, and A1-friendly.
-- Hints must be short A1-level English.
-- Hints should guide thinking, not reveal the answer directly.
-- Use story sentences exactly for word unscramble questions.
-- For word unscramble questions, keep articles with the following noun when possible. For example, use `the forest.`, `a stone.`, or `The Cat` as one token instead of splitting the article into a separate card.
-- Use image and audio filenames that match the provided assets.
+- image: `{storyId}_SC##_I.webp` or `{storyId}_SC##_I_1920x1080.webp`
+- audio: `{storyId}_SC##_ST##_N_A.mp3`
+- cover: `{storyId}_Cover_L_I.webp` or `{storyId}_Cover_L_I_1920x1080.webp`
+- background: `{storyId}_Talking_BG_I.webp`
 
-## Scoring Rules
+## Question Design Rules
 
-Every question score is 0-100.
+### Q1 Consequence / Sequencing
 
-For `story_sequence_drag`:
+- Select 5 scenes that show the full story arc.
+- Do not select scenes clustered only near the ending.
+- Prefer:
+  - opening state
+  - problem begins
+  - attempt/action
+  - result or reaction
+  - final outcome
+- `interaction.correct` must be an array of scene IDs in correct story order.
+- `interaction.items` may use the same scene IDs.
+- Scoring must use weighted position-distance scoring.
+- First and last scenes should usually have higher weights.
 
-- Use weighted position-distance scoring.
-- Important anchor scenes should have higher weight.
-- Adjacent placement may receive partial credit.
-- Far placement should receive little or no credit.
+### Q2 Setting / Slot Fill
 
-For `setting_slot_drag`:
+- Use the first meaningful setting scene, usually SC01.
+- Use exactly 3 slots:
+  - `who` label `Who?`
+  - `where` label `Where?`
+  - `at_first` label `At first...`
+- Use 6 word/phrase cards total:
+  - 3 correct cards
+  - 3 distractors
+- Cards must be short, A1-friendly phrases.
+- The `At first...` answer should be a verb phrase from the story when possible.
+- Example: `loves changing colors`, not a full sentence.
+- Scoring must use weighted slot matching with 35% same-category partial credit.
 
-- Give full credit for exact slot-card match.
-- Give partial credit when the card belongs to the same category but is not the best answer.
-- Give 0 for wrong category.
+### Q3 Initiating Event / Listening Scene Choice
 
-For fixed-option questions:
+- Choose the scene where the real problem starts.
+- The audio file must match an exact `_N` sentence from that scene.
+- Use image options with no duplicate-answer risk.
+- If two images could both look correct, replace one with a clearer distractor.
+- Correct option score is 100.
+- Plausible nearby-event distractors may receive partial score.
+- Irrelevant or reversed distractors receive low or 0 score.
 
-- Each option has its own score.
-- Correct option is 100.
-- Plausible distractors may receive partial scores.
-- Implausible or reversed understanding receives low or 0 score.
+### Q4 Attempt / Scene Word Unscramble
 
-For `scene_word_unscramble`:
+- Use an exact story sentence from the story text.
+- The sentence must show an action/attempt by the character.
+- Do not invent a new sentence.
+- Keep articles with the following noun when possible:
+  - `the forest.`
+  - `a stone.`
+  - `The Cat`
+- Use exact-position weighted word scoring.
+- Do not use distance-based partial credit for words.
 
-- Use exact-position weighted scoring.
-- Do not give distance-based partial credit; word order errors should show sentence-structure weakness.
-- Heavier weights should go to the actor/action/result words.
+### Q5 Reaction / Emotion
+
+- Use a scene where the character's emotion is visible or inferable.
+- Use the character's name in the instruction if the name is clear.
+- Use 4 short emotion options.
+- Correct option score is 100.
+- Similar emotions may receive partial score.
+- Opposite or unrelated emotions receive low or 0 score.
+
+### Q6 Internal Response
+
+- Use a scene where the character thinks, realizes, decides, or understands something.
+- Use the character's name in the instruction if the name is clear.
+- Use 4 options.
+- The correct answer should be clear without requiring hidden context.
+- Avoid vague pronouns such as `they`, `it`, or `that` when they are unclear.
+
+## Hints
+
+Hints must be short A1-level English.
+Hints should guide thinking, not reveal the answer directly.
+
+Examples:
+
+- Q1: `Think about the story from start to end.`
+- Q2: `Who is there? Where is he?`
+- Q3: `Listen for the character's problem.`
+- Q4: `Start with who. Then find the action.`
+- Q5: `Look at the face and the scene.`
+- Q6: `Think about the character's heart.`
 
 ## Diagnostics
 
 For each incorrect or partial option, include a short Korean diagnostic.
-Diagnostics should explain the likely comprehension gap, not only say "wrong".
+Diagnostics should explain the likely comprehension gap.
 
-## Reporting
+Use polite report style ending such as `혼동합니다.`, `확인이 필요합니다.`, or `보완이 필요합니다.`
+Do not end diagnostics with only a noun phrase or `혼동함`.
 
-The report uses only the 6 Story Grammar axes.
-Overall score is:
+## Scoring
 
-`overall = average(setting, initiating_event, attempt, reaction, internal_response, consequence)`
+Every question score is 0-100.
 
-Parent feedback should be Korean and actionable.
+Use these formulas:
 
-## Output
+- Q1: `score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)`
+- Q2: `score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)`
+- Q3/Q5/Q6: `score = selected_option.score`
+- Q4: `score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)`
 
-Return a single JSON object with:
+## Output Shape
+
+Return one JSON object with:
 
 - `schemaVersion`: `quiz-v3.0`
 - `story`
@@ -111,9 +181,7 @@ Return a single JSON object with:
 - `reporting`
 - `generation`
 
-## Required JSON Shape
-
-Every question object MUST include all of these fields:
+Every question object must include:
 
 - `qId`
 - `number`
@@ -127,55 +195,4 @@ Every question object MUST include all of these fields:
 - `diagnostics`
 - `lrs`
 
-Do not return hint-only questions. A question is incomplete if it does not have an instruction, resources, interaction items/options, and scoring components.
-
-Use this shape for each question:
-
-```json
-{
-  "qId": "OG0000_V3_Q01",
-  "number": 1,
-  "type": "story_sequence_drag",
-  "storyGrammar": "consequence",
-  "instruction": "Put the story scenes in order.",
-  "hint": "Think about the story from start to end.",
-  "resources": {
-    "images": [
-      { "id": "SC01", "path": "OG0000_SC01_I.webp", "kind": "image", "sceneId": "SC01" }
-    ]
-  },
-  "interaction": {
-    "promptMode": "drag_sequence",
-    "items": ["SC01", "SC02", "SC03", "SC04", "SC05"],
-    "correct": ["SC01", "SC02", "SC03", "SC04", "SC05"]
-  },
-  "scoring": {
-    "type": "weighted_position",
-    "maxScore": 100,
-    "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
-    "components": [
-      { "key": "SC01", "weight": 2.5, "rule": "position_distance", "correctValue": 1, "rationale": "Opening anchor scene." }
-    ]
-  },
-  "diagnostics": [
-    { "code": "sequence_gap", "threshold": 70, "messageKo": "사건의 흐름을 다시 확인하는 연습이 필요합니다." }
-  ],
-  "lrs": {
-    "verb": "answered",
-    "objectId": "quiz_OG0000_v3_Q01_consequence",
-    "resultFields": ["score_raw", "hint_used"]
-  }
-}
-```
-
-For multiple-choice questions, `interaction.options` MUST contain at least 4 options. Each option MUST include:
-
-- `key`
-- `text`
-- `score`
-- `isCorrect`
-- `diagnostic` for incorrect or partial options
-
-For slot/drag/unscramble questions, `interaction.items` and `interaction.correct` or `interaction.slots` MUST be filled.
-
-For every question, `scoring.components` MUST contain the weights and rules needed to calculate the score.
+Even if you are unsure, keep the fixed blueprint. Never replace a drag, slot, listen, or unscramble question with a plain multiple-choice question.
