@@ -345,6 +345,170 @@ function normalizeQuestionForTemplate(q, storyText = '') {
   return normalized;
 }
 
+function placeholderText(value) {
+  const text = String(value || '').trim().toLowerCase();
+  return !text
+    || ['main_character', 'main character', 'main_place', 'main place', 'story place', 'other character', 'first action', 'later problem', 'other place', 'opening_state', 'opening state'].includes(text)
+    || /^item \d+$/.test(text);
+}
+
+function contaminatedHint(value, storyText = '') {
+  const text = String(value || '').trim();
+  const lower = text.toLowerCase();
+  if (!text) return true;
+  if (text.length > 120) return true;
+  if (/(wait|example|specific for this story|let's make|do not|a1-level|prompt|template|instruction)/i.test(text)) return true;
+  if (/milo/i.test(text) && !/milo/i.test(storyText || '')) return true;
+  if (/podo|didi/i.test(text) && !/podo|didi/i.test(storyText || '')) return true;
+  return false;
+}
+
+function contaminatedVisibleText(value, storyText = '') {
+  const text = String(value || '').trim();
+  if (!text) return true;
+  if (text.length > 140) return true;
+  if (/(wait|example|specific for this story|let's make|do not|a1-level|prompt|template|json|schema|instruction)/i.test(text)) return true;
+  if (/milo/i.test(text) && !/milo/i.test(storyText || '')) return true;
+  return false;
+}
+
+function firstSceneText(storyText = '') {
+  const scenes = parseStory(storyText || '');
+  return (scenes[0]?.sentences || []).map(sentence => sentence.text).join(' ');
+}
+
+function storyNamesFromText(text = '') {
+  const cleaned = String(text || '').replace(/["“”]/g, ' ');
+  const namedMatch = cleaned.match(/\bnamed\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/);
+  if (namedMatch) return [namedMatch[1], namedMatch[2]].filter(Boolean).join(' and ');
+  const objectName = cleaned.match(/\b(the\s+[A-Z][a-z]+(?:\s+[a-z]+)?)/i);
+  if (objectName) return objectName[1].replace(/\s+/g, ' ').replace(/^The\b/, 'the');
+  const names = [...cleaned.matchAll(/\b[A-Z][a-z]{2,}\b/g)]
+    .map(match => match[0])
+    .filter(word => !['The','A','An','On','In','At','One','Once','Long','Deep','Suddenly','But'].includes(word));
+  return [...new Set(names)].slice(0, 2).join(' and ') || 'the character';
+}
+
+function storyPlaceFromText(text = '') {
+  const match = String(text || '').match(/\b(in|at|on|near|inside|into|under|over)\s+(the\s+|a\s+|an\s+)?([a-z]+(?:\s+[a-z]+){0,3})/i);
+  if (!match) return 'the story place';
+  return `${match[1].toLowerCase()} ${match[2] || ''}${match[3]}`.replace(/\s+/g, ' ').trim();
+}
+
+function openingStateFromText(text = '') {
+  const sentence = String(text || '').split(/[.!?]/)[0] || '';
+  const namedSubject = storyNamesFromText(sentence);
+  if (namedSubject && namedSubject !== 'the character') {
+    const escaped = namedSubject.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const subjectMatch = sentence.match(new RegExp(`^\\s*${escaped}\\s+(.+)$`, 'i'));
+    if (subjectMatch?.[1]) return subjectMatch[1].trim().replace(/^[A-Z]/, ch => ch.toLowerCase());
+  }
+  const afterComma = sentence.includes(',') ? sentence.split(',').slice(1).join(',').trim() : sentence.trim();
+  const words = afterComma.split(/\s+/).filter(Boolean);
+  if (words.length <= 4) return afterComma.toLowerCase() || 'starts the story';
+  return words.slice(Math.max(0, words.length - 4)).join(' ').replace(/^[A-Z]/, ch => ch.toLowerCase());
+}
+
+function fallbackSettingInteraction(storyText = '') {
+  const opening = firstSceneText(storyText);
+  const who = storyNamesFromText(opening);
+  const where = storyPlaceFromText(opening);
+  const atFirst = openingStateFromText(opening);
+  const distractors = [
+    { key: 'other_character', text: who.includes(' and ') ? 'one friend' : 'another character', slot: 'who' },
+    { key: 'other_place', text: 'another place', slot: 'where' },
+    { key: 'later_event', text: 'the problem starts', slot: 'at_first' }
+  ];
+  return normalizeSettingInteraction({
+    promptMode: 'slot_drag',
+    slots: [
+      { key: 'who', label: 'Who?', correct: 'setting_who' },
+      { key: 'where', label: 'Where?', correct: 'setting_where' },
+      { key: 'at_first', label: 'At first...', correct: 'setting_first' }
+    ],
+    items: [
+      { key: 'setting_who', text: who, slot: 'who' },
+      { key: 'setting_where', text: where, slot: 'where' },
+      { key: 'setting_first', text: atFirst, slot: 'at_first' },
+      ...distractors
+    ],
+    correct: { who: 'setting_who', where: 'setting_where', at_first: 'setting_first' }
+  });
+}
+
+function fallbackHint(q, storyText = '') {
+  const opening = firstSceneText(storyText);
+  const who = storyNamesFromText(opening);
+  if (q.type === 'story_sequence_drag') return 'Think about what happens first and last.';
+  if (q.type === 'setting_slot_drag') {
+    const plural = /\sand\s/.test(who);
+    return plural ? 'Who is there? Where are they?' : 'Who is there? Where does the story start?';
+  }
+  if (q.type === 'listen_scene_mcq') return 'Listen for the first problem.';
+  if (q.type === 'scene_word_unscramble') return 'Start with who. Then find the action.';
+  if (q.type === 'emotion_mcq') return 'Look at the face and the scene.';
+  if (q.type === 'internal_response_mcq') return 'Think about what the character learns.';
+  return 'Look at the story clues.';
+}
+
+function reconcileQuizResourcesWithPackage(qz) {
+  if (!qz || !currentStoryPackage) return qz;
+  qz.assets = qz.assets || {};
+  if (currentStoryPackage.backgroundFile) qz.assets.backgroundImage = currentStoryPackage.backgroundFile.name;
+  if (currentStoryPackage.coverFiles?.[0]) qz.assets.coverImage = currentStoryPackage.coverFiles[0].name;
+  (qz.questions || []).forEach(q => {
+    q.resources = q.resources || {};
+    if (Array.isArray(q.resources.images)) {
+      q.resources.images.forEach(img => {
+        const scene = (img.sceneId || img.id || sceneIdFromPath(img.path) || '').toUpperCase();
+        const file = packageImageFileForScene(scene);
+        if (file) {
+          img.path = file.name;
+          img.sceneId = scene;
+          img.id = img.id || scene;
+        }
+      });
+    }
+    const scene = q.resources.scene || sceneIdFromPath(q.resources?.images?.[0]?.path);
+    if ((!q.resources.images || !q.resources.images.length) && scene) {
+      const file = packageImageFileForScene(scene);
+      if (file) q.resources.images = [{ id: scene, path: file.name, kind: 'image', sceneId: scene }];
+    }
+    const audio = q.resources.audio;
+    if (audio) {
+      const audioId = (audio.id || sentenceAudioIdFromPath(audio.path) || `${audio.sceneId || ''}_${audio.sentenceId || ''}_A`).toUpperCase();
+      const file = packageAudioFileForId(audioId);
+      if (file) audio.path = file.name;
+    }
+  });
+  return qz;
+}
+
+function sanitizeGeneratedQuiz(qz) {
+  if (!qz) return qz;
+  const storyText = qz.story?.text || '';
+  (qz.questions || []).forEach(q => {
+    if (contaminatedHint(q.hint, storyText)) q.hint = fallbackHint(q, storyText);
+    if (q.type === 'setting_slot_drag') {
+      const items = q.interaction?.items || [];
+      const placeholderCount = items.filter(item => placeholderText(item.text || item.key)).length;
+      const dirtyItem = items.some(item => contaminatedVisibleText(item.text || item.key, storyText));
+      if (items.length < 6 || placeholderCount >= Math.ceil(items.length / 2) || dirtyItem) {
+        q.interaction = fallbackSettingInteraction(storyText);
+        q.scoring = settingScoring(q.interaction.correct);
+      }
+    }
+    if ((q.type === 'emotion_mcq' || q.type === 'internal_response_mcq') && Array.isArray(q.interaction?.options)) {
+      const dirtyOption = q.interaction.options.some(opt => contaminatedVisibleText(opt.text || opt.key, storyText));
+      if (dirtyOption) {
+        q.interaction = q.type === 'emotion_mcq' ? emotionOptions() : internalOptions();
+        q.scoring = templateScoringForQuestion(q);
+      }
+    }
+  });
+  return reconcileQuizResourcesWithPackage(qz);
+}
+
 function completeGeneratedQuiz(generatedQuiz, row = {}) {
   const base = quizFromBatchRow(normalizeBatchRow(row, 0));
   const incoming = applyDefaultAssetsToQuiz(generatedQuiz, row);
@@ -360,7 +524,7 @@ function completeGeneratedQuiz(generatedQuiz, row = {}) {
   }).map(q => normalizeQuestionForTemplate(q, completed.story?.text || row.story_text || ''));
   completed.reporting = incoming.reporting || base.reporting;
   completed.generation = incoming.generation || base.generation;
-  return applyDefaultAssetsToQuiz(completed, row);
+  return sanitizeGeneratedQuiz(applyDefaultAssetsToQuiz(completed, row));
 }
 
 async function callOpenAiInBrowser(prompt, userPayload, apiKey) {
@@ -551,6 +715,26 @@ function resolvedAssetFileName(pathValue) {
   return findLocalAssetFile(pathValue)?.name || fileName(pathValue);
 }
 
+function sceneIdFromPath(pathValue) {
+  const match = String(pathValue || '').match(/(SC\d{2})/i);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function sentenceAudioIdFromPath(pathValue) {
+  const match = String(pathValue || '').match(/(SC\d{2}_ST\d{2}_N_A)/i);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function packageImageFileForScene(sceneId) {
+  if (!sceneId || !currentStoryPackage?.sceneImages) return null;
+  return currentStoryPackage.sceneImages.get(String(sceneId).toUpperCase()) || null;
+}
+
+function packageAudioFileForId(audioId) {
+  if (!audioId || !currentStoryPackage?.audioFiles) return null;
+  return currentStoryPackage.audioFiles.get(String(audioId).toUpperCase()) || null;
+}
+
 function imagesForQuestion(q) {
   const images = Array.isArray(q?.resources?.images) ? q.resources.images : [];
   if (images.length) return images;
@@ -561,8 +745,9 @@ function imagesForQuestion(q) {
 }
 
 function imageHtml(resource, className = '') {
-  const url = assetUrl(resource?.path, 'image');
-  const scene = resource?.sceneId || resource?.id || 'Scene';
+  const scene = resource?.sceneId || resource?.id || sceneIdFromPath(resource?.path) || 'Scene';
+  const packageFile = packageImageFileForScene(scene);
+  const url = packageFile ? findLocalAssetUrl(packageFile.name) : assetUrl(resource?.path, 'image');
   return `<div class="scene-card ${className}">
     <img src="${escapeAttr(url)}" alt="${escapeAttr(scene)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
     <div class="scene-fallback" style="display:none">${escapeHtml(scene)}</div>
@@ -570,7 +755,9 @@ function imageHtml(resource, className = '') {
 }
 
 function playPreviewAudio(pathValue) {
-  const url = assetUrl(pathValue, 'audio');
+  const audioId = sentenceAudioIdFromPath(pathValue);
+  const packageFile = packageAudioFileForId(audioId);
+  const url = packageFile ? findLocalAssetUrl(packageFile.name) : assetUrl(pathValue, 'audio');
   if (!url) {
     toast('Audio file is missing.');
     return;
@@ -1393,7 +1580,7 @@ async function loadStoryPackage(files) {
   }
 
   const row = currentStoryRow();
-  quiz = quizFromBatchRow(row);
+  quiz = sanitizeGeneratedQuiz(quizFromBatchRow(row));
   currentQuestionIndex = 0;
   currentBatchIndex = -1;
   renderAll();

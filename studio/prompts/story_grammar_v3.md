@@ -161,6 +161,8 @@ Keep the tone friendly for a young learner.
 
 Examples:
 
+These are style examples only. Do NOT copy these exact example hints into the output unless the story really contains the same character and event.
+
 - Q1: `Milo loses his color and looks for it.`
 - Q2: `Who is there? Where is he?`
 - Q2 with two or more characters: `Who is there? Where are they?`
@@ -218,3 +220,4 @@ Every question object must include:
 - `lrs`
 
 Even if you are unsure, keep the fixed blueprint. Never replace a drag, slot, listen, or unscramble question with a plain multiple-choice question.
+Never include prompt commentary such as "wait", "example", "let's make it", or "specific for this story" in any visible quiz text.
