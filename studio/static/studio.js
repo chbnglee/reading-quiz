@@ -157,9 +157,11 @@ function isTemplateCompatible(baseQ, aiQ) {
   }
   if (baseQ.type === 'setting_slot_drag') {
     return Array.isArray(aiQ.interaction?.slots)
-      && Array.isArray(aiQ.interaction?.items)
       && aiQ.interaction.slots.length >= 3
-      && aiQ.interaction.items.length >= 3;
+      && (
+        (Array.isArray(aiQ.interaction?.items) && aiQ.interaction.items.length >= 3)
+        || (Array.isArray(aiQ.interaction?.options) && aiQ.interaction.options.length >= 3)
+      );
   }
   if (baseQ.type === 'listen_scene_mcq') {
     return hasMcqOptions(aiQ) && hasImageResources(aiQ);
@@ -208,7 +210,7 @@ function templateScoringForQuestion(q) {
       : (q.interaction?.items || []);
     return weightedPosition(sequence);
   }
-  if (q.type === 'setting_slot_drag') return settingScoring();
+  if (q.type === 'setting_slot_drag') return settingScoring(q.interaction?.correct);
   if (q.type === 'scene_word_unscramble') {
     const words = Array.isArray(q.interaction?.correct) ? q.interaction.correct : [];
     return wordScoring(words);
@@ -248,6 +250,101 @@ function mergeQuestionDraft(baseQ, aiQ) {
   return merged;
 }
 
+function slugKey(value, fallback) {
+  const slug = String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return slug || fallback;
+}
+
+function normalizeSettingItem(item, index) {
+  if (typeof item === 'string') {
+    return { key: slugKey(item, `item_${index + 1}`), text: item, slot: '' };
+  }
+  const text = item?.text || item?.label || item?.value || item?.key || `item ${index + 1}`;
+  return {
+    ...item,
+    key: item?.key || slugKey(text, `item_${index + 1}`),
+    text,
+    slot: item?.slot || item?.category || ''
+  };
+}
+
+function normalizeSettingInteraction(interaction = {}) {
+  const aiSlots = Array.isArray(interaction.slots) ? interaction.slots : [];
+  const fixedSlots = [
+    { key: 'who', label: 'Who?', weight: 2.5 },
+    { key: 'where', label: 'Where?', weight: 2 },
+    { key: 'at_first', label: 'At first...', weight: 1.5 }
+  ];
+  const sourceItems = Array.isArray(interaction.items) && interaction.items.length
+    ? interaction.items
+    : (Array.isArray(interaction.options) ? interaction.options : []);
+  const items = sourceItems.map(normalizeSettingItem);
+  const itemByKey = new Map(items.map(item => [String(item.key), item]));
+  const correct = {};
+  const slots = fixedSlots.map(slot => {
+    const aiSlot = aiSlots.find(s => s.key === slot.key || s.label === slot.label) || {};
+    let correctValue = interaction.correct?.[slot.key] || aiSlot.correct || slot.correct;
+    if (correctValue && !itemByKey.has(String(correctValue))) {
+      const matchedItem = items.find(item => String(item.text || '').toLowerCase() === String(correctValue).toLowerCase());
+      if (matchedItem) {
+        correctValue = matchedItem.key;
+      }
+    }
+    if (correctValue && !itemByKey.has(String(correctValue))) {
+      const text = String(correctValue);
+      const key = `${slot.key}_${slugKey(text, 'correct')}`;
+      const newItem = { key, text, slot: slot.key, diagnostic: aiSlot.diagnostic || '' };
+      items.push(newItem);
+      itemByKey.set(key, newItem);
+      correctValue = key;
+    }
+    correct[slot.key] = correctValue || slot.correct || `${slot.key}_correct`;
+    return { ...slot, ...aiSlot, key: slot.key, label: slot.label, correct: correct[slot.key], weight: slot.weight };
+  });
+  return {
+    ...interaction,
+    promptMode: 'slot_drag',
+    slots,
+    items,
+    correct
+  };
+}
+
+function storySentenceTextById(storyText, sentenceId) {
+  if (!sentenceId) return '';
+  for (const scene of parseStory(storyText || '')) {
+    const found = (scene.sentences || []).find(sentence => sentence.sentenceId === sentenceId);
+    if (found) return found.text;
+  }
+  return '';
+}
+
+function normalizeQuestionForTemplate(q, storyText = '') {
+  const normalized = deepClone(q);
+  if (normalized.type === 'setting_slot_drag') {
+    normalized.interaction = normalizeSettingInteraction(normalized.interaction || {});
+    normalized.scoring = settingScoring(normalized.interaction.correct);
+  }
+  if (normalized.type === 'scene_word_unscramble') {
+    const sentence = storySentenceTextById(storyText, normalized.resources?.sentenceId);
+    const source = sentence || (Array.isArray(normalized.interaction?.correct) ? normalized.interaction.correct.join(' ') : '');
+    const tokens = storyWordTokens(source);
+    if (tokens.length >= 3) {
+      normalized.interaction = {
+        ...(normalized.interaction || {}),
+        promptMode: 'word_unscramble',
+        correct: tokens,
+        items: [...tokens].reverse()
+      };
+      normalized.scoring = wordScoring(tokens);
+    }
+  }
+  return normalized;
+}
+
 function completeGeneratedQuiz(generatedQuiz, row = {}) {
   const base = quizFromBatchRow(normalizeBatchRow(row, 0));
   const incoming = applyDefaultAssetsToQuiz(generatedQuiz, row);
@@ -260,7 +357,7 @@ function completeGeneratedQuiz(generatedQuiz, row = {}) {
   completed.questions = base.questions.map(baseQ => {
     const aiQ = bestAiQuestionForTemplate(baseQ, incomingQuestions);
     return mergeQuestionDraft(baseQ, aiQ);
-  });
+  }).map(q => normalizeQuestionForTemplate(q, completed.story?.text || row.story_text || ''));
   completed.reporting = incoming.reporting || base.reporting;
   completed.generation = incoming.generation || base.generation;
   return applyDefaultAssetsToQuiz(completed, row);
@@ -362,6 +459,14 @@ function renderAll() {
   renderReviewPanel();
 }
 
+function showLeftSection(mode = 'generate') {
+  const isGenerate = mode === 'generate';
+  $('left-tab-generate')?.classList.toggle('active', isGenerate);
+  $('left-tab-open')?.classList.toggle('active', !isGenerate);
+  $('left-section-generate')?.classList.toggle('active', isGenerate);
+  $('left-section-open')?.classList.toggle('active', !isGenerate);
+}
+
 function renderQuestionNav() {
   const nav = $('preview-nav');
   nav.innerHTML = '';
@@ -446,6 +551,15 @@ function resolvedAssetFileName(pathValue) {
   return findLocalAssetFile(pathValue)?.name || fileName(pathValue);
 }
 
+function imagesForQuestion(q) {
+  const images = Array.isArray(q?.resources?.images) ? q.resources.images : [];
+  if (images.length) return images;
+  const scene = q?.resources?.scene;
+  const storyId = quiz?.story?.storyId || 'OG0000';
+  if (scene) return [{ id: scene, path: `${storyId}_${scene}_I.webp`, kind: 'image', sceneId: scene }];
+  return [];
+}
+
 function imageHtml(resource, className = '') {
   const url = assetUrl(resource?.path, 'image');
   const scene = resource?.sceneId || resource?.id || 'Scene';
@@ -455,13 +569,26 @@ function imageHtml(resource, className = '') {
   </div>`;
 }
 
+function playPreviewAudio(pathValue) {
+  const url = assetUrl(pathValue, 'audio');
+  if (!url) {
+    toast('Audio file is missing.');
+    return;
+  }
+  const audio = new Audio(url);
+  audio.play().catch(error => {
+    console.error(error);
+    toast('Audio could not play. Check the audio file.');
+  });
+}
+
 function renderPreview() {
   const stage = $('preview-stage');
   const bg = quiz.assets?.backgroundImage;
   const bgUrl = findLocalAssetUrl(bg) || bg;
   stage.style.setProperty('--preview-bg', bgUrl ? `url("${bgUrl}")` : 'linear-gradient(140deg,#F7F4FF,#EBF7FF)');
   const q = quiz.questions[currentQuestionIndex];
-  const images = q.resources?.images || [];
+  const images = imagesForQuestion(q);
   const hintAvatarPath = quiz.assets?.hintCharacter || `../v3/${quiz.story?.storyId || 'OG0021'}/Assets/BKTK_Characters_Bookey.png`;
   const hintAvatar = findLocalAssetUrl(hintAvatarPath) || hintAvatarPath;
   const parts = [];
@@ -474,18 +601,18 @@ function renderPreview() {
     parts.push(`<div class="scene-grid">${images.map(img => imageHtml(img)).join('')}</div>`);
     parts.push(`<div class="sequence-slots">${(q.interaction?.correct || []).map((_, i) => `<div class="slot">Scene ${i + 1}</div>`).join('')}</div>`);
   } else if (q.type === 'setting_slot_drag') {
-    parts.push(`<div class="scene-grid">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
-    parts.push(`<div class="setting-slots">${(q.interaction?.slots || []).map(slot => `<div class="setting-row"><div class="slot">${escapeHtml(slot.label)}</div><div class="word-chip">${escapeHtml(slot.correct)}</div></div>`).join('')}</div>`);
+    parts.push(`<div class="scene-grid single">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
+    parts.push(`<div class="setting-slots">${(q.interaction?.slots || []).map(slot => `<div class="setting-row"><div class="setting-label">${escapeHtml(slot.label)}</div><div class="slot">Drop here</div></div>`).join('')}</div>`);
     parts.push(`<div class="word-row">${(q.interaction?.items || []).map(item => `<div class="word-chip">${escapeHtml(item.text || item.key)}</div>`).join('')}</div>`);
   } else if (q.type === 'listen_scene_mcq') {
     const audio = q.resources?.audio;
-    parts.push(`<div class="audio-chip">Listen · ${escapeHtml(audio?.path || 'audio file')}</div>`);
+    parts.push(`<button type="button" class="audio-chip" onclick="playPreviewAudio('${escapeAttr(audio?.path || '')}')">Listen</button>`);
     parts.push(`<div class="scene-grid">${images.map(img => imageHtml(img)).join('')}</div>`);
   } else if (q.type === 'scene_word_unscramble') {
-    parts.push(`<div class="scene-grid">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
+    parts.push(`<div class="scene-grid single">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
     parts.push(`<div class="word-row">${(q.interaction?.items || []).map(word => `<div class="word-chip">${escapeHtml(word)}</div>`).join('')}</div>`);
   } else {
-    parts.push(`<div class="scene-grid">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
+    parts.push(`<div class="scene-grid single">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
     parts.push(`<div class="option-grid">${(q.interaction?.options || []).map(opt => `<div class="option-chip">${escapeHtml(opt.text || opt.key)} <small>(${opt.score ?? 0})</small></div>`).join('')}</div>`);
   }
 
@@ -659,10 +786,37 @@ function parseStory(storyText) {
 
 function storyWordTokens(sentence) {
   const raw = String(sentence || '').match(/[A-Za-z']+[,\.!?]?/g) || [];
+  const compoundPairs = new Set([
+    'plastic bag',
+    'rainbow cloud',
+    'crystal box',
+    'dark canyon',
+    'ocean floor',
+    'lost light',
+    'tiny rock',
+    'youngest son',
+    'youngest man'
+  ]);
+  const modifierWords = new Set([
+    'plastic', 'rainbow', 'crystal', 'dark', 'deep', 'little', 'big', 'quiet',
+    'lost', 'youngest', 'oldest', 'middle', 'bright', 'gray', 'grey', 'clear'
+  ]);
+  const clean = token => String(token || '').replace(/[,\.\!?]+$/g, '').toLowerCase();
+  const isCompoundPair = (a, b) => compoundPairs.has(`${clean(a)} ${clean(b)}`);
+  const shouldGroupThree = (article, first, second) => {
+    if (!/^(a|an|the)$/i.test(article) || !first || !second) return false;
+    return isCompoundPair(first, second) || modifierWords.has(clean(first));
+  };
   const grouped = [];
   for (let i = 0; i < raw.length; i += 1) {
     const token = raw[i];
-    if (/^(a|an|the)$/i.test(token) && raw[i + 1]) {
+    if (shouldGroupThree(token, raw[i + 1], raw[i + 2])) {
+      grouped.push(`${token} ${raw[i + 1]} ${raw[i + 2]}`);
+      i += 2;
+    } else if (/^(a|an|the)$/i.test(token) && raw[i + 1]) {
+      grouped.push(`${token} ${raw[i + 1]}`);
+      i += 1;
+    } else if (raw[i + 1] && isCompoundPair(token, raw[i + 1])) {
       grouped.push(`${token} ${raw[i + 1]}`);
       i += 1;
     } else {
@@ -751,15 +905,15 @@ function settingInteraction() {
   };
 }
 
-function settingScoring() {
+function settingScoring(correct = {}) {
   return {
     type: 'weighted_slot_match',
     maxScore: 100,
     formula: 'full slot weight if exact target; 35% slot credit if same category but wrong card; 0 for wrong category',
     components: [
-      { key: 'who', weight: 2.5, rule: 'slot_match', correctValue: 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
-      { key: 'where', weight: 2, rule: 'slot_match', correctValue: 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
-      { key: 'at_first', weight: 1.5, rule: 'slot_match', correctValue: 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
+      { key: 'who', weight: 2.5, rule: 'slot_match', correctValue: correct.who || 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
+      { key: 'where', weight: 2, rule: 'slot_match', correctValue: correct.where || 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
+      { key: 'at_first', weight: 1.5, rule: 'slot_match', correctValue: correct.at_first || 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
     ]
   };
 }
@@ -1092,21 +1246,13 @@ function renderResourceSummary(pkg) {
       <strong>${escapeHtml(value)}</strong>
       <em>${kind === 'story_id' ? 'Edit' : 'Replace'}</em>
     </button>`;
-  const sceneRows = sceneList.slice(0, 8).map(sceneId =>
-    row(sceneId, pkg.sceneImages.get(sceneId)?.name || 'Missing', true, 'scene', sceneId)
-  );
-  const audioRows = audioList.slice(0, 6).map(audioId =>
-    row(audioId.replace(/_N_A$/i, ''), pkg.audioFiles.get(audioId)?.name || 'Missing', true, 'audio', audioId)
-  );
   box.innerHTML = [
     row('Story ID', pkg.storyId || 'Not detected', !!pkg.storyId, 'story_id'),
     row('Story TXT', pkg.storyFile?.name || 'Missing', !!pkg.storyFile, 'story'),
     row('Cover', pkg.coverFiles[0]?.name || 'Missing', !!pkg.coverFiles.length, 'cover'),
     row('Background', pkg.backgroundFile?.name || 'Missing', !!pkg.backgroundFile, 'background'),
     row('Scene Images', `${sceneList.length} files`, sceneList.length > 0, 'scene_any'),
-    ...sceneRows,
-    row('Audio', `${audioList.length} files`, true, 'audio_any'),
-    ...audioRows
+    row('Audio', `${audioList.length} files`, true, 'audio_any')
   ].join('');
 }
 
@@ -1140,8 +1286,20 @@ function startResourceReplace(kind, key = '') {
   const input = $('resource-replace-file');
   if (!input) return;
   input.accept = replaceInputAccept(kind);
+  input.multiple = kind === 'scene_any' || kind === 'audio_any';
   input.value = '';
   input.click();
+}
+
+async function handleResourceReplaceFiles(files) {
+  const kind = pendingResourceReplaceKind;
+  if (kind === 'scene_any' || kind === 'audio_any') {
+    await replaceStoryPackageFiles(files);
+    pendingResourceReplaceKind = '';
+    pendingResourceReplaceKey = '';
+    return;
+  }
+  await replaceSpecificResourceFile(Array.from(files || [])[0]);
 }
 
 async function replaceSpecificResourceFile(file) {
@@ -1211,6 +1369,7 @@ async function replaceSpecificResourceFile(file) {
 async function loadStoryPackage(files) {
   const fileList = Array.from(files || []);
   if (!fileList.length) return;
+  showLeftSection('generate');
   assetObjectUrls.forEach(url => URL.revokeObjectURL(url));
   assetObjectUrls = [];
   assetFiles = new Map();
@@ -1651,6 +1810,7 @@ function dedupeLoadedQuizItems(items) {
 async function loadQuizUploadFiles(files) {
   const fileList = Array.from(files || []);
   if (!fileList.length) return;
+  showLeftSection('open');
   const loadedItems = [];
   try {
     for (const file of fileList) {
@@ -2006,9 +2166,11 @@ function escapeAttr(value) {
 }
 
 function bindEvents() {
+  if ($('left-tab-generate')) $('left-tab-generate').onclick = () => showLeftSection('generate');
+  if ($('left-tab-open')) $('left-tab-open').onclick = () => showLeftSection('open');
   if ($('story-package')) $('story-package').onchange = e => loadStoryPackage(e.target.files);
   if ($('story-file-replace')) $('story-file-replace').onchange = e => replaceStoryPackageFiles(e.target.files);
-  if ($('resource-replace-file')) $('resource-replace-file').onchange = e => replaceSpecificResourceFile(e.target.files[0]);
+  if ($('resource-replace-file')) $('resource-replace-file').onchange = e => handleResourceReplaceFiles(e.target.files);
   if ($('load-sample-btn')) $('load-sample-btn').onclick = loadSample;
   if ($('quiz-file')) $('quiz-file').onchange = e => loadQuizUploadFiles(e.target.files);
   if ($('batch-file')) $('batch-file').onchange = e => loadBatchFile(e.target.files[0]);

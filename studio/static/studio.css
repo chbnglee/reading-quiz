@@ -138,6 +138,32 @@ h3{font-size:14px;color:var(--ui-strong);font-weight:700;margin-bottom:10px}
   margin-bottom:16px;
 }
 .panel-head.compact{margin-bottom:10px}
+.left-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:16px;
+  padding:4px;
+  border-radius:10px;
+  background:#F3F4F6;
+  border:1px solid var(--ui-line-soft);
+}
+.left-tab{
+  border:none;
+  border-radius:8px;
+  padding:9px 8px;
+  background:transparent;
+  color:#6B7280;
+  font-size:12px;
+  font-weight:700;
+}
+.left-tab.active{
+  background:#fff;
+  color:#111827;
+  box-shadow:0 1px 4px rgba(17,24,39,.08);
+}
+.left-section{display:none}
+.left-section.active{display:block}
 .pill{
   display:inline-flex;
   align-items:center;
@@ -470,6 +496,10 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   grid-template-columns:repeat(auto-fit,minmax(138px,1fr));
   gap:13px;
 }
+.scene-grid.single{
+  max-width:360px;
+  margin:0 auto;
+}
 .scene-card{
   border:2px solid #EDE9FE;
   border-radius:20px;
@@ -508,12 +538,20 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   text-align:center;
   padding:8px;
 }
-.setting-slots{grid-template-columns:1fr}
+.setting-slots{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+}
 .setting-row{
   display:grid;
-  grid-template-columns:110px 1fr;
-  align-items:center;
-  gap:12px;
+  gap:7px;
+}
+.setting-label{
+  color:#4C1D95;
+  font-family:'Nunito',sans-serif;
+  font-size:14px;
+  font-weight:900;
+  text-align:center;
 }
 .word-row{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}
 .word-chip,.option-chip{
@@ -536,6 +574,7 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
 .audio-chip{
   display:inline-flex;
   align-items:center;
+  border:none;
   gap:8px;
   border-radius:999px;
   background:#7C3AED;
@@ -545,6 +584,7 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   font-weight:900;
   margin-bottom:14px;
 }
+.audio-chip:hover{background:#6D28D9}
 .export-box{
   margin-top:18px;
   padding-top:14px;

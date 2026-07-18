@@ -95,8 +95,14 @@ Asset filenames should follow these patterns:
   - 3 correct cards
   - 3 distractors
 - Cards must be short, A1-friendly phrases.
+- Card text must be actual story-specific content.
+- Never use generic placeholder text such as `main_character`, `main place`, `story place`, `other character`, `first action`, or `later problem` as visible card text.
 - The `At first...` answer should be a verb phrase from the story when possible.
 - Example: `loves changing colors`, not a full sentence.
+- Use this interaction shape:
+  - `slots`: fixed keys `who`, `where`, `at_first`
+  - `items`: six objects with `key`, `text`, and `slot`
+  - `correct`: maps each slot key to the correct item key
 - Scoring must use weighted slot matching with 35% same-category partial credit.
 
 ### Q3 Initiating Event / Listening Scene Choice
@@ -118,6 +124,12 @@ Asset filenames should follow these patterns:
   - `the forest.`
   - `a stone.`
   - `The Cat`
+- Keep common compound nouns as one word card:
+  - `plastic bag`
+  - `rainbow cloud`
+  - `crystal box`
+  - `dark canyon`
+- Keep the original final punctuation on the last word card.
 - Use exact-position weighted word scoring.
 - Do not use distance-based partial credit for words.
 
@@ -153,8 +165,10 @@ Examples:
 - Q2: `Who is there? Where is he?`
 - Q2 with two or more characters: `Who is there? Where are they?`
 - Q2 when the place is the key: `Who is there? Where does the story start?`
+- Q2 hint must match the selected setting scene. Use `Where is he?`, `Where is she?`, `Where are they?`, or `Where does the story start?` naturally.
 - Q3: `Listen for the first problem.`
 - Q4: `Start with who. Then find the action.`
+- Q4 hint should help word order, not repeat the instruction.
 - Q5: `Look at the face and the scene.`
 - Q6: `Think about what the character learns.`
 

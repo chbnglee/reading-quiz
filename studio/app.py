@@ -74,11 +74,44 @@ def choose_scene(scene_ids: list[str], ratio: float) -> str:
 
 def word_tokens(sentence: str) -> list[str]:
     raw_tokens = re.findall(r"[A-Za-z']+[,\.!?]?", sentence or "")
+    compound_pairs = {
+        "plastic bag",
+        "rainbow cloud",
+        "crystal box",
+        "dark canyon",
+        "ocean floor",
+        "lost light",
+        "tiny rock",
+        "youngest son",
+        "youngest man",
+    }
+    modifier_words = {
+        "plastic", "rainbow", "crystal", "dark", "deep", "little", "big", "quiet",
+        "lost", "youngest", "oldest", "middle", "bright", "gray", "grey", "clear",
+    }
+
+    def clean(token: str) -> str:
+        return re.sub(r"[,\.!?]+$", "", token or "").lower()
+
+    def is_compound_pair(first: str, second: str) -> bool:
+        return f"{clean(first)} {clean(second)}" in compound_pairs
+
+    def should_group_three(article: str, first: str | None, second: str | None) -> bool:
+        if not article or not first or not second or article.lower() not in {"a", "an", "the"}:
+            return False
+        return is_compound_pair(first, second) or clean(first) in modifier_words
+
     grouped: list[str] = []
     i = 0
     while i < len(raw_tokens):
         token = raw_tokens[i]
-        if token.lower() in {"a", "an", "the"} and i + 1 < len(raw_tokens):
+        if i + 2 < len(raw_tokens) and should_group_three(token, raw_tokens[i + 1], raw_tokens[i + 2]):
+            grouped.append(f"{token} {raw_tokens[i + 1]} {raw_tokens[i + 2]}")
+            i += 3
+        elif token.lower() in {"a", "an", "the"} and i + 1 < len(raw_tokens):
+            grouped.append(f"{token} {raw_tokens[i + 1]}")
+            i += 2
+        elif i + 1 < len(raw_tokens) and is_compound_pair(token, raw_tokens[i + 1]):
             grouped.append(f"{token} {raw_tokens[i + 1]}")
             i += 2
         else:
