@@ -14,6 +14,7 @@ Do NOT change question type.
 Do NOT change the Story Grammar axis assigned to a question.
 Return Q1 through Q6 in the exact order below.
 If you are unsure, fill the nearest matching content inside the fixed question instead of changing the task.
+Do not make a different quiz design because it seems more natural. The preview app expects this exact template.
 
 You are allowed to choose story-specific scenes, sentences, options, hints, diagnostics, and weights inside the fixed template only.
 
@@ -97,6 +98,8 @@ Asset filenames should follow these patterns:
 - Cards must be short, A1-friendly phrases.
 - Card text must be actual story-specific content.
 - Never use generic placeholder text such as `main_character`, `main place`, `story place`, `other character`, `first action`, or `later problem` as visible card text.
+- If you cannot find 6 good cards on the first pass, reread the opening and nearby scenes and try again before returning JSON.
+- The 3 correct cards must be real content from the story. The 3 distractors must also be story-specific, not generic labels.
 - The `At first...` answer should be a verb phrase from the story when possible.
 - Example: `loves changing colors`, not a full sentence.
 - Use this interaction shape:
@@ -109,6 +112,9 @@ Asset filenames should follow these patterns:
 
 - Choose the scene where the real problem starts.
 - The audio file must match an exact `_N` sentence from that scene.
+- The audio sentence must be content-rich enough to identify the problem scene.
+- Do NOT choose weak attention-getters or short lines such as `Look there!`, `Wow!`, `Oh no!`, `Got it!`, or other sentences with no problem information.
+- Prefer a sentence with at least 5 words and a clear problem/change clue.
 - Use image options with no duplicate-answer risk.
 - If two images could both look correct, replace one with a clearer distractor.
 - Correct option score is 100.
@@ -130,6 +136,8 @@ Asset filenames should follow these patterns:
   - `crystal box`
   - `dark canyon`
 - Keep the original final punctuation on the last word card.
+- The final token in `interaction.correct` must include the original period, question mark, or exclamation mark if the source sentence has one.
+- The hint for Q4 must help sentence order, not describe a different story event.
 - Use exact-position weighted word scoring.
 - Do not use distance-based partial credit for words.
 
@@ -137,6 +145,8 @@ Asset filenames should follow these patterns:
 
 - Use a scene where the character's emotion is visible or inferable.
 - Use the character's name in the instruction if the name is clear.
+- The named character in the instruction must be present in the selected scene.
+- If the visible/emotional character is unclear, use `How does the character feel here?` rather than naming the wrong character.
 - Use 4 short emotion options.
 - Correct option score is 100.
 - Similar emotions may receive partial score.
@@ -158,12 +168,14 @@ Every question must have a story-specific hint.
 Do not reuse one generic hint for several questions.
 Use one short sentence, or two very short questions.
 Keep the tone friendly for a young learner.
+Never include hidden reasoning, prompt instructions, placeholders, or wording such as `Wait`, `example`, `specific for this story`, or `Let's make it`.
 
 Examples:
 
 These are style examples only. Do NOT copy these exact example hints into the output unless the story really contains the same character and event.
 
-- Q1: `Milo loses his color and looks for it.`
+- Q1: `Milo loses his color and tries to find it.`
+- Q1 should briefly summarize the whole story arc in one easy sentence.
 - Q2: `Who is there? Where is he?`
 - Q2 with two or more characters: `Who is there? Where are they?`
 - Q2 when the place is the key: `Who is there? Where does the story start?`

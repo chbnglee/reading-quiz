@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/studio.css?v=20260718-4">
+<link rel="stylesheet" href="static/studio.css?v=20260718-5">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
@@ -20,8 +20,8 @@
 <main class="studio-grid">
   <aside class="panel input-panel">
     <div class="left-tabs" role="tablist" aria-label="Studio mode">
-      <button type="button" id="left-tab-generate" class="left-tab active" data-icon="G">Generate Quiz</button>
-      <button type="button" id="left-tab-open" class="left-tab" data-icon="O">Open Quiz</button>
+      <button type="button" id="left-tab-generate" class="left-tab active">Generate Quiz</button>
+      <button type="button" id="left-tab-open" class="left-tab">Open Quiz</button>
     </div>
 
     <div id="left-section-generate" class="left-section active">
@@ -165,6 +165,13 @@
       <input id="hint-input">
     </label>
 
+    <section class="choice-editor-box">
+      <div class="panel-head compact">
+        <h3>Choices & Weights</h3>
+      </div>
+      <div id="choice-editor" class="choice-editor"></div>
+    </section>
+
     <label class="field">
       <span>Resources JSON</span>
       <textarea class="json-area" id="resources-json"></textarea>
@@ -203,6 +210,6 @@
 </main>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="static/studio.js?v=20260718-4"></script>
+<script src="static/studio.js?v=20260718-5"></script>
 </body>
 </html>

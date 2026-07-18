@@ -31,6 +31,7 @@ const SG_KO = {
 const $ = (id) => document.getElementById(id);
 const OPENAI_MODEL = 'gpt-4.1-mini';
 const GEMINI_MODEL = 'gemini-2.5-flash';
+const OPTION_LABELS = ['ⓐ', 'ⓑ', 'ⓒ', 'ⓓ', 'ⓔ', 'ⓕ'];
 
 const QUESTION_BLUEPRINT = [
   { number: 1, storyGrammar: 'consequence', type: 'story_sequence_drag', instruction: 'Put the story scenes in order.', promptMode: 'drag_sequence' },
@@ -322,14 +323,176 @@ function storySentenceTextById(storyText, sentenceId) {
   return '';
 }
 
+function storySentenceById(storyText, sentenceId) {
+  if (!sentenceId) return null;
+  for (const scene of parseStory(storyText || '')) {
+    const found = (scene.sentences || []).find(sentence => sentence.sentenceId === sentenceId);
+    if (found) return { ...found, sceneId: scene.sceneId };
+  }
+  return null;
+}
+
+function sceneTextById(storyText, sceneId) {
+  const scene = parseStory(storyText || '').find(item => item.sceneId === sceneId);
+  return (scene?.sentences || []).map(sentence => sentence.text).join(' ');
+}
+
+function imageResourceForScene(storyId, sceneId) {
+  return { id: sceneId, path: `${storyId}_${sceneId}_I.webp`, kind: 'image', sceneId };
+}
+
+function audioResourceForSentence(storyId, sentence) {
+  if (!sentence?.sentenceId) return null;
+  const audioId = `${sentence.sentenceId}_A`;
+  return {
+    id: audioId,
+    path: `${storyId}_${audioId}.mp3`,
+    kind: 'audio',
+    sceneId: sentence.sceneId,
+    sentenceId: sentence.sentenceId
+  };
+}
+
+function storySentenceWords(text = '') {
+  return (String(text).match(/[A-Za-z']+/g) || []).length;
+}
+
+function weakInitiatingSentence(text = '') {
+  const cleaned = String(text || '').trim();
+  if (storySentenceWords(cleaned) < 5) return true;
+  if (/^(look there|look|listen|wow|oh no|oh|hey|got it|help|hello)[!\.]*$/i.test(cleaned)) return true;
+  if (/^["']?(look|wow|oh|hey)\b/i.test(cleaned) && storySentenceWords(cleaned) <= 4) return true;
+  return false;
+}
+
+function chooseInitiatingSentence(storyText = '') {
+  const scenes = parseStory(storyText || '');
+  const keywords = [
+    'lost', 'missing', 'problem', 'trouble', 'only', 'cannot', "can't", 'could not', "couldn't",
+    'but', 'suddenly', 'danger', 'stuck', 'trapped', 'caught', 'heavy', 'dark', 'fell',
+    'broke', 'vanished', 'disappeared', 'cry', 'cried', 'worried', 'afraid'
+  ];
+  let best = null;
+  scenes.forEach((scene, sceneIdx) => {
+    (scene.sentences || []).forEach(sentence => {
+      const text = sentence.text || '';
+      if (weakInitiatingSentence(text)) return;
+      const lower = text.toLowerCase();
+      let score = keywords.reduce((sum, keyword) => sum + (lower.includes(keyword) ? 3 : 0), 0);
+      score += sceneIdx === 0 ? -2 : Math.max(0, 6 - sceneIdx);
+      score += Math.min(4, storySentenceWords(text) / 2);
+      if (!best || score > best.score) best = { ...sentence, sceneId: scene.sceneId, score };
+    });
+  });
+  if (best) return best;
+  const fallbackScene = scenes[1] || scenes[0];
+  const fallbackSentence = fallbackScene?.sentences?.find(sentence => !weakInitiatingSentence(sentence.text)) || fallbackScene?.sentences?.[0];
+  return fallbackSentence ? { ...fallbackSentence, sceneId: fallbackScene.sceneId } : null;
+}
+
+function chooseAttemptSentence(storyText = '') {
+  const scenes = parseStory(storyText || '');
+  const actionWords = [
+    'went', 'walked', 'ran', 'looked', 'searched', 'tried', 'helped', 'opened',
+    'picked', 'took', 'put', 'grabbed', 'caught', 'followed', 'hid', 'carried',
+    'made', 'used', 'asked', 'gave', 'started'
+  ];
+  let best = null;
+  scenes.forEach((scene, sceneIdx) => {
+    (scene.sentences || []).forEach(sentence => {
+      const text = sentence.text || '';
+      const words = storySentenceWords(text);
+      if (words < 4 || words > 12) return;
+      const lower = text.toLowerCase();
+      let score = actionWords.reduce((sum, word) => sum + (lower.includes(word) ? 3 : 0), 0);
+      score += sceneIdx > 1 ? 3 : 0;
+      score += Math.max(0, 8 - Math.abs(words - 7));
+      if (!best || score > best.score) best = { ...sentence, sceneId: scene.sceneId, score };
+    });
+  });
+  return best;
+}
+
+function sceneOptionsAround(storyText = '', correctScene = '', count = 4) {
+  const scenes = parseStory(storyText || '').map(scene => scene.sceneId);
+  const correctIndex = Math.max(0, scenes.indexOf(correctScene));
+  const ordered = [correctScene];
+  for (let dist = 1; ordered.length < count && dist <= scenes.length; dist += 1) {
+    [correctIndex - dist, correctIndex + dist].forEach(idx => {
+      if (idx >= 0 && idx < scenes.length && !ordered.includes(scenes[idx]) && ordered.length < count) ordered.push(scenes[idx]);
+    });
+  }
+  scenes.forEach(scene => {
+    if (ordered.length < count && !ordered.includes(scene)) ordered.push(scene);
+  });
+  return ordered.filter(Boolean).slice(0, count).sort((a, b) => scenes.indexOf(a) - scenes.indexOf(b));
+}
+
+function settingInteractionLooksWeak(interaction = {}) {
+  const items = interaction.items || [];
+  if (items.length < 6) return true;
+  const texts = items.map(item => String(item.text || item.key || '').trim().toLowerCase());
+  if (texts.some(placeholderText)) return true;
+  if (new Set(texts).size < 6) return true;
+  const correct = interaction.correct || {};
+  return !correct.who || !correct.where || !correct.at_first;
+}
+
+function characterFromInstruction(instruction = '') {
+  const match = String(instruction || '').match(/^How does\s+(.+?)\s+feel here\?$/i)
+    || String(instruction || '').match(/^What is\s+(.+?)\s+thinking\?$/i);
+  return match ? match[1].trim() : '';
+}
+
+function fixCharacterInstructionForScene(q, storyText = '') {
+  const scene = q.resources?.scene || sceneIdFromPath(q.resources?.images?.[0]?.path);
+  const sceneText = sceneTextById(storyText, scene);
+  if (!sceneText) return;
+  const currentName = characterFromInstruction(q.instruction);
+  if (currentName && !/^the character$/i.test(currentName) && !sceneText.toLowerCase().includes(currentName.toLowerCase())) {
+    const inferred = storyNamesFromText(sceneText).split(' and ')[0];
+    if (inferred && inferred !== 'the character') {
+      q.instruction = q.type === 'emotion_mcq' ? `How does ${inferred} feel here?` : `What is ${inferred} thinking?`;
+    } else {
+      q.instruction = q.type === 'emotion_mcq' ? 'How does the character feel here?' : 'What is the character thinking?';
+    }
+  }
+}
+
 function normalizeQuestionForTemplate(q, storyText = '') {
   const normalized = deepClone(q);
   if (normalized.type === 'setting_slot_drag') {
     normalized.interaction = normalizeSettingInteraction(normalized.interaction || {});
     normalized.scoring = settingScoring(normalized.interaction.correct);
   }
+  if (normalized.type === 'listen_scene_mcq') {
+    const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
+    const audioSentence = storySentenceById(storyText, normalized.resources?.audio?.sentenceId);
+    if (!audioSentence || weakInitiatingSentence(audioSentence.text)) {
+      const better = chooseInitiatingSentence(storyText);
+      if (better) {
+        normalized.resources = normalized.resources || {};
+        normalized.resources.audio = audioResourceForSentence(storyId, better);
+        normalized.resources.images = sceneOptionsAround(storyText, better.sceneId, 4).map(scene => imageResourceForScene(storyId, scene));
+        normalized.interaction = imageOptions((normalized.resources.images || []).map(img => img.sceneId), better.sceneId);
+      }
+    }
+  }
   if (normalized.type === 'scene_word_unscramble') {
-    const sentence = storySentenceTextById(storyText, normalized.resources?.sentenceId);
+    let sentence = storySentenceTextById(storyText, normalized.resources?.sentenceId);
+    if (!sentence) {
+      const better = chooseAttemptSentence(storyText);
+      if (better) {
+        const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
+        normalized.resources = {
+          ...(normalized.resources || {}),
+          scene: better.sceneId,
+          sentenceId: better.sentenceId,
+          images: [imageResourceForScene(storyId, better.sceneId)]
+        };
+        sentence = better.text;
+      }
+    }
     const source = sentence || (Array.isArray(normalized.interaction?.correct) ? normalized.interaction.correct.join(' ') : '');
     const tokens = storyWordTokens(source);
     if (tokens.length >= 3) {
@@ -358,6 +521,7 @@ function contaminatedHint(value, storyText = '') {
   if (!text) return true;
   if (text.length > 120) return true;
   if (/(wait|example|specific for this story|let's make|do not|a1-level|prompt|template|instruction)/i.test(text)) return true;
+  if (/[^\x00-\x7F]/.test(text)) return true;
   if (/milo/i.test(text) && !/milo/i.test(storyText || '')) return true;
   if (/podo|didi/i.test(text) && !/podo|didi/i.test(storyText || '')) return true;
   return false;
@@ -409,15 +573,39 @@ function openingStateFromText(text = '') {
   return words.slice(Math.max(0, words.length - 4)).join(' ').replace(/^[A-Z]/, ch => ch.toLowerCase());
 }
 
+function storyPlacesFromText(text = '') {
+  const places = [...String(text || '').matchAll(/\b(in|at|on|near|inside|into|under|over)\s+(the\s+|a\s+|an\s+)?([a-z]+(?:\s+[a-z]+){0,3})/gi)]
+    .map(match => `${match[1].toLowerCase()} ${match[2] || ''}${match[3]}`.replace(/\s+/g, ' ').trim())
+    .filter(place => storySentenceWords(place) <= 5);
+  return [...new Set(places)];
+}
+
+function storyActionPhrases(storyText = '') {
+  const phrases = [];
+  parseStory(storyText || '').forEach(scene => {
+    (scene.sentences || []).forEach(sentence => {
+      const phrase = openingStateFromText(sentence.text);
+      if (phrase && !placeholderText(phrase) && phrase.length <= 45) phrases.push(phrase);
+    });
+  });
+  return [...new Set(phrases)];
+}
+
 function fallbackSettingInteraction(storyText = '') {
   const opening = firstSceneText(storyText);
   const who = storyNamesFromText(opening);
   const where = storyPlaceFromText(opening);
   const atFirst = openingStateFromText(opening);
+  const allNames = storyNamesFromText(storyText).split(' and ').filter(Boolean);
+  const otherName = allNames.find(name => !who.toLowerCase().includes(name.toLowerCase())) || 'someone else';
+  const places = storyPlacesFromText(storyText);
+  const otherPlace = places.find(place => place.toLowerCase() !== where.toLowerCase()) || 'another place';
+  const actions = storyActionPhrases(storyText);
+  const otherAction = actions.find(action => action.toLowerCase() !== atFirst.toLowerCase()) || 'has a problem';
   const distractors = [
-    { key: 'other_character', text: who.includes(' and ') ? 'one friend' : 'another character', slot: 'who' },
-    { key: 'other_place', text: 'another place', slot: 'where' },
-    { key: 'later_event', text: 'the problem starts', slot: 'at_first' }
+    { key: 'other_character', text: otherName, slot: 'who' },
+    { key: 'other_place', text: otherPlace, slot: 'where' },
+    { key: 'later_event', text: otherAction, slot: 'at_first' }
   ];
   return normalizeSettingInteraction({
     promptMode: 'slot_drag',
@@ -439,12 +627,16 @@ function fallbackSettingInteraction(storyText = '') {
 function fallbackHint(q, storyText = '') {
   const opening = firstSceneText(storyText);
   const who = storyNamesFromText(opening);
-  if (q.type === 'story_sequence_drag') return 'Think about what happens first and last.';
+  if (q.type === 'story_sequence_drag') {
+    const name = who && who !== 'the character' ? who : 'the character';
+    const plural = /\sand\s/.test(name);
+    return `${name} ${plural ? 'have' : 'has'} a problem and ${plural ? 'try' : 'tries'} to fix it.`;
+  }
   if (q.type === 'setting_slot_drag') {
     const plural = /\sand\s/.test(who);
     return plural ? 'Who is there? Where are they?' : 'Who is there? Where does the story start?';
   }
-  if (q.type === 'listen_scene_mcq') return 'Listen for the first problem.';
+  if (q.type === 'listen_scene_mcq') return 'Listen for the first clear problem.';
   if (q.type === 'scene_word_unscramble') return 'Start with who. Then find the action.';
   if (q.type === 'emotion_mcq') return 'Look at the face and the scene.';
   if (q.type === 'internal_response_mcq') return 'Think about what the character learns.';
@@ -493,9 +685,36 @@ function sanitizeGeneratedQuiz(qz) {
       const items = q.interaction?.items || [];
       const placeholderCount = items.filter(item => placeholderText(item.text || item.key)).length;
       const dirtyItem = items.some(item => contaminatedVisibleText(item.text || item.key, storyText));
-      if (items.length < 6 || placeholderCount >= Math.ceil(items.length / 2) || dirtyItem) {
+      if (settingInteractionLooksWeak(q.interaction || {}) || placeholderCount >= Math.ceil(items.length / 2) || dirtyItem) {
         q.interaction = fallbackSettingInteraction(storyText);
         q.scoring = settingScoring(q.interaction.correct);
+      }
+    }
+    if (q.type === 'listen_scene_mcq') {
+      const sentence = storySentenceById(storyText, q.resources?.audio?.sentenceId);
+      if (!sentence || weakInitiatingSentence(sentence.text)) {
+        const storyId = qz.story?.storyId || 'OG0000';
+        const better = chooseInitiatingSentence(storyText);
+        if (better) {
+          q.resources = q.resources || {};
+          q.resources.audio = audioResourceForSentence(storyId, better);
+          q.resources.images = sceneOptionsAround(storyText, better.sceneId, 4).map(scene => imageResourceForScene(storyId, scene));
+          q.interaction = imageOptions((q.resources.images || []).map(img => img.sceneId), better.sceneId);
+          q.scoring = templateScoringForQuestion(q);
+        }
+      }
+    }
+    if (q.type === 'scene_word_unscramble') {
+      const sentence = storySentenceById(storyText, q.resources?.sentenceId);
+      if (!sentence) {
+        const storyId = qz.story?.storyId || 'OG0000';
+        const better = chooseAttemptSentence(storyText);
+        if (better) {
+          const tokens = storyWordTokens(better.text);
+          q.resources = { ...(q.resources || {}), scene: better.sceneId, sentenceId: better.sentenceId, images: [imageResourceForScene(storyId, better.sceneId)] };
+          q.interaction = { promptMode: 'word_unscramble', correct: tokens, items: [...tokens].reverse() };
+          q.scoring = wordScoring(tokens);
+        }
       }
     }
     if ((q.type === 'emotion_mcq' || q.type === 'internal_response_mcq') && Array.isArray(q.interaction?.options)) {
@@ -504,6 +723,7 @@ function sanitizeGeneratedQuiz(qz) {
         q.interaction = q.type === 'emotion_mcq' ? emotionOptions() : internalOptions();
         q.scoring = templateScoringForQuestion(q);
       }
+      fixCharacterInstructionForScene(q, storyText);
     }
   });
   return reconcileQuizResourcesWithPackage(qz);
@@ -582,6 +802,52 @@ async function callAiInBrowser(provider, prompt, userPayload, apiKey) {
   return provider === 'gemini'
     ? callGeminiInBrowser(prompt, userPayload, apiKey)
     : callOpenAiInBrowser(prompt, userPayload, apiKey);
+}
+
+async function requestAiQuizOnce(payload, apiKey) {
+  if (isLocalOrigin()) {
+    const res = await fetch('/api/generate-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
+    return data.quiz;
+  }
+  const prompt = await loadGenerationPrompt();
+  return callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
+}
+
+function generationQualityIssues(qz) {
+  const issues = [];
+  const storyText = qz?.story?.text || '';
+  const q1 = qz?.questions?.find(q => Number(q.number) === 1);
+  const q2 = qz?.questions?.find(q => Number(q.number) === 2);
+  const q3 = qz?.questions?.find(q => Number(q.number) === 3);
+  const q4 = qz?.questions?.find(q => Number(q.number) === 4);
+  const q5 = qz?.questions?.find(q => Number(q.number) === 5);
+  if (q1 && contaminatedHint(q1.hint, storyText)) issues.push('Q1 hint contains prompt/example text or is missing.');
+  if (q2 && settingInteractionLooksWeak(q2.interaction || {})) issues.push('Q2 setting cards must contain six real story-specific cards.');
+  if (q3) {
+    const sentence = storySentenceById(storyText, q3.resources?.audio?.sentenceId);
+    if (!sentence || weakInitiatingSentence(sentence.text)) issues.push('Q3 audio sentence is too short or not problem-rich enough.');
+  }
+  if (q4) {
+    const sentence = storySentenceById(storyText, q4.resources?.sentenceId);
+    const correct = q4.interaction?.correct || [];
+    if (sentence && /[.!?]$/.test(sentence.text.trim()) && !/[.!?]$/.test(String(correct[correct.length - 1] || ''))) {
+      issues.push('Q4 final punctuation is missing from the last word card.');
+    }
+  }
+  if (q5) {
+    const name = characterFromInstruction(q5.instruction);
+    const scene = q5.resources?.scene || sceneIdFromPath(q5.resources?.images?.[0]?.path);
+    if (name && !/^the character$/i.test(name) && scene && !sceneTextById(storyText, scene).toLowerCase().includes(name.toLowerCase())) {
+      issues.push('Q5 named character does not match the selected scene.');
+    }
+  }
+  return issues;
 }
 
 async function loadSample() {
@@ -800,7 +1066,7 @@ function renderPreview() {
     parts.push(`<div class="word-row">${(q.interaction?.items || []).map(word => `<div class="word-chip">${escapeHtml(word)}</div>`).join('')}</div>`);
   } else {
     parts.push(`<div class="scene-grid single">${images.slice(0, 1).map(img => imageHtml(img)).join('')}</div>`);
-    parts.push(`<div class="option-grid">${(q.interaction?.options || []).map(opt => `<div class="option-chip">${escapeHtml(opt.text || opt.key)} <small>(${opt.score ?? 0})</small></div>`).join('')}</div>`);
+    parts.push(`<div class="option-grid">${(q.interaction?.options || []).map((opt, idx) => `<div class="option-chip"><span class="option-letter">${OPTION_LABELS[idx] || escapeHtml(opt.key || String(idx + 1))}</span><span class="option-text">${escapeHtml(opt.text || opt.key)}</span></div>`).join('')}</div>`);
   }
 
   parts.push(hintHtml);
@@ -815,10 +1081,139 @@ function renderEditor() {
   $('type-select').value = q.type;
   $('instruction-input').value = q.instruction || '';
   $('hint-input').value = q.hint || '';
+  renderChoiceEditor(q);
   $('resources-json').value = JSON.stringify(q.resources || {}, null, 2);
   $('interaction-json').value = JSON.stringify(q.interaction || {}, null, 2);
   $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
   $('diagnostics-json').value = JSON.stringify(q.diagnostics || [], null, 2);
+}
+
+function renderChoiceEditor(q) {
+  const box = $('choice-editor');
+  if (!box) return;
+  if (!q) {
+    box.innerHTML = '<div class="choice-note">No question selected.</div>';
+    return;
+  }
+  if (Array.isArray(q.interaction?.options) && q.interaction.options.length) {
+    box.innerHTML = q.interaction.options.map((opt, idx) => `
+      <div class="choice-row">
+        <div class="choice-key">${OPTION_LABELS[idx] || escapeHtml(opt.key || String(idx + 1))}</div>
+        <input value="${escapeAttr(opt.text || '')}" oninput="updateOptionText(${idx}, this.value)" aria-label="Option ${escapeAttr(opt.key || idx + 1)} text">
+        <input type="number" min="0" max="100" step="1" value="${Number(opt.score) || 0}" oninput="updateOptionScore(${idx}, this.value)" aria-label="Option ${escapeAttr(opt.key || idx + 1)} score">
+      </div>
+    `).join('');
+    return;
+  }
+  if (q.type === 'setting_slot_drag' && Array.isArray(q.interaction?.items)) {
+    box.innerHTML = q.interaction.items.map((item, idx) => `
+      <div class="choice-row">
+        <div class="choice-key">${idx + 1}</div>
+        <input value="${escapeAttr(item.text || '')}" oninput="updateSettingItem(${idx}, 'text', this.value)" aria-label="Setting card ${idx + 1} text">
+        <select onchange="updateSettingItem(${idx}, 'slot', this.value)" aria-label="Setting card ${idx + 1} slot">
+          <option value="who"${item.slot === 'who' ? ' selected' : ''}>Who</option>
+          <option value="where"${item.slot === 'where' ? ' selected' : ''}>Where</option>
+          <option value="at_first"${item.slot === 'at_first' ? ' selected' : ''}>At first</option>
+        </select>
+      </div>
+    `).join('');
+    return;
+  }
+  if (q.type === 'scene_word_unscramble' && Array.isArray(q.interaction?.correct)) {
+    const weightByKey = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
+    box.innerHTML = q.interaction.correct.map((word, idx) => `
+      <div class="choice-row">
+        <div class="choice-key">${idx + 1}</div>
+        <input value="${escapeAttr(word)}" oninput="updateWordToken(${idx}, this.value)" aria-label="Word ${idx + 1}">
+        <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(word)) || 1}" oninput="updateWordWeight(${idx}, this.value)" aria-label="Word ${idx + 1} weight">
+      </div>
+    `).join('');
+    return;
+  }
+  if (q.type === 'story_sequence_drag') {
+    const sequence = Array.isArray(q.interaction?.correct) ? q.interaction.correct : [];
+    const weightByKey = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
+    box.innerHTML = sequence.map((scene, idx) => `
+      <div class="choice-row sequence-row">
+        <div class="choice-key">${escapeHtml(scene)}</div>
+        <input value="${escapeAttr(scene)}" oninput="updateSequenceScene(${idx}, this.value)" aria-label="Scene ${idx + 1}">
+        <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(scene)) || 1}" oninput="updateSequenceWeight(${idx}, this.value)" aria-label="Scene ${idx + 1} weight">
+      </div>
+    `).join('');
+    return;
+  }
+  box.innerHTML = '<div class="choice-note">This question has no editable choices.</div>';
+}
+
+function refreshQuestionAfterLightEdit() {
+  const q = quiz.questions[currentQuestionIndex];
+  q.scoring = templateScoringForQuestion(q);
+  syncCurrentBatchItem();
+  renderPreview();
+  renderQuestionNav();
+  renderReviewPanel();
+  $('interaction-json').value = JSON.stringify(q.interaction || {}, null, 2);
+  $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
+}
+
+function updateOptionText(index, value) {
+  const opts = quiz?.questions?.[currentQuestionIndex]?.interaction?.options || [];
+  if (!opts[index]) return;
+  opts[index].text = value;
+  refreshQuestionAfterLightEdit();
+}
+
+function updateOptionScore(index, value) {
+  const opts = quiz?.questions?.[currentQuestionIndex]?.interaction?.options || [];
+  if (!opts[index]) return;
+  opts[index].score = Math.max(0, Math.min(100, Number(value) || 0));
+  opts[index].isCorrect = opts[index].score === 100;
+  quiz.questions[currentQuestionIndex].interaction.correct = opts.find(opt => opt.isCorrect)?.key || quiz.questions[currentQuestionIndex].interaction.correct;
+  refreshQuestionAfterLightEdit();
+}
+
+function updateSettingItem(index, field, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  const item = q?.interaction?.items?.[index];
+  if (!item) return;
+  item[field] = value;
+  q.interaction = normalizeSettingInteraction(q.interaction);
+  refreshQuestionAfterLightEdit();
+}
+
+function updateWordToken(index, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  if (!Array.isArray(q?.interaction?.correct)) return;
+  q.interaction.correct[index] = value;
+  q.interaction.items = [...q.interaction.correct].reverse();
+  refreshQuestionAfterLightEdit();
+}
+
+function updateWordWeight(index, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  const word = q?.interaction?.correct?.[index];
+  const component = (q?.scoring?.components || []).find(c => String(c.key) === String(word));
+  if (component) component.weight = Math.max(0, Number(value) || 0);
+  syncCurrentBatchItem();
+  $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
+}
+
+function updateSequenceScene(index, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  if (!Array.isArray(q?.interaction?.correct)) return;
+  q.interaction.correct[index] = value.trim().toUpperCase();
+  q.interaction.items = [...q.interaction.correct];
+  q.resources.images = q.interaction.correct.map(scene => imageResourceForScene(quiz.story?.storyId || 'OG0000', scene));
+  refreshQuestionAfterLightEdit();
+}
+
+function updateSequenceWeight(index, value) {
+  const q = quiz?.questions?.[currentQuestionIndex];
+  const scene = q?.interaction?.correct?.[index];
+  const component = (q?.scoring?.components || []).find(c => String(c.key) === String(scene));
+  if (component) component.weight = Math.max(0, Number(value) || 0);
+  syncCurrentBatchItem();
+  $('scoring-json').value = JSON.stringify(q.scoring || {}, null, 2);
 }
 
 function applyEditorChanges() {
@@ -932,25 +1327,28 @@ async function generateAiDraft() {
   btn.disabled = true;
   btn.textContent = 'Generating...';
   try {
-    if (isLocalOrigin()) {
-      const res = await fetch('/api/generate-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'AI generation failed.');
-      quiz = completeGeneratedQuiz(data.quiz, row);
-    } else {
-      const prompt = await loadGenerationPrompt();
-      const generated = await callAiInBrowser(payload.provider, prompt, payload.input, apiKey);
-      quiz = completeGeneratedQuiz(generated, row);
+    let bestQuiz = null;
+    let issues = [];
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const attemptPayload = deepClone(payload);
+      if (attempt > 0 && issues.length) {
+        attemptPayload.input.revisionNotes = [
+          'Regenerate inside the fixed Q1-Q6 template.',
+          'Fix these quality issues before returning JSON:',
+          ...issues
+        ].join('\n- ');
+      }
+      const generated = await requestAiQuizOnce(attemptPayload, apiKey);
+      bestQuiz = completeGeneratedQuiz(generated, row);
+      issues = generationQualityIssues(bestQuiz);
+      if (!issues.length) break;
     }
+    quiz = bestQuiz;
     const hintCount = (quiz.questions || []).filter(q => String(q.hint || '').trim()).length;
     currentBatchIndex = -1;
     currentQuestionIndex = 0;
     renderAll();
-    toast(`Quiz generated with ${payload.provider}. ${hintCount}/6 hints ready.`);
+    toast(`Quiz generated with ${payload.provider}. ${hintCount}/6 hints ready.${issues.length ? ' Please review flagged items.' : ''}`);
   } catch (error) {
     toast(`AI generation failed: ${error.message}`);
   } finally {
@@ -1030,8 +1428,12 @@ function buildRuleDraft(payload) {
   while (sequence.length < 5) sequence.push(usable[Math.min(sequence.length, usable.length - 1)]);
   const image = scene => ({ id: scene, path: `${storyId}_${scene}_I.webp`, kind: 'image', sceneId: scene });
   const findSentence = scene => (scenes.find(s => s.sceneId === scene)?.sentences?.[0]) || { sentenceId: `${scene}_ST01_N`, text: 'Put the words in order.' };
-  const attemptSentence = findSentence(attempt);
-  const words = (storyWordTokens(attemptSentence.text).length ? storyWordTokens(attemptSentence.text) : ['Put','the words','in','order.']).slice(0, 8);
+  const eventSentence = chooseInitiatingSentence(storyText) || { ...findSentence(event), sceneId: event };
+  const eventScene = eventSentence.sceneId || event;
+  const attemptSentence = chooseAttemptSentence(storyText) || { ...findSentence(attempt), sceneId: attempt };
+  const attemptScene = attemptSentence.sceneId || attempt;
+  const words = storyWordTokens(attemptSentence.text).length ? storyWordTokens(attemptSentence.text) : ['Put','the words','in','order.'];
+  const settingDraft = fallbackSettingInteraction(storyText);
   const mkQ = (number, type, axis, instruction, hint, resources, interaction, scoring, diagnostics) => ({
     qId: `${storyId}_V3_Q${String(number).padStart(2, '0')}`,
     number, type, storyGrammar: axis, instruction, hint, resources, interaction, scoring,
@@ -1051,12 +1453,12 @@ function buildRuleDraft(payload) {
     },
     storyGrammarAxes: Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' })),
     questions: [
-      mkQ(1, 'story_sequence_drag', 'consequence', 'Put the story scenes in order.', 'Think about the story from start to end.', { images: sequence.map(image) }, { promptMode: 'drag_sequence', items: sequence, correct: sequence }, weightedPosition(sequence)),
-      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the picture. Fill in the boxes.', 'Who is there? Where are they?', { images: [image(first)], scene: first }, settingInteraction(), settingScoring()),
-      mkQ(3, 'listen_scene_mcq', 'initiating_event', 'Listen. Which scene starts the problem?', 'Listen for the first big change.', { images: sequence.slice(0, 4).map(image), audio: { id: `${event}_ST01_N_A`, path: `${storyId}_${event}_ST01_N_A.mp3`, kind: 'audio', sceneId: event, sentenceId: `${event}_ST01_N` } }, imageOptions(sequence.slice(0, 4), event), fixedScoring()),
-      mkQ(4, 'scene_word_unscramble', 'attempt', 'Put the story words in order.', 'Find who. Then find the action.', { images: [image(attempt)], scene: attempt, sentenceId: attemptSentence.sentenceId }, { promptMode: 'word_unscramble', items: [...words].reverse(), correct: words }, wordScoring(words)),
-      mkQ(5, 'emotion_mcq', 'reaction', 'How does the character feel here?', 'Look at the face and the scene.', { images: [image(reaction)], scene: reaction }, emotionOptions(), fixedScoring()),
-      mkQ(6, 'internal_response_mcq', 'internal_response', 'What is the character thinking?', 'Think about the character’s heart.', { images: [image(reaction)], scene: reaction }, internalOptions(), fixedScoring())
+      mkQ(1, 'story_sequence_drag', 'consequence', 'Put the story scenes in order.', fallbackHint({ type: 'story_sequence_drag' }, storyText), { images: sequence.map(image) }, { promptMode: 'drag_sequence', items: sequence, correct: sequence }, weightedPosition(sequence)),
+      mkQ(2, 'setting_slot_drag', 'setting', 'Look at the picture. Fill in the boxes.', fallbackHint({ type: 'setting_slot_drag' }, storyText), { images: [image(first)], scene: first }, settingDraft, settingScoring(settingDraft.correct)),
+      mkQ(3, 'listen_scene_mcq', 'initiating_event', 'Listen. Which scene starts the problem?', fallbackHint({ type: 'listen_scene_mcq' }, storyText), { images: sceneOptionsAround(storyText, eventScene, 4).map(image), audio: { id: `${eventSentence.sentenceId}_A`, path: `${storyId}_${eventSentence.sentenceId}_A.mp3`, kind: 'audio', sceneId: eventScene, sentenceId: eventSentence.sentenceId } }, imageOptions(sceneOptionsAround(storyText, eventScene, 4), eventScene), fixedScoring()),
+      mkQ(4, 'scene_word_unscramble', 'attempt', 'Put the story words in order.', fallbackHint({ type: 'scene_word_unscramble' }, storyText), { images: [image(attemptScene)], scene: attemptScene, sentenceId: attemptSentence.sentenceId }, { promptMode: 'word_unscramble', items: [...words].reverse(), correct: words }, wordScoring(words)),
+      mkQ(5, 'emotion_mcq', 'reaction', 'How does the character feel here?', fallbackHint({ type: 'emotion_mcq' }, storyText), { images: [image(reaction)], scene: reaction }, emotionOptions(), fixedScoring()),
+      mkQ(6, 'internal_response_mcq', 'internal_response', 'What is the character thinking?', 'Think about the character\'s heart.', { images: [image(reaction)], scene: reaction }, internalOptions(), fixedScoring())
     ],
     reporting: defaultReporting(),
     generation: { provider: 'rule_based', model: 'browser-heuristic', promptVersion: 'story_grammar_v3', createdAt: new Date().toISOString().slice(0, 10), notes: 'Draft generated locally. Human review required.' }
@@ -1427,18 +1829,22 @@ function renderResourceSummary(pkg) {
   }
   const sceneList = [...pkg.sceneImages.keys()].sort();
   const audioList = [...pkg.audioFiles.keys()].sort();
-  const row = (label, value, ok = true, kind = '', key = '') => `
+  const row = (label, value, ok = true, kind = '', key = '') => {
+    const title = kind === 'story_id' ? 'Edit' : 'Replace';
+    const icon = kind === 'story_id' ? '✎' : '⇧';
+    return `
     <button type="button" class="resource-row ${ok ? 'ok' : 'warn'}" onclick="startResourceReplace('${escapeAttr(kind)}','${escapeAttr(key)}')">
       <span>${escapeHtml(label)}</span>
       <strong>${escapeHtml(value)}</strong>
-      <em>${kind === 'story_id' ? 'Edit' : 'Replace'}</em>
+      <em title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}">${icon}</em>
     </button>`;
+  };
   box.innerHTML = [
     row('Story ID', pkg.storyId || 'Not detected', !!pkg.storyId, 'story_id'),
     row('Story TXT', pkg.storyFile?.name || 'Missing', !!pkg.storyFile, 'story'),
     row('Cover', pkg.coverFiles[0]?.name || 'Missing', !!pkg.coverFiles.length, 'cover'),
     row('Background', pkg.backgroundFile?.name || 'Missing', !!pkg.backgroundFile, 'background'),
-    row('Scene Images', `${sceneList.length} files`, sceneList.length > 0, 'scene_any'),
+    row('Scenes', `${sceneList.length} files`, sceneList.length > 0, 'scene_any'),
     row('Audio', `${audioList.length} files`, true, 'audio_any')
   ].join('');
 }
