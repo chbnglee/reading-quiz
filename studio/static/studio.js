@@ -14,9 +14,9 @@ const SG_LABELS = {
   setting: 'Setting',
   initiating_event: 'Initiating Event',
   attempt: 'Attempt',
-  reaction: '\uAC10\uC815 \uBC18\uC751',
-  internal_response: '\uB0B4\uBA74 \uCD94\uB860',
-  consequence: '\uACB0\uACFC \uC774\uD574'
+  reaction: 'Reaction',
+  internal_response: 'Internal Response',
+  consequence: 'Consequence'
 };
 
 const SG_KO = {
@@ -26,6 +26,28 @@ const SG_KO = {
   reaction: '\uAC10\uC815 \uBC18\uC751',
   internal_response: '\uB0B4\uBA74 \uCD94\uB860',
   consequence: '\uACB0\uACFC \uC774\uD574'
+};
+
+const SG_KEY_ALIASES = {
+  setting: 'setting',
+  'setting & sequence': 'setting',
+  '\uBC30\uACBD': 'setting',
+  '\uBC30\uACBD \uC774\uD574': 'setting',
+  initiating_event: 'initiating_event',
+  'initiating event': 'initiating_event',
+  '\uC0AC\uAC74 \uC2DC\uC791': 'initiating_event',
+  attempt: 'attempt',
+  '\uC2DC\uB3C4': 'attempt',
+  '\uD574\uACB0 \uD589\uB3D9': 'attempt',
+  reaction: 'reaction',
+  '\uBC18\uC751': 'reaction',
+  '\uAC10\uC815 \uBC18\uC751': 'reaction',
+  internal_response: 'internal_response',
+  'internal response': 'internal_response',
+  '\uB0B4\uBA74 \uCD94\uB860': 'internal_response',
+  consequence: 'consequence',
+  '\uACB0\uACFC': 'consequence',
+  '\uACB0\uACFC \uC774\uD574': 'consequence'
 };
 
 const $ = (id) => document.getElementById(id);
@@ -190,7 +212,7 @@ function matchingQuestionScore(baseQ, aiQ) {
   if (!aiQ) return 0;
   let score = 0;
   if (Number(aiQ.number) === Number(baseQ.number)) score += 40;
-  if (aiQ.storyGrammar === baseQ.storyGrammar) score += 35;
+  if (normalizeStoryGrammarKey(aiQ.storyGrammar) === normalizeStoryGrammarKey(baseQ.storyGrammar)) score += 35;
   if (aiQ.type === baseQ.type) score += 20;
   if ((aiQ.interaction?.promptMode || '') === (baseQ.interaction?.promptMode || '')) score += 10;
   if (isTemplateCompatible(baseQ, aiQ)) score += 40;
@@ -239,7 +261,7 @@ function mergeQuestionDraft(baseQ, aiQ) {
   const compatible = isTemplateCompatible(baseQ, aiQ);
   merged.qId = baseQ.qId;
   merged.number = baseQ.number;
-  merged.storyGrammar = baseQ.storyGrammar;
+  merged.storyGrammar = normalizeStoryGrammarKey(baseQ.storyGrammar);
   merged.type = baseQ.type;
   merged.instruction = isInstructionCompatible(baseQ, aiQ.instruction) ? aiQ.instruction : baseQ.instruction;
   if (aiQ.hint) merged.hint = aiQ.hint;
@@ -259,25 +281,59 @@ function slugKey(value, fallback) {
   return slug || fallback;
 }
 
+function normalizeStoryGrammarKey(value) {
+  const raw = String(value || '').trim();
+  const lower = raw.toLowerCase().replace(/[-\s]+/g, '_');
+  return SG_KEY_ALIASES[raw] || SG_KEY_ALIASES[raw.toLowerCase()] || SG_KEY_ALIASES[lower] || lower;
+}
+
+function storyGrammarLabel(value) {
+  const key = normalizeStoryGrammarKey(value);
+  return SG_LABELS[key] || String(value || '');
+}
+
+function normalizeSlotKey(value) {
+  const lower = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  if (['who', 'character', 'main_character'].includes(lower)) return 'who';
+  if (['where', 'place', 'setting', 'main_place', 'story_place'].includes(lower)) return 'where';
+  if (['at_first', 'first', 'opening', 'opening_state', 'first_action', 'later_problem'].includes(lower)) return 'at_first';
+  return lower;
+}
+
+function humanizeKey(value) {
+  const text = String(value || '')
+    .replace(/^card[_-]/i, '')
+    .replace(/^setting[_-]/i, '')
+    .replace(/^main[_-]/i, '')
+    .replace(/^other[_-]/i, 'other ')
+    .replace(/^later[_-]/i, 'later ')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!text) return '';
+  return text.replace(/\b([a-z])/g, ch => ch.toUpperCase()).replace(/\bThe\b/g, 'the');
+}
+
 function normalizeSettingItem(item, index) {
   if (typeof item === 'string') {
     return { key: slugKey(item, `item_${index + 1}`), text: item, slot: '' };
   }
-  const text = item?.text || item?.label || item?.value || item?.key || `item ${index + 1}`;
+  const rawText = item?.text || item?.label || item?.value || '';
+  const text = placeholderText(rawText) ? (humanizeKey(item?.key) || rawText || `item ${index + 1}`) : rawText;
   return {
     ...item,
     key: item?.key || slugKey(text, `item_${index + 1}`),
     text,
-    slot: item?.slot || item?.category || ''
+    slot: normalizeSlotKey(item?.slot || item?.category || '')
   };
 }
 
 function normalizeSettingInteraction(interaction = {}) {
   const aiSlots = Array.isArray(interaction.slots) ? interaction.slots : [];
   const fixedSlots = [
-    { key: 'who', label: 'Who?', weight: 2.5 },
-    { key: 'where', label: 'Where?', weight: 2 },
-    { key: 'at_first', label: 'At first...', weight: 1.5 }
+    { key: 'who', label: 'Who?', weight: 3 },
+    { key: 'where', label: 'Where?', weight: 3 },
+    { key: 'at_first', label: 'At first...', weight: 4 }
   ];
   const sourceItems = Array.isArray(interaction.items) && interaction.items.length
     ? interaction.items
@@ -286,7 +342,7 @@ function normalizeSettingInteraction(interaction = {}) {
   const itemByKey = new Map(items.map(item => [String(item.key), item]));
   const correct = {};
   const slots = fixedSlots.map(slot => {
-    const aiSlot = aiSlots.find(s => s.key === slot.key || s.label === slot.label) || {};
+    const aiSlot = aiSlots.find(s => normalizeSlotKey(s.key || s.label) === slot.key) || {};
     let correctValue = interaction.correct?.[slot.key] || aiSlot.correct || slot.correct;
     if (correctValue && !itemByKey.has(String(correctValue))) {
       const matchedItem = items.find(item => String(item.text || '').toLowerCase() === String(correctValue).toLowerCase());
@@ -303,7 +359,7 @@ function normalizeSettingInteraction(interaction = {}) {
       correctValue = key;
     }
     correct[slot.key] = correctValue || slot.correct || `${slot.key}_correct`;
-    return { ...slot, ...aiSlot, key: slot.key, label: slot.label, correct: correct[slot.key], weight: Number(aiSlot.weight) || slot.weight };
+    return { ...aiSlot, key: slot.key, label: slot.label, correct: correct[slot.key], weight: slot.weight, partialCredit: .35 };
   });
   return {
     ...interaction,
@@ -365,22 +421,34 @@ function weakInitiatingSentence(text = '') {
   return false;
 }
 
+function problemSignalScore(text = '') {
+  const lower = String(text || '').toLowerCase();
+  const strong = [
+    'lost', 'loses', 'missing', 'problem', 'trouble', 'only', 'cannot', "can't", 'could not', "couldn't",
+    'danger', 'stuck', 'trapped', 'caught', 'heavy', 'dark', 'fell', 'broke', 'vanished', 'disappeared',
+    'worried', 'afraid', 'terrible', 'wrong', 'mistake', 'dim', 'stopped', 'dull', 'lifeless',
+    'plastic', 'trash', 'bag', 'net', 'capture', 'captured', 'grabbed', 'must have', 'will capture',
+    'own', 'keep', 'ignored', 'warning', 'warned'
+  ];
+  const weak = ['beautiful', 'amazing', 'pretty', 'wonderful', 'watched', 'watching', 'smiled', 'happy'];
+  let score = strong.reduce((sum, keyword) => sum + (lower.includes(keyword) ? 5 : 0), 0);
+  score -= weak.reduce((sum, keyword) => sum + (lower.includes(keyword) ? 2 : 0), 0);
+  if (/\bbut\b|\bsuddenly\b/.test(lower)) score += 2;
+  if (/\b(want|wanted|must|try|tried|need|needed)\b/.test(lower)) score += 2;
+  return score;
+}
+
 function chooseInitiatingSentence(storyText = '') {
   const scenes = parseStory(storyText || '');
-  const keywords = [
-    'lost', 'missing', 'problem', 'trouble', 'only', 'cannot', "can't", 'could not', "couldn't",
-    'but', 'suddenly', 'danger', 'stuck', 'trapped', 'caught', 'heavy', 'dark', 'fell',
-    'broke', 'vanished', 'disappeared', 'cry', 'cried', 'worried', 'afraid'
-  ];
   let best = null;
   scenes.forEach((scene, sceneIdx) => {
     (scene.sentences || []).forEach(sentence => {
       const text = sentence.text || '';
       if (weakInitiatingSentence(text)) return;
-      const lower = text.toLowerCase();
-      let score = keywords.reduce((sum, keyword) => sum + (lower.includes(keyword) ? 3 : 0), 0);
-      score += sceneIdx === 0 ? -2 : Math.max(0, 6 - sceneIdx);
+      let score = problemSignalScore(text) * 2;
+      score += sceneIdx === 0 ? -4 : Math.max(0, 8 - sceneIdx);
       score += Math.min(4, storySentenceWords(text) / 2);
+      if (problemSignalScore(text) <= 0) score -= 6;
       if (!best || score > best.score) best = { ...sentence, sceneId: scene.sceneId, score };
     });
   });
@@ -478,8 +546,8 @@ function ensurePartialOptionScores(q) {
     wrong.forEach((opt, idx) => {
       opt.score = idx === 0 ? 40 : idx === 1 ? 20 : 0;
       opt.diagnostic = opt.diagnostic || (idx === 0
-        ? '정답과 가까운 단서가 있지만 감정이나 내면 상태를 더 정확히 확인해야 합니다.'
-        : '일부 장면 단서는 보았지만 겉으로 보이는 반응과 속마음을 구분하는 연습이 필요합니다.');
+        ? 'Near-miss distractor: the scene clue is close, but the feeling or thought needs more precise checking.'
+        : 'Distractor: the learner may be reading a surface clue without connecting it to the story grammar target.');
     });
   }
 }
@@ -524,6 +592,7 @@ function ensureImageResourcesForQuiz(qz) {
 
 function normalizeQuestionForTemplate(q, storyText = '') {
   const normalized = deepClone(q);
+  normalized.storyGrammar = normalizeStoryGrammarKey(normalized.storyGrammar);
   if (normalized.type === 'setting_slot_drag') {
     normalized.interaction = normalizeSettingInteraction(normalized.interaction || {});
     normalized.scoring = settingScoring(normalized.interaction.correct, normalized.interaction.slots);
@@ -531,13 +600,14 @@ function normalizeQuestionForTemplate(q, storyText = '') {
   if (normalized.type === 'listen_scene_mcq') {
     const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
     const audioSentence = storySentenceById(storyText, normalized.resources?.audio?.sentenceId);
-    if (!audioSentence || weakInitiatingSentence(audioSentence.text)) {
+    if (!audioSentence || weakInitiatingSentence(audioSentence.text) || problemSignalScore(audioSentence.text) <= 0) {
       const better = chooseInitiatingSentence(storyText);
       if (better) {
         normalized.resources = normalized.resources || {};
         normalized.resources.audio = audioResourceForSentence(storyId, better);
         normalized.resources.images = sceneOptionsAround(storyText, better.sceneId, 4).map(scene => imageResourceForScene(storyId, scene));
         normalized.interaction = imageOptions((normalized.resources.images || []).map(img => img.sceneId), better.sceneId);
+        normalized.hint = fallbackHint(normalized, storyText);
       }
     }
   }
@@ -566,6 +636,7 @@ function normalizeQuestionForTemplate(q, storyText = '') {
         items: [...tokens].reverse()
       };
       normalized.scoring = wordScoring(tokens);
+      if (genericHint(normalized, normalized.hint)) normalized.hint = fallbackHint(normalized, storyText);
     }
   }
   if (Array.isArray(normalized.interaction?.options)) {
@@ -578,7 +649,8 @@ function normalizeQuestionForTemplate(q, storyText = '') {
 function placeholderText(value) {
   const text = String(value || '').trim().toLowerCase();
   return !text
-    || ['main_character', 'main character', 'main_place', 'main place', 'story place', 'other character', 'first action', 'later problem', 'other place', 'opening_state', 'opening state'].includes(text)
+    || ['main_character', 'main character', 'character', 'main_place', 'main place', 'story place', 'place', 'other character', 'first action', 'later problem', 'other place', 'opening_state', 'opening state'].includes(text)
+    || /^card[_-]/.test(text)
     || /^item \d+$/.test(text);
 }
 
@@ -591,6 +663,16 @@ function contaminatedHint(value, storyText = '') {
   if (/[^\x00-\x7F]/.test(text)) return true;
   if (/milo/i.test(text) && !/milo/i.test(storyText || '')) return true;
   if (/podo|didi/i.test(text) && !/podo|didi/i.test(storyText || '')) return true;
+  return false;
+}
+
+function genericHint(q = {}, value = '') {
+  const text = String(value || '').trim().toLowerCase();
+  if (!text) return true;
+  if (q.type === 'listen_scene_mcq' && /listen for the first (clear )?problem\.?$/.test(text)) return true;
+  if (q.type === 'scene_word_unscramble' && /(start with who|find who|then find the action)/.test(text)) return true;
+  if (q.type === 'emotion_mcq' && /(face|expression|what .* says|look at the face)/.test(text)) return true;
+  if (q.type === 'internal_response_mcq' && /^think about what the character learns\.?$/.test(text)) return true;
   return false;
 }
 
@@ -691,6 +773,54 @@ function fallbackSettingInteraction(storyText = '') {
   });
 }
 
+function possessiveName(name = 'the character') {
+  const cleaned = String(name || 'the character').trim() || 'the character';
+  if (/^the character$/i.test(cleaned)) return 'the character\'s';
+  return cleaned.endsWith('s') ? `${cleaned}'` : `${cleaned}'s`;
+}
+
+function initiatingHint(storyText = '', sentence = null) {
+  const text = String(sentence?.text || '').toLowerCase();
+  if (/lost|missing|vanished|disappeared/.test(text)) return 'Listen for what is lost.';
+  if (/\bonly\b.*\bcat\b|\bcat\b.*\bonly\b/.test(text)) return 'Listen for the youngest man\'s problem.';
+  if (/plastic|trash|bag|danger/.test(text)) return 'Listen for the danger in the sea.';
+  if (/dark|canyon|lost light/.test(text)) return 'Listen for the problem in the dark place.';
+  if (/heavy|gold/.test(text)) return 'Listen for the problem with the heavy gold.';
+  if (/capture|captured|caught|trapped|grabbed|keep|own|must have|will capture/.test(text)) return 'Listen for the problem about keeping it.';
+  return 'Listen for the story problem.';
+}
+
+function attemptHint(q = {}, storyText = '') {
+  const sentence = storySentenceById(storyText, q.resources?.sentenceId);
+  const text = String(sentence?.text || storySentenceTextById(storyText, q.resources?.sentenceId) || '').toLowerCase();
+  const sceneText = sceneTextById(storyText, q.resources?.scene || sentence?.sceneId || '');
+  const name = storyNamesFromText(sentence?.text || sceneText || firstSceneText(storyText)).split(' and ')[0] || 'the character';
+  if (/hid/.test(text)) return 'Build the sentence about hiding.';
+  if (/help|rescue|save/.test(text)) return 'Build the sentence about helping.';
+  if (/walk|went|go|ran|rush/.test(text)) return `Build the sentence about where ${name} goes.`;
+  if (/follow/.test(text)) return 'Build the sentence about following.';
+  if (/open/.test(text)) return 'Build the sentence about opening it.';
+  if (/catch|caught|capture|grab/.test(text)) return 'Build the sentence about catching it.';
+  return `Put ${possessiveName(name)} action in order.`;
+}
+
+function emotionHint(q = {}, storyText = '') {
+  const scene = q.resources?.scene || sceneIdFromPath(q.resources?.images?.[0]?.path);
+  const text = sceneTextById(storyText, scene).toLowerCase();
+  if (/danger|plastic|trash|bag|stuck|trapped/.test(text)) return 'The character is near danger. How does it feel?';
+  if (/terrible|dark|dull|dim|lost|sad|cry|cried|wrong/.test(text)) return 'Something goes wrong. How does the character feel?';
+  if (/happy|smile|smiled|free|safe|saved/.test(text)) return 'Good news comes. How does the character feel?';
+  return 'Look at the scene. How does the character feel?';
+}
+
+function internalHint(q = {}, storyText = '') {
+  const scene = q.resources?.scene || sceneIdFromPath(q.resources?.images?.[0]?.path);
+  const text = sceneTextById(storyText, scene);
+  const name = storyNamesFromText(text || firstSceneText(storyText)).split(' and ')[0] || 'the character';
+  if (/realized|understood|learned|mistake|belongs|freely|free/i.test(text)) return `Think about what ${name} learns.`;
+  return `Think about what ${name} understands.`;
+}
+
 function fallbackHint(q, storyText = '') {
   const opening = firstSceneText(storyText);
   const who = storyNamesFromText(opening);
@@ -703,10 +833,10 @@ function fallbackHint(q, storyText = '') {
     const plural = /\sand\s/.test(who);
     return plural ? 'Who is there? Where are they?' : 'Who is there? Where does the story start?';
   }
-  if (q.type === 'listen_scene_mcq') return 'Listen for the first clear problem.';
-  if (q.type === 'scene_word_unscramble') return 'Start with who. Then find the action.';
-  if (q.type === 'emotion_mcq') return 'Look at the face and the scene.';
-  if (q.type === 'internal_response_mcq') return 'Think about what the character learns.';
+  if (q.type === 'listen_scene_mcq') return initiatingHint(storyText, storySentenceById(storyText, q.resources?.audio?.sentenceId) || chooseInitiatingSentence(storyText));
+  if (q.type === 'scene_word_unscramble') return attemptHint(q, storyText);
+  if (q.type === 'emotion_mcq') return emotionHint(q, storyText);
+  if (q.type === 'internal_response_mcq') return internalHint(q, storyText);
   return 'Look at the story clues.';
 }
 
@@ -747,19 +877,27 @@ function sanitizeGeneratedQuiz(qz) {
   if (!qz) return qz;
   const storyText = qz.story?.text || '';
   (qz.questions || []).forEach(q => {
-    if (contaminatedHint(q.hint, storyText)) q.hint = fallbackHint(q, storyText);
+    q.storyGrammar = normalizeStoryGrammarKey(q.storyGrammar);
+    if (contaminatedHint(q.hint, storyText) || genericHint(q, q.hint)) q.hint = fallbackHint(q, storyText);
+    if (q.type === 'story_sequence_drag') {
+      const sequence = Array.isArray(q.interaction?.correct) && q.interaction.correct.length
+        ? q.interaction.correct
+        : (q.interaction?.items || []);
+      q.scoring = weightedPosition(sequence);
+    }
     if (q.type === 'setting_slot_drag') {
       const items = q.interaction?.items || [];
       const placeholderCount = items.filter(item => placeholderText(item.text || item.key)).length;
       const dirtyItem = items.some(item => contaminatedVisibleText(item.text || item.key, storyText));
       if (settingInteractionLooksWeak(q.interaction || {}) || placeholderCount >= Math.ceil(items.length / 2) || dirtyItem) {
         q.interaction = fallbackSettingInteraction(storyText);
-        q.scoring = settingScoring(q.interaction.correct, q.interaction.slots);
       }
+      q.interaction = normalizeSettingInteraction(q.interaction || {});
+      q.scoring = settingScoring(q.interaction.correct, q.interaction.slots);
     }
     if (q.type === 'listen_scene_mcq') {
       const sentence = storySentenceById(storyText, q.resources?.audio?.sentenceId);
-      if (!sentence || weakInitiatingSentence(sentence.text)) {
+      if (!sentence || weakInitiatingSentence(sentence.text) || problemSignalScore(sentence.text) <= 0) {
         const storyId = qz.story?.storyId || 'OG0000';
         const better = chooseInitiatingSentence(storyText);
         if (better) {
@@ -768,6 +906,7 @@ function sanitizeGeneratedQuiz(qz) {
           q.resources.images = sceneOptionsAround(storyText, better.sceneId, 4).map(scene => imageResourceForScene(storyId, scene));
           q.interaction = imageOptions((q.resources.images || []).map(img => img.sceneId), better.sceneId);
           q.scoring = templateScoringForQuestion(q);
+          q.hint = fallbackHint(q, storyText);
         }
       }
     }
@@ -781,8 +920,11 @@ function sanitizeGeneratedQuiz(qz) {
           q.resources = { ...(q.resources || {}), scene: better.sceneId, sentenceId: better.sentenceId, images: [imageResourceForScene(storyId, better.sceneId)] };
           q.interaction = { promptMode: 'word_unscramble', correct: tokens, items: [...tokens].reverse() };
           q.scoring = wordScoring(tokens);
+          q.hint = fallbackHint(q, storyText);
         }
       }
+      if (Array.isArray(q.interaction?.correct) && q.interaction.correct.length) q.scoring = wordScoring(q.interaction.correct);
+      if (genericHint(q, q.hint)) q.hint = fallbackHint(q, storyText);
     }
     if ((q.type === 'emotion_mcq' || q.type === 'internal_response_mcq') && Array.isArray(q.interaction?.options)) {
       const dirtyOption = q.interaction.options.some(opt => contaminatedVisibleText(opt.text || opt.key, storyText));
@@ -793,6 +935,7 @@ function sanitizeGeneratedQuiz(qz) {
       ensurePartialOptionScores(q);
       q.scoring = templateScoringForQuestion(q);
       fixCharacterInstructionForScene(q, storyText);
+      if (genericHint(q, q.hint)) q.hint = fallbackHint(q, storyText);
     }
   });
   return reconcileQuizResourcesWithPackage(ensureImageResourcesForQuiz(qz));
@@ -806,7 +949,7 @@ function completeGeneratedQuiz(generatedQuiz, row = {}) {
   completed.schemaVersion = incoming.schemaVersion || base.schemaVersion;
   completed.story = { ...base.story, ...(incoming.story || {}) };
   completed.assets = { ...base.assets, ...(incoming.assets || {}) };
-  completed.storyGrammarAxes = Array.isArray(incoming.storyGrammarAxes) && incoming.storyGrammarAxes.length ? incoming.storyGrammarAxes : base.storyGrammarAxes;
+  completed.storyGrammarAxes = Object.keys(SG_LABELS).map(key => ({ key, labelEn: SG_LABELS[key], labelKo: SG_KO[key], descriptionKo: '' }));
   completed.questions = base.questions.map(baseQ => {
     const aiQ = bestAiQuestionForTemplate(baseQ, incomingQuestions);
     return mergeQuestionDraft(baseQ, aiQ);
@@ -897,11 +1040,12 @@ function generationQualityIssues(qz) {
   const q4 = qz?.questions?.find(q => Number(q.number) === 4);
   const q5 = qz?.questions?.find(q => Number(q.number) === 5);
   const q6 = qz?.questions?.find(q => Number(q.number) === 6);
-  if (q1 && contaminatedHint(q1.hint, storyText)) issues.push('Q1 hint contains prompt/example text or is missing.');
+  if (q1 && (contaminatedHint(q1.hint, storyText) || genericHint(q1, q1.hint))) issues.push('Q1 hint contains prompt/example text or is missing.');
   if (q2 && settingInteractionLooksWeak(q2.interaction || {})) issues.push('Q2 setting cards must contain six real story-specific cards.');
   if (q3) {
     const sentence = storySentenceById(storyText, q3.resources?.audio?.sentenceId);
-    if (!sentence || weakInitiatingSentence(sentence.text)) issues.push('Q3 audio sentence is too short or not problem-rich enough.');
+    if (!sentence || weakInitiatingSentence(sentence.text) || problemSignalScore(sentence.text) <= 0) issues.push('Q3 audio sentence must identify the central problem, not just an early scene.');
+    if (genericHint(q3, q3.hint)) issues.push('Q3 hint is too generic for the selected problem.');
   }
   if (q4) {
     const sentence = storySentenceById(storyText, q4.resources?.sentenceId);
@@ -909,6 +1053,7 @@ function generationQualityIssues(qz) {
     if (sentence && /[.!?]$/.test(sentence.text.trim()) && !/[.!?]$/.test(String(correct[correct.length - 1] || ''))) {
       issues.push('Q4 final punctuation is missing from the last word card.');
     }
+    if (genericHint(q4, q4.hint)) issues.push('Q4 hint is too generic for the selected action sentence.');
   }
   if (q5) {
     const name = characterFromInstruction(q5.instruction);
@@ -919,11 +1064,13 @@ function generationQualityIssues(qz) {
     if ((q5.interaction?.options || []).filter(opt => !opt.isCorrect).every(opt => Number(opt.score) === 0)) {
       issues.push('Q5 needs at least one partial-score distractor.');
     }
+    if (genericHint(q5, q5.hint)) issues.push('Q5 hint must use scene context, not invisible face/speech cues.');
   }
   if (q6) {
     if ((q6.interaction?.options || []).filter(opt => !opt.isCorrect).every(opt => Number(opt.score) === 0)) {
       issues.push('Q6 needs at least one partial-score distractor.');
     }
+    if (genericHint(q6, q6.hint)) issues.push('Q6 hint is too generic for the selected internal response.');
   }
   return issues;
 }
@@ -1008,6 +1155,7 @@ function assetUrl(path, kind = 'image') {
   const localAsset = findLocalAssetUrl(path);
   if (localAsset) return localAsset;
   if (/^(https?:|data:|blob:|\/)/.test(path)) return path;
+  if (String(path).includes('/')) return path;
   const base = kind === 'audio' ? quiz.assets.audioBasePath : quiz.assets.imageBasePath;
   const joined = `${base || ''}${path}`;
   return findLocalAssetUrl(joined) || joined;
@@ -1159,7 +1307,7 @@ function renderPreview() {
   const hintAvatar = findLocalAssetUrl(hintAvatarPath) || hintAvatarPath;
   const parts = [];
   parts.push(`<article class="quiz-card q-type-${escapeAttr(q.type || 'unknown')}">`);
-  parts.push(`<div class="quiz-meta"><span class="q-badge">Q${q.number || currentQuestionIndex + 1}</span><span class="sg-tag">${escapeHtml(SG_LABELS[q.storyGrammar] || q.storyGrammar)}</span></div>`);
+  parts.push(`<div class="quiz-meta"><span class="q-badge">Q${q.number || currentQuestionIndex + 1}</span><span class="sg-tag">${escapeHtml(storyGrammarLabel(q.storyGrammar))}</span></div>`);
   parts.push(`<div class="instruction">${escapeHtml(q.instruction || '')}</div>`);
   const hintHtml = `<div class="hint-row"><img class="hint-avatar" src="${escapeAttr(hintAvatar)}" alt="Bookey"><span>${escapeHtml(q.hint || '')}</span></div>`;
 
@@ -1190,7 +1338,7 @@ function renderPreview() {
 function renderEditor() {
   const q = quiz.questions[currentQuestionIndex];
   $('question-select').value = String(currentQuestionIndex);
-  $('sg-select').value = q.storyGrammar;
+  $('sg-select').value = normalizeStoryGrammarKey(q.storyGrammar);
   $('type-select').value = q.type;
   $('instruction-input').value = q.instruction || '';
   $('hint-input').value = q.hint || '';
@@ -1282,13 +1430,12 @@ function weightMetricsForQuestion(q) {
   if (!q) return { text: '', warn: false };
   if (Array.isArray(q.interaction?.options) && q.interaction.options.length) {
     const scores = q.interaction.options.map(opt => Number(opt.score) || 0);
-    const total = scores.reduce((sum, score) => sum + score, 0);
     const highest = Math.max(...scores);
     const wrongScores = q.interaction.options.filter(opt => !opt.isCorrect && Number(opt.score) < 100).map(opt => Number(opt.score) || 0);
     const hasPartial = wrongScores.some(score => score > 0);
     const needsPartial = q.type === 'emotion_mcq' || q.type === 'internal_response_mcq';
     return {
-      text: `Selectable max: ${highest} / 100 - option score total: ${total}${needsPartial ? ' - partial score required' : ''}`,
+      text: `Selectable max: ${highest} / 100${needsPartial ? ' - partial distractor required' : ''}`,
       warn: highest !== 100 || scores.some(score => score > 100 || score < 0) || (needsPartial && !hasPartial)
     };
   }
@@ -1296,7 +1443,7 @@ function weightMetricsForQuestion(q) {
   const total = components.reduce((sum, c) => sum + (Number(c.weight) || 0), 0);
   return {
     text: `Weight total: ${Number(total.toFixed(2))} / 10`,
-    warn: total >= 10
+    warn: total <= 0 || Math.abs(total - 10) > 0.01
   };
 }
 
@@ -1398,7 +1545,7 @@ function applyEditorChanges() {
   if (!quiz) return;
   const q = quiz.questions[currentQuestionIndex];
   try {
-    q.storyGrammar = $('sg-select').value;
+    q.storyGrammar = normalizeStoryGrammarKey($('sg-select').value);
     q.type = $('type-select').value;
     q.instruction = $('instruction-input').value.trim();
     q.hint = $('hint-input').value.trim();
@@ -1556,13 +1703,15 @@ function storyWordTokens(sentence) {
     'dark canyon',
     'ocean floor',
     'lost light',
+    'strange light',
+    'aurora submarine',
     'tiny rock',
     'youngest son',
     'youngest man'
   ]);
   const modifierWords = new Set([
     'plastic', 'rainbow', 'crystal', 'dark', 'deep', 'little', 'big', 'quiet',
-    'lost', 'youngest', 'oldest', 'middle', 'bright', 'gray', 'grey', 'clear'
+    'lost', 'strange', 'aurora', 'youngest', 'oldest', 'middle', 'bright', 'gray', 'grey', 'clear'
   ]);
   const clean = token => String(token || '').replace(/[,\.\!?]+$/g, '').toLowerCase();
   const isCompoundPair = (a, b) => compoundPairs.has(`${clean(a)} ${clean(b)}`);
@@ -1644,21 +1793,31 @@ function buildRuleDraft(payload) {
 }
 
 function weightedPosition(sequence) {
+  const weights = normalizedWeights(sequence.length, (idx, count) => (idx === 0 || idx === count - 1 ? 2.5 : 1.5));
   return {
     type: 'weighted_position',
     maxScore: 100,
     formula: 'score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)',
-    components: sequence.map((sc, idx) => ({ key: sc, weight: idx === 0 || idx === sequence.length - 1 ? 2.5 : 1.5, rule: 'position_distance', correctValue: idx + 1, rationale: 'Story sequence diagnostic point.' }))
+    components: sequence.map((sc, idx) => ({ key: sc, weight: weights[idx], rule: 'position_distance', correctValue: idx + 1, rationale: 'Story sequence diagnostic point.' }))
   };
+}
+
+function normalizedWeights(count, rawWeightFn) {
+  const raw = Array.from({ length: count }, (_, idx) => Number(rawWeightFn(idx, count)) || 1);
+  const total = raw.reduce((sum, weight) => sum + weight, 0) || 1;
+  const weights = raw.map(weight => Number((weight * 10 / total).toFixed(2)));
+  const diff = Number((10 - weights.reduce((sum, weight) => sum + weight, 0)).toFixed(2));
+  if (weights.length) weights[weights.length - 1] = Number((weights[weights.length - 1] + diff).toFixed(2));
+  return weights;
 }
 
 function settingInteraction() {
   return {
     promptMode: 'slot_drag',
     slots: [
-      { key: 'who', label: 'Who?', correct: 'main_character', weight: 2.5 },
-      { key: 'where', label: 'Where?', correct: 'main_place', weight: 2 },
-      { key: 'at_first', label: 'At first...', correct: 'opening_state', weight: 1.5 }
+      { key: 'who', label: 'Who?', correct: 'main_character', weight: 3 },
+      { key: 'where', label: 'Where?', correct: 'main_place', weight: 3 },
+      { key: 'at_first', label: 'At first...', correct: 'opening_state', weight: 4 }
     ],
     items: [
       { key: 'main_place', text: 'story place', slot: 'where' },
@@ -1679,9 +1838,9 @@ function settingScoring(correct = {}, slots = []) {
     maxScore: 100,
     formula: 'full slot weight if exact target; 35% slot credit if same category but wrong card; 0 for wrong category',
     components: [
-      { key: 'who', weight: slotWeight('who', 2.5), rule: 'slot_match', correctValue: correct.who || 'main_character', partialCredit: .35, rationale: 'Identifies the main character.' },
-      { key: 'where', weight: slotWeight('where', 2), rule: 'slot_match', correctValue: correct.where || 'main_place', partialCredit: .35, rationale: 'Identifies the story place.' },
-      { key: 'at_first', weight: slotWeight('at_first', 1.5), rule: 'slot_match', correctValue: correct.at_first || 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state.' }
+      { key: 'who', weight: slotWeight('who', 3), rule: 'slot_match', correctValue: correct.who || 'main_character', partialCredit: .35, rationale: 'Identifies the main character. Same-category wrong character earns 35% of this slot.' },
+      { key: 'where', weight: slotWeight('where', 3), rule: 'slot_match', correctValue: correct.where || 'main_place', partialCredit: .35, rationale: 'Identifies the story place. Same-category wrong place earns 35% of this slot.' },
+      { key: 'at_first', weight: slotWeight('at_first', 4), rule: 'slot_match', correctValue: correct.at_first || 'opening_state', partialCredit: .35, rationale: 'Identifies the opening state. Same-category wrong opening action earns 35% of this slot.' }
     ]
   };
 }
@@ -1694,18 +1853,19 @@ function imageOptions(scenes, correctScene) {
       text: sc,
       score: sc === correctScene ? 100 : Math.max(0, 30 - idx * 5),
       isCorrect: sc === correctScene,
-      diagnostic: '사건 시작 장면과 다른 장면을 혼동합니다.'
+      diagnostic: 'Distractor: the learner confuses the problem-start scene with another story scene.'
     })),
     correct: String.fromCharCode(65 + Math.max(0, scenes.indexOf(correctScene)))
   };
 }
 
 function wordScoring(words) {
+  const weights = normalizedWeights(words.length, (idx, count) => (idx <= 1 || idx === count - 1 ? 2.5 : 1));
   return {
     type: 'weighted_word_position',
     maxScore: 100,
     formula: 'score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)',
-    components: words.map((word, idx) => ({ key: word, weight: idx <= 1 || idx === words.length - 1 ? 2.5 : 1, rule: 'exact_position', correctValue: idx + 1, rationale: 'Sentence structure diagnostic point.' }))
+    components: words.map((word, idx) => ({ key: word, weight: weights[idx], rule: 'exact_position', correctValue: idx + 1, rationale: 'Sentence structure diagnostic point.' }))
   };
 }
 
@@ -1715,37 +1875,70 @@ function fixedScoring() {
 
 function emotionOptions() {
   return { promptMode: 'text_mcq', options: [
-    { key: 'A', text: 'Happy', score: 20, isCorrect: false, diagnostic: '장면의 감정을 반대로 이해합니다.' },
-    { key: 'B', text: 'Sad', score: 100, isCorrect: true },
-    { key: 'C', text: 'Angry', score: 40, isCorrect: false, diagnostic: '비슷한 부정 감정을 혼동합니다.' },
-    { key: 'D', text: 'Surprised', score: 20, isCorrect: false, diagnostic: '갑작스러운 반응과 감정을 혼동합니다.' }
+    { key: 'A', text: 'happy', score: 20, isCorrect: false, diagnostic: 'Distractor: positive feeling is confused with a difficult scene.' },
+    { key: 'B', text: 'sad', score: 100, isCorrect: true },
+    { key: 'C', text: 'angry', score: 40, isCorrect: false, diagnostic: 'Near-miss: the learner identifies a negative feeling but confuses sadness and anger.' },
+    { key: 'D', text: 'surprised', score: 20, isCorrect: false, diagnostic: 'Distractor: surprise is confused with the character?s sustained feeling.' }
   ], correct: 'B' };
 }
 
 function internalOptions() {
   return { promptMode: 'text_mcq', options: [
     { key: 'A', text: 'I understand something now.', score: 100, isCorrect: true },
-    { key: 'B', text: 'I want a new toy.', score: 0, isCorrect: false, diagnostic: '이야기와 무관한 생각을 선택합니다.' },
-    { key: 'C', text: 'The place is pretty.', score: 40, isCorrect: false, diagnostic: '장면 정보에 머무릅니다.' },
-    { key: 'D', text: 'I want to go away.', score: 20, isCorrect: false, diagnostic: '행동과 내면의 이유를 혼동합니다.' }
+    { key: 'B', text: 'I want a new toy.', score: 0, isCorrect: false, diagnostic: 'Distractor: this thought is not connected to the story.' },
+    { key: 'C', text: 'The place is pretty.', score: 40, isCorrect: false, diagnostic: 'Near-miss: the learner notices scene information but does not infer the character?s thought.' },
+    { key: 'D', text: 'I want to go away.', score: 20, isCorrect: false, diagnostic: 'Distractor: action and inner reason are confused.' }
   ], correct: 'A' };
 }
 
 function defaultReporting() {
+  const feedback = {
+    setting: {
+      stable: 'Setting is understood steadily.',
+      developing: 'The learner mostly understands who, where, and the opening state, but should check some clues again.',
+      shaky: 'The learner needs practice identifying who is in the first scene and where the story starts.',
+      focus: 'Practice matching short opening sentences with character and place cards.'
+    },
+    initiating_event: {
+      stable: 'The problem-start scene is identified steadily.',
+      developing: 'The learner mostly finds the problem, but should separate it from nearby scenes.',
+      shaky: 'The learner needs practice hearing the sentence that changes the story into a problem.',
+      focus: 'Practice matching the problem sentence with its scene.'
+    },
+    attempt: {
+      stable: 'The character action used to solve the problem is understood well.',
+      developing: 'The learner finds the action scene but should check word-order clues more carefully.',
+      shaky: 'The learner needs practice identifying who does what in the action sentence.',
+      focus: 'Practice subject and action chunks with short word cards.'
+    },
+    reaction: {
+      stable: 'The character reaction and feeling are understood steadily.',
+      developing: 'The learner understands the broad feeling but should distinguish similar emotions.',
+      shaky: 'The learner needs practice choosing a feeling from scene evidence.',
+      focus: 'Practice connecting feeling words with story situations.'
+    },
+    internal_response: {
+      stable: 'The character thought or realization is inferred well.',
+      developing: 'The learner mostly understands the thought but should check the evidence scene again.',
+      shaky: 'The learner needs practice separating visible action from inner thought.',
+      focus: 'Practice saying why the character thinks that way.'
+    },
+    consequence: {
+      stable: 'The story flow and outcome are understood steadily.',
+      developing: 'The learner understands the overall story but should check the middle order again.',
+      shaky: 'The learner needs practice connecting beginning, problem, action, and outcome.',
+      focus: 'Practice retelling the whole story with five key scenes.'
+    }
+  };
   return {
     overallFormula: 'overall = average(setting, initiating_event, attempt, reaction, internal_response, consequence)',
     masteryBands: [
-      { key: 'stable', min: 85, max: 100, labelKo: '\uC548\uC815' },
-      { key: 'developing', min: 70, max: 84, labelKo: '\uBC1C\uB2EC \uC911' },
-      { key: 'shaky', min: 50, max: 69, labelKo: '\uD754\uB4E4\uB9BC' },
-      { key: 'focus', min: 0, max: 49, labelKo: '\uC9D1\uC911 \uBCF4\uC644' }
+      { key: 'stable', min: 85, max: 100, labelKo: 'Stable' },
+      { key: 'developing', min: 70, max: 84, labelKo: 'Developing' },
+      { key: 'shaky', min: 50, max: 69, labelKo: 'Shaky' },
+      { key: 'focus', min: 0, max: 49, labelKo: 'Focus' }
     ],
-    parentFeedback: Object.fromEntries(Object.keys(SG_LABELS).map(key => [key, {
-      stable: SG_KO[key] + ' 항목을 안정적으로 이해합니다.',
-      developing: SG_KO[key] + ' 항목은 대체로 이해하지만 일부 단서 확인이 필요합니다.',
-      shaky: SG_KO[key] + ' 항목의 근거를 다시 확인하는 연습이 필요합니다.',
-      focus: SG_KO[key] + ' 항목은 짧은 문장과 장면으로 다시 연습하는 것이 좋습니다.'
-    }]))
+    parentFeedback: feedback
   };
 }
 
@@ -1843,33 +2036,32 @@ function quizFromBatchRow(row) {
 function validateQuizDraft(sourceQuiz, row = {}) {
   const issues = [];
   const scenes = sourceQuiz.story?.scenes || [];
-  if (!row.story_text && !sourceQuiz.story?.text) issues.push('?ㅽ넗由??꾨Ц??鍮꾩뼱 ?덉뒿?덈떎.');
-  if (scenes.length < 5) issues.push('?λ㈃??5媛?誘몃쭔?낅땲?? ?쒗??臾명빆 寃?섍? ?꾩슂?⑸땲??');
-  if ((sourceQuiz.questions || []).length !== 6) issues.push('臾명빆 ?섍? 6媛쒓? ?꾨떃?덈떎.');
+  if (!row.story_text && !sourceQuiz.story?.text) issues.push('Story text is missing.');
+  if (scenes.length < 5) issues.push('At least five scenes are recommended for this quiz template.');
+  if ((sourceQuiz.questions || []).length !== 6) issues.push('The quiz must contain exactly six questions.');
   const expectedAxes = Object.keys(SG_LABELS);
-  const foundAxes = new Set((sourceQuiz.questions || []).map(q => q.storyGrammar));
+  const foundAxes = new Set((sourceQuiz.questions || []).map(q => normalizeStoryGrammarKey(q.storyGrammar)));
   expectedAxes.forEach(axis => {
-    if (!foundAxes.has(axis)) issues.push(`${SG_LABELS[axis]} ??ぉ???놁뒿?덈떎.`);
+    if (!foundAxes.has(axis)) issues.push(`${SG_LABELS[axis]} axis is missing.`);
   });
   (sourceQuiz.questions || []).forEach(q => {
-    if (!q.instruction) issues.push(`${q.qId}: 吏?쒕Ц???놁뒿?덈떎.`);
-    if (!q.hint) issues.push(`${q.qId}: ?뚰듃媛 ?놁뒿?덈떎.`);
-    if (!q.resources || (!q.resources.images && !q.resources.audio && !q.resources.scene)) issues.push(`${q.qId}: 由ъ냼???뺣낫媛 ?놁뒿?덈떎.`);
-    if (!hasMeaningfulInteraction(q)) issues.push(`${q.qId}: ?좏깮吏/諛곗튂 ??ぉ ??interaction ?뺣낫媛 ?놁뒿?덈떎.`);
-    if (!q.scoring?.formula) issues.push(`${q.qId}: 怨꾩궛?앹씠 ?놁뒿?덈떎.`);
-    if (!Array.isArray(q.scoring?.components) || !q.scoring.components.length) issues.push(`${q.qId}: 媛以묒튂/梨꾩젏 援ъ꽦?붿냼媛 ?놁뒿?덈떎.`);
+    if (!q.instruction) issues.push(`${q.qId}: instruction is missing.`);
+    if (!q.hint) issues.push(`${q.qId}: hint is missing.`);
+    if (!q.resources || (!q.resources.images && !q.resources.audio && !q.resources.scene)) issues.push(`${q.qId}: resource data is missing.`);
+    if (!hasMeaningfulInteraction(q)) issues.push(`${q.qId}: interaction data is missing or too thin.`);
+    if (!q.scoring?.formula) issues.push(`${q.qId}: scoring formula is missing.`);
+    if (!Array.isArray(q.scoring?.components) || !q.scoring.components.length) issues.push(`${q.qId}: scoring components are missing.`);
     if ((q.type || '').includes('mcq') && (!Array.isArray(q.interaction?.options) || q.interaction.options.length < 2)) {
-      issues.push(`${q.qId}: 媛앷????좏깮吏媛 遺議깊빀?덈떎.`);
+      issues.push(`${q.qId}: options are missing or insufficient.`);
     }
     if (q.type === 'scene_word_unscramble') {
       const sentenceId = q.resources?.sentenceId;
       const sentenceFound = scenes.some(scene => (scene.sentences || []).some(s => s.sentenceId === sentenceId));
-      if (sentenceId && !sentenceFound) issues.push(`${q.qId}: ?몄뒪?щ옩釉?sentenceId媛 ?먮Ц?먯꽌 ?뺤씤?섏? ?딆뒿?덈떎.`);
+      if (sentenceId && !sentenceFound) issues.push(`${q.qId}: sentenceId was not found in the story text.`);
     }
   });
   return issues;
 }
-
 function generateBatchDrafts() {
   if (!batchItems.length) {
     toast('癒쇱? Batch XLSX/JSON??遺덈윭? 二쇱꽭??');
@@ -2709,7 +2901,7 @@ function workbookForQuiz(sourceQuiz, kind) {
 }
 
 function packageQuizForExport(sourceQuiz) {
-  const packaged = deepClone(sourceQuiz);
+  const packaged = sanitizeGeneratedQuiz(ensureImageResourcesForQuiz(deepClone(sourceQuiz)));
   packaged.assets = packaged.assets || {};
   packaged.assets.imageBasePath = 'Image/';
   packaged.assets.audioBasePath = 'Audio/';
@@ -2728,7 +2920,28 @@ function packageQuizForExport(sourceQuiz) {
 
 function previewHtmlForQuiz(sourceQuiz) {
   const data = JSON.stringify(sourceQuiz).replace(/</g, '\\u003c');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Preview</title><style>body{font-family:Arial,sans-serif;background:#f7f4ff;margin:0;padding:24px;color:#263148}.wrap{max-width:900px;margin:auto}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}img{max-width:160px;border-radius:14px;margin:6px}.pill{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold}</style></head><body><main class="wrap"><h1>${escapeHtml(sourceQuiz.story.title)}</h1><div id="app"></div></main><script>const quiz=${data};const app=document.getElementById('app');const asset=(p)=>/^(https?:|data:|\\/)/.test(p)?p:(quiz.assets.imageBasePath+p);app.innerHTML=quiz.questions.map(q=>'<section class="card"><span class="pill">Q'+q.number+' '+q.storyGrammar+'</span><h2>'+q.instruction+'</h2><p>'+q.hint+'</p><div>'+((q.resources.images||[]).map(i=>'<img src="'+asset(i.path)+'" alt="'+(i.sceneId||i.id)+'">').join(''))+'</div><pre>'+JSON.stringify(q.interaction,null,2)+'</pre></section>').join('');</script></body></html>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Reading Quiz</title><style>
+body{font-family:Arial,sans-serif;margin:0;color:#263148;background:#f7f4ff}
+.page{min-height:100vh;padding:28px;background:linear-gradient(rgba(255,255,255,.78),rgba(255,255,255,.78)),var(--bg)}
+.wrap{max-width:980px;margin:auto}.head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+h1{margin:0;font-size:30px}.meta{color:#6b7280;font-weight:700}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}
+.pill{display:inline-flex;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold;margin-bottom:8px}.instruction{font-size:21px;font-weight:800;margin:8px 0 16px}
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.listen .scene-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.scene{border:2px solid #ede9fe;border-radius:16px;overflow:hidden;background:#faf7ff;aspect-ratio:16/9}.sequence .scene{aspect-ratio:4/3}.scene img{width:100%;height:100%;object-fit:cover;display:block}
+.setting{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.slot{border:2px dashed #c4b5fd;border-radius:14px;background:#faf7ff;color:#6d28d9;font-weight:800;text-align:center;padding:16px 10px}
+.chips,.options{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.chip,.option{border:2px solid #d8b4fe;background:#fff;color:#4c1d95;border-radius:12px;padding:10px 14px;font-weight:800}
+.option{color:#374151;min-width:180px}.audio{display:inline-block;background:#7c3aed;color:white;border-radius:99px;padding:10px 16px;font-weight:bold;margin-bottom:12px}
+.hint{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:16px;background:#fff8dd;color:#7c5b00}.hint img{width:42px;height:42px;border-radius:50%;object-fit:contain;background:white}
+pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px;color:#4b5563;font-size:12px}
+</style></head><body><main class="page"><div class="wrap" id="app"></div></main><script>
+const quiz=${data};
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function asset(p,kind='image'){if(!p)return'';if(/^(https?:|data:|blob:|\\/)/.test(p))return p;if(p.includes('/'))return p;const base=kind==='audio'?(quiz.assets.audioBasePath||'Audio/'):(quiz.assets.imageBasePath||'Image/');return base+p;}
+document.querySelector('.page').style.setProperty('--bg','url("'+asset(quiz.assets.backgroundImage,'image')+'") center/cover fixed');
+function imgs(q){return (q.resources?.images||[]).map(i=>'<div class="scene"><img src="'+esc(asset(i.path,'image'))+'" alt="'+esc(i.sceneId||i.id||'scene')+'"></div>').join('');}
+function choices(q){if(q.type==='setting_slot_drag')return '<div class="setting">'+(q.interaction.slots||[]).map(s=>'<div><b>'+esc(s.label)+'</b><div class="slot">Drop here</div></div>').join('')+'</div><div class="chips">'+(q.interaction.items||[]).map(i=>'<span class="chip">'+esc(i.text||i.key)+'</span>').join('')+'</div>';if(q.type==='scene_word_unscramble')return '<div class="chips">'+(q.interaction.items||[]).map(w=>'<span class="chip">'+esc(w)+'</span>').join('')+'</div>';if(q.interaction?.options)return '<div class="options">'+q.interaction.options.map((o,i)=>'<span class="option">'+['A','B','C','D'][i]+' '+esc(o.text||o.key)+' - '+Number(o.score||0)+'</span>').join('')+'</div>';if(q.type==='story_sequence_drag')return '<div class="setting">'+(q.interaction.correct||[]).map((_,i)=>'<div class="slot">Scene '+(i+1)+'</div>').join('')+'</div>';return '';}
+document.getElementById('app').innerHTML='<div class="head"><div><h1>'+esc(quiz.story.title||quiz.story.storyId)+'</h1><div class="meta">'+esc(quiz.story.storyId)+' - '+esc(quiz.story.level||'')+'</div></div></div>'+quiz.questions.map(q=>'<section class="card '+(q.type==='listen_scene_mcq'?'listen ':'')+(q.type==='story_sequence_drag'?'sequence':'')+'"><span class="pill">Q'+q.number+' - '+esc(q.storyGrammar)+'</span><div class="instruction">'+esc(q.instruction)+'</div>'+(q.resources?.audio?'<div class="audio">Listen: '+esc(q.resources.audio.path||'')+'</div>':'')+'<div class="scene-grid">'+imgs(q)+'</div>'+choices(q)+'<div class="hint"><img src="'+esc(asset(quiz.assets.hintCharacter,'image'))+'" alt="Bookey"><span>'+esc(q.hint||'')+'</span></div><pre>'+esc(JSON.stringify({interaction:q.interaction,scoring:q.scoring},null,2))+'</pre></section>').join('');
+</script></body></html>`;
 }
 
 function collectQuizAssetEntries(sourceQuiz) {
@@ -2830,37 +3043,42 @@ function buildReadingWorkbook(wb) {
     ['Title', quiz.story.title],
     ['Level', quiz.story.level],
     [],
-    ['Q_ID','No','Story Grammar','Question Type','Instruction','Hint','Scoring Formula'],
-    ...quiz.questions.map(q => [q.qId, q.number, q.storyGrammar, q.type, q.instruction, q.hint, q.scoring?.formula || ''])
+    ['Q_ID','No','Story Grammar','Story Grammar Label','Question Type','Instruction','Hint','Scoring Formula'],
+    ...quiz.questions.map(q => [q.qId, q.number, normalizeStoryGrammarKey(q.storyGrammar), storyGrammarLabel(q.storyGrammar), q.type, q.instruction, q.hint, q.scoring?.formula || ''])
   ]);
   quiz.questions.forEach(q => {
     const rows = [
-      [`Q${String(q.number).padStart(2, '0')} ??${q.storyGrammar}`],
+      [`Q${String(q.number).padStart(2, '0')} - ${storyGrammarLabel(q.storyGrammar)}`],
       ['Q_ID', q.qId],
       ['Type', q.type],
+      ['Story Grammar', normalizeStoryGrammarKey(q.storyGrammar)],
       ['Instruction', q.instruction],
       ['Hint', q.hint],
       [],
-      ['SECTION A ??Resources'],
+      ['SECTION A - Resources'],
       ['Kind','ID','Path','Scene ID','Sentence ID'],
       ...resourceRows(q),
       [],
-      ['SECTION B ??Interaction'],
-      ['JSON', JSON.stringify(q.interaction || {}, null, 2)],
+      ['SECTION B - Interaction Details'],
+      ...readingInteractionRows(q),
       [],
-      ['SECTION C ??Scoring Components'],
+      ['SECTION C - Scoring Components'],
       ['Key','Weight','Rule','Correct Value','Partial Credit','Rationale'],
       ...(q.scoring?.components || []).map(c => [c.key, c.weight, c.rule, c.correctValue, c.partialCredit ?? '', c.rationale || '']),
       [],
-      ['SECTION D ??Diagnostics'],
+      ['SECTION D - Diagnostics'],
       ['Code','Threshold','Message'],
-      ...(q.diagnostics || []).map(d => [d.code, d.threshold, d.messageKo])
+      ...(q.diagnostics || []).map(d => [d.code, d.threshold, d.messageKo]),
+      [],
+      ['SECTION E - Raw JSON'],
+      ['Interaction JSON', JSON.stringify(q.interaction || {}, null, 2)],
+      ['Scoring JSON', JSON.stringify(q.scoring || {}, null, 2)]
     ];
-    aoaSheet(wb, `Q${String(q.number).padStart(2, '0')}_${q.storyGrammar}`.toUpperCase(), rows);
+    aoaSheet(wb, `Q${String(q.number).padStart(2, '0')}_${normalizeStoryGrammarKey(q.storyGrammar)}`.toUpperCase(), rows);
   });
   aoaSheet(wb, 'SG_SCORING', [
-    ['Axis','Question','Score Source','Formula'],
-    ...quiz.questions.map(q => [q.storyGrammar, q.qId, 'question_score', q.scoring?.formula || '']),
+    ['Axis','Label','Question','Score Source','Formula'],
+    ...quiz.questions.map(q => [normalizeStoryGrammarKey(q.storyGrammar), storyGrammarLabel(q.storyGrammar), q.qId, 'question_score', q.scoring?.formula || '']),
     [],
     ['Overall', '', '', quiz.reporting?.overallFormula || '']
   ]);
@@ -2870,18 +3088,83 @@ function buildReadingWorkbook(wb) {
   ]);
 }
 
+function readingInteractionRows(q) {
+  if (q.type === 'story_sequence_drag') {
+    const sequence = q.interaction?.correct || [];
+    const weights = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
+    const rows = [
+      ['Scene ID','Correct Position','Weight','Image Path','Rubric'],
+      ...sequence.map((scene, idx) => [scene, idx + 1, weights.get(String(scene)) || '', imagePathForSceneInQuestion(q, scene), idx === 0 || idx === sequence.length - 1 ? 'Anchor scene. High diagnostic weight.' : 'Middle story event. Partial position credit applies.']),
+      [],
+      ['Score Matrix - points by submitted position'],
+      ['Scene \\ Position', ...sequence.map((_, idx) => `Pos ${idx + 1}`)]
+    ];
+    sequence.forEach((scene, correctIdx) => {
+      const weight = weights.get(String(scene)) || 0;
+      const maxPoints = weight * 10;
+      rows.push([scene, ...sequence.map((_, submittedIdx) => Number((maxPoints * Math.max(0, 1 - Math.abs(submittedIdx - correctIdx) * 0.5)).toFixed(1)))]);
+    });
+    return rows;
+  }
+  if (q.type === 'setting_slot_drag') {
+    const slots = q.interaction?.slots || [];
+    const items = q.interaction?.items || [];
+    const correct = q.interaction?.correct || {};
+    const rows = [
+      ['Slot Key','Label','Correct Item Key','Slot Weight','Same-Slot Partial Credit','Rule'],
+      ...slots.map(slot => [slot.key, slot.label, correct[slot.key] || slot.correct || '', Number(slot.weight) || '', slot.partialCredit ?? .35, 'Exact correct card = full slot weight; wrong card from same slot category = 35%; wrong category = 0']),
+      [],
+      ['Item Key','Visible Text','Category Slot','Correct For Slot','Exact Credit','Same-Slot Partial Credit','Diagnostic'],
+      ...items.map(item => {
+        const slot = slots.find(s => s.key === item.slot) || {};
+        const isCorrectSlot = Object.entries(correct).find(([, value]) => String(value) === String(item.key))?.[0] || '';
+        const slotWeight = Number(slot.weight) || 0;
+        return [item.key, item.text || item.key, item.slot || '', isCorrectSlot, isCorrectSlot ? slotWeight : 0, isCorrectSlot ? '' : Number((slotWeight * (slot.partialCredit ?? .35)).toFixed(2)), item.diagnostic || 'Same-category distractor if placed in its own slot; otherwise 0.'];
+      })
+    ];
+    return rows;
+  }
+  if (q.type === 'scene_word_unscramble') {
+    const components = q.scoring?.components || [];
+    return [
+      ['Token','Correct Position','Weight','Rule','Rationale'],
+      ...components.map(c => [c.key, c.correctValue, c.weight, c.rule, c.rationale || 'Exact-position credit only.'])
+    ];
+  }
+  if (Array.isArray(q.interaction?.options)) {
+    return [
+      ['Option Key','Visible Text','Score','Correct?','Scene ID','Image Path','Diagnostic'],
+      ...q.interaction.options.map(opt => {
+        const scene = sceneIdFromOption(opt);
+        return [opt.key, opt.text || opt.key, Number(opt.score) || 0, !!opt.isCorrect, scene, imagePathForSceneInQuestion(q, scene), opt.diagnostic || ''];
+      })
+    ];
+  }
+  return [['JSON', JSON.stringify(q.interaction || {}, null, 2)]];
+}
+
 function buildDevWorkbook(wb) {
   aoaSheet(wb, 'QUESTIONS', [
-    ['q_id','story_id','story_level','number','story_grammar','question_type','instruction','hint','max_score','formula'],
-    ...quiz.questions.map(q => [q.qId, quiz.story.storyId, quiz.story.level || '', q.number, q.storyGrammar, q.type, q.instruction, q.hint, q.scoring?.maxScore || 100, q.scoring?.formula || ''])
+    ['q_id','story_id','story_level','number','story_grammar','story_grammar_label','question_type','instruction','hint','max_score','formula'],
+    ...quiz.questions.map(q => [q.qId, quiz.story.storyId, quiz.story.level || '', q.number, normalizeStoryGrammarKey(q.storyGrammar), storyGrammarLabel(q.storyGrammar), q.type, q.instruction, q.hint, q.scoring?.maxScore || 100, q.scoring?.formula || ''])
   ]);
   aoaSheet(wb, 'RESOURCES', [
     ['q_id','resource_kind','resource_id','path','scene_id','sentence_id'],
     ...quiz.questions.flatMap(q => resourceRows(q).map(r => [q.qId, ...r]))
   ]);
   aoaSheet(wb, 'OPTIONS', [
-    ['q_id','option_key','option_text','score','is_correct','diagnostic'],
-    ...quiz.questions.flatMap(q => (q.interaction?.options || []).map(o => [q.qId, o.key, o.text, o.score, !!o.isCorrect, o.diagnostic || '']))
+    ['q_id','option_key','option_text','score','is_correct','scene_id','diagnostic'],
+    ...quiz.questions.flatMap(q => (q.interaction?.options || []).map(o => [q.qId, o.key, o.text, o.score, !!o.isCorrect, sceneIdFromOption(o), o.diagnostic || '']))
+  ]);
+  aoaSheet(wb, 'INTERACTION_ITEMS', [
+    ['q_id','item_kind','item_key','visible_text','slot_or_position','scene_id','is_correct','score_or_weight','diagnostic'],
+    ...quiz.questions.flatMap(q => devInteractionItemRows(q))
+  ]);
+  aoaSheet(wb, 'SLOT_RULES', [
+    ['q_id','slot_key','slot_label','correct_item_key','slot_weight','partial_credit','partial_rule'],
+    ...quiz.questions.flatMap(q => q.type === 'setting_slot_drag'
+      ? (q.interaction?.slots || []).map(slot => [q.qId, slot.key, slot.label, q.interaction?.correct?.[slot.key] || slot.correct || '', slot.weight, slot.partialCredit ?? .35, 'same slot/category only'])
+      : [])
   ]);
   aoaSheet(wb, 'SCORING_RULES', [
     ['q_id','component_key','weight','rule','correct_value','partial_credit','rationale'],
@@ -2891,6 +3174,27 @@ function buildDevWorkbook(wb) {
     ['q_id','verb','object_id','result_fields'],
     ...quiz.questions.map(q => [q.qId, q.lrs?.verb || 'answered', q.lrs?.objectId || '', (q.lrs?.resultFields || []).join('|')])
   ]);
+}
+
+function imagePathForSceneInQuestion(q, scene) {
+  if (!scene) return '';
+  return (q.resources?.images || []).find(img => String(img.sceneId || img.id || '').toUpperCase() === String(scene).toUpperCase())?.path || '';
+}
+
+function devInteractionItemRows(q) {
+  if (q.type === 'story_sequence_drag') {
+    const weights = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
+    return (q.interaction?.correct || []).map((scene, idx) => [q.qId, 'sequence_scene', scene, scene, idx + 1, scene, true, weights.get(String(scene)) || '', 'position-distance weighted scene']);
+  }
+  if (q.type === 'setting_slot_drag') {
+    const correctValues = new Set(Object.values(q.interaction?.correct || {}).map(String));
+    return (q.interaction?.items || []).map(item => [q.qId, 'setting_card', item.key, item.text || item.key, item.slot || '', '', correctValues.has(String(item.key)), slotWeightForSetting(q, item.slot), item.diagnostic || '']);
+  }
+  if (q.type === 'scene_word_unscramble') {
+    const weights = new Map((q.scoring?.components || []).map(c => [String(c.key), Number(c.weight) || 0]));
+    return (q.interaction?.correct || []).map((word, idx) => [q.qId, 'word_token', word, word, idx + 1, q.resources?.scene || '', true, weights.get(String(word)) || '', 'exact-position token']);
+  }
+  return (q.interaction?.options || []).map(opt => [q.qId, 'option', opt.key, opt.text || opt.key, '', sceneIdFromOption(opt), !!opt.isCorrect, Number(opt.score) || 0, opt.diagnostic || '']);
 }
 
 function resourceRows(q) {

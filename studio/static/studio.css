@@ -548,6 +548,26 @@ textarea{min-height:210px;resize:vertical;line-height:1.45}
   height:100%;
   aspect-ratio:16/9;
 }
+.q-type-listen_scene_mcq .scene-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  max-width:720px;
+  margin:0 auto;
+}
+.q-type-listen_scene_mcq .scene-card{
+  aspect-ratio:16/9;
+  min-height:0;
+  border-radius:14px;
+}
+.q-type-listen_scene_mcq .scene-card img{
+  width:100%;
+  height:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+}
+.q-type-listen_scene_mcq .scene-fallback{
+  height:100%;
+  aspect-ratio:16/9;
+}
 .sequence-slots,.setting-slots,.word-row,.option-grid{
   display:grid;
   gap:12px;

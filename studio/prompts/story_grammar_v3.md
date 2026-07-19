@@ -85,6 +85,7 @@ Asset filenames should follow these patterns:
 - `interaction.items` may use the same scene IDs.
 - Scoring must use weighted position-distance scoring.
 - First and last scenes should usually have higher weights.
+- Component weights should sum to exactly 10. Use normalized weights; do not leave totals such as 9.5.
 
 ### Q2 Setting / Slot Fill
 
@@ -109,14 +110,19 @@ Asset filenames should follow these patterns:
   - `items`: six objects with `key`, `text`, and `slot`
   - `correct`: maps each slot key to the correct item key
 - Scoring must use weighted slot matching with 35% same-category partial credit.
+- Slot weights must sum to exactly 10: `who` = 3, `where` = 3, `at_first` = 4.
+- Same-category wrong cards receive 35% of that slot only when placed in their own category slot; cards from a different category receive 0 in that slot.
 
 ### Q3 Initiating Event / Listening Scene Choice
 
 - Choose the scene where the real problem starts.
+- Focus on the fundamental problem, not merely the first exciting, beautiful, or attention-getting scene.
 - The audio file must match an exact `_N` sentence from that scene.
 - The audio sentence must be content-rich enough to identify the problem scene.
 - Do NOT choose weak attention-getters or short lines such as `Look there!`, `Wow!`, `Oh no!`, `Got it!`, or other sentences with no problem information.
 - Prefer a sentence with at least 5 words and a clear problem/change clue.
+- Good problem clues include lost/missing, only, cannot/could not, trapped/caught, danger, plastic/trash, dark, heavy, dim/stopped, mistake, capture/keep/own, or a character's problematic desire.
+- If the first candidate is only an attention-getter, reread the next 2-3 scenes and choose the sentence that actually states or causes the problem.
 - Use image options with no duplicate-answer risk.
 - `resources.images` must include one image resource for every image option.
 - Each option should include a clear scene reference such as `sceneId` or visible text `SC03`.
@@ -140,11 +146,16 @@ Asset filenames should follow these patterns:
   - `rainbow cloud`
   - `crystal box`
   - `dark canyon`
+  - `strange light`
+  - `The Aurora submarine`
+- Treat story-specific proper noun phrases and object names as one card when they function as one noun phrase.
 - Keep the original final punctuation on the last word card.
 - The final token in `interaction.correct` must include the original period, question mark, or exclamation mark if the source sentence has one.
 - The hint for Q4 must help sentence order, not describe a different story event.
+- The hint should be specific to the selected action sentence, such as `Build the sentence about Toby's rescue action.` or `Put Milo's walking action in order.`
 - Use exact-position weighted word scoring.
 - Do not use distance-based partial credit for words.
+- Component weights should sum to exactly 10.
 
 ### Q5 Reaction / Emotion
 
@@ -158,6 +169,7 @@ Asset filenames should follow these patterns:
 - Similar emotions may receive partial score.
 - Opposite or unrelated emotions receive low or 0 score.
 - Do not make all incorrect options 0. At least one plausible or confusable distractor should receive a partial score such as 20-50.
+- The hint must use visible or inferable scene context. Do not mention face, expression, or what the character says unless the image and scene clearly support it.
 
 ### Q6 Internal Response
 
@@ -168,6 +180,7 @@ Asset filenames should follow these patterns:
 - The correct answer should be clear without requiring hidden context.
 - Avoid vague pronouns such as `they`, `it`, or `that` when they are unclear.
 - Do not make all incorrect options 0. At least one near-miss option should receive a partial score such as 20-50.
+- Each option score is independent because the student selects one option. Do not force the option score total to equal 100.
 
 ## Hints
 
@@ -189,10 +202,14 @@ These are style examples only. Do NOT copy these exact example hints into the ou
 - Q2 with two or more characters: `Who is there? Where are they?`
 - Q2 when the place is the key: `Who is there? Where does the story start?`
 - Q2 hint must match the selected setting scene. Use `Where is he?`, `Where is she?`, `Where are they?`, or `Where does the story start?` naturally.
-- Q3: `Listen for the first problem.`
-- Q4: `Start with who. Then find the action.`
+- Q3: `Listen for what is lost.`
+- Q3: `Listen for the youngest man's problem.`
+- Q3: `Listen for the danger in the sea.`
+- Q4: `Build the sentence about helping.`
+- Q4: `Put Milo's action in order.`
 - Q4 hint should help word order, not repeat the instruction.
-- Q5: `Look at the face and the scene.`
+- Q5: `The fish is near danger. How does she feel?`
+- Q5: `Something goes wrong. How does he feel?`
 - Q6: `Think about what the character learns.`
 
 ## Diagnostics
@@ -213,6 +230,9 @@ Use these formulas:
 - Q2: `score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)`
 - Q3/Q5/Q6: `score = selected_option.score`
 - Q4: `score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)`
+
+For Q1/Q2/Q4, component weights are reviewer-facing metadata and should sum to 10.
+For Q3/Q5/Q6, do not show or optimize for an option-score total; the student selects only one option.
 
 ## Output Shape
 
