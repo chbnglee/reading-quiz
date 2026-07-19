@@ -421,6 +421,20 @@ function weakInitiatingSentence(text = '') {
   return false;
 }
 
+function storySceneIds(storyText = '') {
+  return parseStory(storyText || '').map(scene => scene.sceneId);
+}
+
+function storySceneIndex(storyText = '', sceneId = '') {
+  return storySceneIds(storyText).indexOf(String(sceneId || '').toUpperCase());
+}
+
+function sceneAtRatio(sceneIds = [], ratio = 0) {
+  if (!sceneIds.length) return '';
+  const idx = Math.max(0, Math.min(sceneIds.length - 1, Math.round((sceneIds.length - 1) * ratio)));
+  return sceneIds[idx];
+}
+
 function problemSignalScore(text = '') {
   const lower = String(text || '').toLowerCase();
   const strong = [
@@ -460,10 +474,21 @@ function chooseInitiatingSentence(storyText = '') {
 
 function chooseAttemptSentence(storyText = '') {
   const scenes = parseStory(storyText || '');
-  const actionWords = [
-    'went', 'walked', 'ran', 'looked', 'searched', 'tried', 'helped', 'opened',
-    'picked', 'took', 'put', 'grabbed', 'caught', 'followed', 'hid', 'carried',
-    'made', 'used', 'asked', 'gave', 'started'
+  const initiating = chooseInitiatingSentence(storyText);
+  const eventIdx = Math.max(0, scenes.findIndex(scene => scene.sceneId === initiating?.sceneId));
+  const solveActions = [
+    'helped', 'help', 'rescued', 'rescue', 'saved', 'save', 'opened', 'open',
+    'released', 'release', 'freed', 'free', 'returned', 'return', 'ran back',
+    'went back', 'searched', 'looked for', 'picked up', 'carried', 'hid',
+    'used', 'made', 'asked'
+  ];
+  const goalActions = [
+    'tried', 'went', 'walked', 'ran', 'looked', 'followed', 'grabbed',
+    'caught', 'capture', 'captured', 'took', 'put'
+  ];
+  const weakOutcome = [
+    'smiled', 'watched', 'whispered', 'agreed', 'realized', 'understood',
+    'felt', 'was happy', 'was sad', 'became', 'looked like', 'beautiful'
   ];
   let best = null;
   scenes.forEach((scene, sceneIdx) => {
@@ -472,13 +497,74 @@ function chooseAttemptSentence(storyText = '') {
       const words = storySentenceWords(text);
       if (words < 4 || words > 12) return;
       const lower = text.toLowerCase();
-      let score = actionWords.reduce((sum, word) => sum + (lower.includes(word) ? 3 : 0), 0);
-      score += sceneIdx > 1 ? 3 : 0;
+      let score = 0;
+      score += solveActions.reduce((sum, word) => sum + (lower.includes(word) ? 6 : 0), 0);
+      score += goalActions.reduce((sum, word) => sum + (lower.includes(word) ? 3 : 0), 0);
+      score += sceneIdx > eventIdx ? 6 : -6;
       score += Math.max(0, 8 - Math.abs(words - 7));
+      score -= weakOutcome.reduce((sum, word) => sum + (lower.includes(word) ? 5 : 0), 0);
+      if (/^["']?i will help you/i.test(text)) score -= 4;
+      if (score <= 0) return;
       if (!best || score > best.score) best = { ...sentence, sceneId: scene.sceneId, score };
     });
   });
   return best;
+}
+
+function weakAttemptSentence(storyText = '', sentence = null) {
+  if (!sentence?.text) return true;
+  const scenes = parseStory(storyText || '');
+  const sceneIdx = scenes.findIndex(scene => scene.sceneId === sentence.sceneId);
+  const eventIdx = Math.max(0, scenes.findIndex(scene => scene.sceneId === chooseInitiatingSentence(storyText)?.sceneId));
+  const lower = String(sentence.text || '').toLowerCase();
+  const words = storySentenceWords(sentence.text);
+  if (words < 4 || words > 12) return true;
+  if (sceneIdx >= 0 && sceneIdx <= eventIdx) return true;
+  if (/^(look there|wow|oh no|got it|hello)[!\.]*$/i.test(sentence.text.trim())) return true;
+  if (/(watched|watching|beautiful|smiled|whispered|agreed|realized|understood)\b/.test(lower)) return true;
+  return !/(help|rescue|save|open|release|free|return|ran back|went back|search|looked for|pick|carry|hid|used|made|ask|follow|grab|catch|caught|capture|took|walk|went|ran)/.test(lower);
+}
+
+function storyArcScenes(storyText = '', seedScenes = []) {
+  const scenes = parseStory(storyText || '');
+  const sceneIds = scenes.map(scene => scene.sceneId);
+  const usable = sceneIds.length ? sceneIds : ['SC01', 'SC02', 'SC03', 'SC04', 'SC05'];
+  const validSeed = (seedScenes || []).map(sceneIdFromValue).filter(scene => usable.includes(scene));
+  const uniqueSeed = [...new Set(validSeed)];
+  if (uniqueSeed.length === 5) return uniqueSeed.sort((a, b) => usable.indexOf(a) - usable.indexOf(b));
+  const eventScene = chooseInitiatingSentence(storyText)?.sceneId || sceneAtRatio(usable, .18) || usable[0];
+  const attemptScene = chooseAttemptSentence(storyText)?.sceneId || sceneAtRatio(usable, .45) || eventScene;
+  const reactionScene = scenes
+    .map((scene, idx) => {
+      const text = (scene.sentences || []).map(sentence => sentence.text).join(' ').toLowerCase();
+      const score = ['sad', 'happy', 'afraid', 'worried', 'angry', 'surprised', 'terrible', 'smile', 'cried', 'groaned', 'realized']
+        .reduce((sum, word) => sum + (text.includes(word) ? 3 : 0), 0)
+        + (idx > Math.max(0, usable.indexOf(eventScene)) ? 2 : 0);
+      return { sceneId: scene.sceneId, score };
+    })
+    .filter(entry => entry.score > 0)
+    .sort((a, b) => b.score - a.score)[0]?.sceneId || sceneAtRatio(usable, .7) || usable[usable.length - 1];
+  const preferred = [
+    usable[0],
+    eventScene,
+    attemptScene,
+    reactionScene,
+    usable[usable.length - 1],
+    ...validSeed,
+    sceneAtRatio(usable, .25),
+    sceneAtRatio(usable, .5),
+    sceneAtRatio(usable, .75)
+  ];
+  const out = [];
+  const add = scene => {
+    const normalized = sceneIdFromValue(scene);
+    if (normalized && usable.includes(normalized) && !out.includes(normalized)) out.push(normalized);
+  };
+  preferred.forEach(add);
+  usable.forEach(add);
+  const sorted = out.sort((a, b) => usable.indexOf(a) - usable.indexOf(b)).slice(0, Math.min(5, usable.length));
+  while (sorted.length < 5) sorted.push(sorted[sorted.length - 1] || usable[0]);
+  return sorted;
 }
 
 function sceneOptionsAround(storyText = '', correctScene = '', count = 4) {
@@ -498,7 +584,7 @@ function sceneOptionsAround(storyText = '', correctScene = '', count = 4) {
 
 function settingInteractionLooksWeak(interaction = {}) {
   const items = interaction.items || [];
-  if (items.length < 6) return true;
+  if (items.length !== 6) return true;
   const texts = items.map(item => String(item.text || item.key || '').trim().toLowerCase());
   if (texts.some(placeholderText)) return true;
   if (new Set(texts).size < 6) return true;
@@ -558,6 +644,17 @@ function ensureImageResourcesForQuiz(qz) {
   const parsedScenes = parseStory(storyText || '').map(scene => scene.sceneId);
   (qz?.questions || []).forEach(q => {
     q.resources = q.resources || {};
+    if (q.type === 'story_sequence_drag') {
+      const seed = [
+        ...(Array.isArray(q.interaction?.correct) ? q.interaction.correct : []),
+        ...(Array.isArray(q.interaction?.items) ? q.interaction.items : []),
+        ...(Array.isArray(q.resources?.images) ? q.resources.images.map(img => img.sceneId || img.id || img.path) : [])
+      ];
+      const sequence = storyArcScenes(storyText, seed);
+      q.interaction = { ...(q.interaction || {}), promptMode: 'drag_sequence', items: sequence, correct: sequence };
+      q.resources.images = sequence.map(scene => imageResourceForScene(storyId, scene));
+      return;
+    }
     const existing = Array.isArray(q.resources.images) ? q.resources.images : [];
     q.resources.images = existing
       .map(img => {
@@ -593,6 +690,18 @@ function ensureImageResourcesForQuiz(qz) {
 function normalizeQuestionForTemplate(q, storyText = '') {
   const normalized = deepClone(q);
   normalized.storyGrammar = normalizeStoryGrammarKey(normalized.storyGrammar);
+  if (normalized.type === 'story_sequence_drag') {
+    const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
+    const seed = [
+      ...(Array.isArray(normalized.interaction?.correct) ? normalized.interaction.correct : []),
+      ...(Array.isArray(normalized.interaction?.items) ? normalized.interaction.items : []),
+      ...(Array.isArray(normalized.resources?.images) ? normalized.resources.images.map(img => img.sceneId || img.id || img.path) : [])
+    ];
+    const sequence = storyArcScenes(storyText, seed);
+    normalized.interaction = { ...(normalized.interaction || {}), promptMode: 'drag_sequence', correct: sequence, items: sequence };
+    normalized.resources = { ...(normalized.resources || {}), images: sequence.map(scene => imageResourceForScene(storyId, scene)) };
+    normalized.scoring = weightedPosition(sequence);
+  }
   if (normalized.type === 'setting_slot_drag') {
     normalized.interaction = normalizeSettingInteraction(normalized.interaction || {});
     normalized.scoring = settingScoring(normalized.interaction.correct, normalized.interaction.slots);
@@ -612,8 +721,9 @@ function normalizeQuestionForTemplate(q, storyText = '') {
     }
   }
   if (normalized.type === 'scene_word_unscramble') {
-    let sentence = storySentenceTextById(storyText, normalized.resources?.sentenceId);
-    if (!sentence) {
+    let sentenceObj = storySentenceById(storyText, normalized.resources?.sentenceId);
+    let sentence = sentenceObj?.text || '';
+    if (!sentence || weakAttemptSentence(storyText, sentenceObj)) {
       const better = chooseAttemptSentence(storyText);
       if (better) {
         const storyId = quiz?.story?.storyId || normalized.qId?.split('_V3_')?.[0] || 'OG0000';
@@ -624,6 +734,7 @@ function normalizeQuestionForTemplate(q, storyText = '') {
           images: [imageResourceForScene(storyId, better.sceneId)]
         };
         sentence = better.text;
+        sentenceObj = better;
       }
     }
     const source = sentence || (Array.isArray(normalized.interaction?.correct) ? normalized.interaction.correct.join(' ') : '');
@@ -649,7 +760,9 @@ function normalizeQuestionForTemplate(q, storyText = '') {
 function placeholderText(value) {
   const text = String(value || '').trim().toLowerCase();
   return !text
-    || ['main_character', 'main character', 'character', 'main_place', 'main place', 'story place', 'place', 'other character', 'first action', 'later problem', 'other place', 'opening_state', 'opening state'].includes(text)
+    || ['main_character', 'main character', 'character', 'the character', 'the characgter', 'characgter', 'main_place', 'main place', 'story place', 'the story place', 'place', 'other character', 'first action', 'later problem', 'other place', 'opening_state', 'opening state', 'main action', 'later action'].includes(text)
+    || /\bcharacgter\b/.test(text)
+    || /\bas\s+\w+\s+as\b/.test(text)
     || /^card[_-]/.test(text)
     || /^item \d+$/.test(text);
 }
@@ -671,7 +784,7 @@ function genericHint(q = {}, value = '') {
   if (!text) return true;
   if (q.type === 'listen_scene_mcq' && /listen for the first (clear )?problem\.?$/.test(text)) return true;
   if (q.type === 'scene_word_unscramble' && /(start with who|find who|then find the action)/.test(text)) return true;
-  if (q.type === 'emotion_mcq' && /(face|expression|what .* says|look at the face)/.test(text)) return true;
+  if (q.type === 'emotion_mcq' && /(face|expression|what .* says|look at the face|smiling because|because the problem is solved|feels? happy because|answer is)/.test(text)) return true;
   if (q.type === 'internal_response_mcq' && /^think about what the character learns\.?$/.test(text)) return true;
   return false;
 }
@@ -703,9 +816,18 @@ function storyNamesFromText(text = '') {
 }
 
 function storyPlaceFromText(text = '') {
-  const match = String(text || '').match(/\b(in|at|on|near|inside|into|under|over)\s+(the\s+|a\s+|an\s+)?([a-z]+(?:\s+[a-z]+){0,3})/i);
-  if (!match) return 'the story place';
-  return `${match[1].toLowerCase()} ${match[2] || ''}${match[3]}`.replace(/\s+/g, ' ').trim();
+  const source = String(text || '');
+  if (/Tiny Rock/i.test(source)) return 'on Tiny Rock';
+  if (/dark canyon/i.test(source)) return 'in the dark canyon';
+  if (/forest/i.test(source)) return 'in the forest';
+  if (/\bocean\b/i.test(source)) return 'in the ocean';
+  if (/\bsea\b/i.test(source)) return 'in the sea';
+  if (/\bmill\b/i.test(source)) return 'at the mill';
+  if (/\bhome\b|\bhouse\b/i.test(source)) return 'at home';
+  const match = source.match(/\b(in|at|on|near|inside|into|under|over)\s+(the\s+|a\s+|an\s+)?([A-Za-z]+(?:\s+[A-Za-z]+){0,3})/);
+  if (!match) return '';
+  const phrase = `${match[1].toLowerCase()} ${match[2] || ''}${match[3]}`.replace(/\s+/g, ' ').replace(/\s+of$/i, '').trim();
+  return placeholderText(phrase) ? '' : phrase;
 }
 
 function openingStateFromText(text = '') {
@@ -714,9 +836,22 @@ function openingStateFromText(text = '') {
   if (namedSubject && namedSubject !== 'the character') {
     const escaped = namedSubject.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const subjectMatch = sentence.match(new RegExp(`^\\s*${escaped}\\s+(.+)$`, 'i'));
-    if (subjectMatch?.[1]) return subjectMatch[1].trim().replace(/^[A-Z]/, ch => ch.toLowerCase());
+    if (subjectMatch?.[1]) {
+      const phrase = subjectMatch[1]
+        .replace(/\b(in|at|on|near|inside|into)\s+(the\s+|a\s+|an\s+)?[A-Za-z]+(?:\s+[A-Za-z]+){0,3}$/i, '')
+        .trim();
+      return phrase.replace(/^[A-Z]/, ch => ch.toLowerCase());
+    }
   }
   const afterComma = sentence.includes(',') ? sentence.split(',').slice(1).join(',').trim() : sentence.trim();
+  const directSubject = afterComma.match(/^The\s+[A-Z][a-z]+(?:\s+(?:submarine|cat|fish|boy|girl|son|man|woman|friend|cloud|box|ship|robot|dog))?\s+(.+)$/)
+    || afterComma.match(/^[A-Z][a-z]+(?:\s+and\s+[A-Z][a-z]+)?\s+(.+)$/);
+  if (directSubject?.[1]) {
+    const phrase = directSubject[1]
+      .replace(/\b(in|at|on|near|inside|into)\s+(the\s+|a\s+|an\s+)?[A-Za-z]+(?:\s+[A-Za-z]+){0,3}$/i, '')
+      .trim();
+    if (phrase && storySentenceWords(phrase) <= 6) return phrase.replace(/^[A-Z]/, ch => ch.toLowerCase());
+  }
   const words = afterComma.split(/\s+/).filter(Boolean);
   if (words.length <= 4) return afterComma.toLowerCase() || 'starts the story';
   return words.slice(Math.max(0, words.length - 4)).join(' ').replace(/^[A-Z]/, ch => ch.toLowerCase());
@@ -725,7 +860,7 @@ function openingStateFromText(text = '') {
 function storyPlacesFromText(text = '') {
   const places = [...String(text || '').matchAll(/\b(in|at|on|near|inside|into|under|over)\s+(the\s+|a\s+|an\s+)?([a-z]+(?:\s+[a-z]+){0,3})/gi)]
     .map(match => `${match[1].toLowerCase()} ${match[2] || ''}${match[3]}`.replace(/\s+/g, ' ').trim())
-    .filter(place => storySentenceWords(place) <= 5);
+    .filter(place => storySentenceWords(place) <= 5 && !/\bof$|\bas black\b|\bas white\b/i.test(place) && !placeholderText(place));
   return [...new Set(places)];
 }
 
@@ -740,16 +875,75 @@ function storyActionPhrases(storyText = '') {
   return [...new Set(phrases)];
 }
 
-function fallbackSettingInteraction(storyText = '') {
+function firstSafe(values = [], fallback = '') {
+  return values.find(value => value && !placeholderText(value) && !contaminatedVisibleText(value, '')) || fallback;
+}
+
+function openingCharacterFromText(storyText = '') {
   const opening = firstSceneText(storyText);
   const who = storyNamesFromText(opening);
-  const where = storyPlaceFromText(opening);
-  const atFirst = openingStateFromText(opening);
-  const allNames = storyNamesFromText(storyText).split(' and ').filter(Boolean);
-  const otherName = allNames.find(name => !who.toLowerCase().includes(name.toLowerCase())) || 'someone else';
-  const places = storyPlacesFromText(storyText);
-  const otherPlace = places.find(place => place.toLowerCase() !== where.toLowerCase()) || 'another place';
-  const actions = storyActionPhrases(storyText);
+  const nonCharacter = /\b(planet|place|forest|ocean|sea|canyon|sky|light|cloud|room|house|home|mill|rock|gold)\b/i;
+  if (who && !placeholderText(who) && !nonCharacter.test(who)) return who;
+  const whole = storyNamesFromText(storyText);
+  if (whole && !placeholderText(whole) && !nonCharacter.test(whole)) return whole;
+  const titleLike = String(storyText || '').match(/\b(?:named\s+)?([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?\b/);
+  return [titleLike?.[1], titleLike?.[2]].filter(Boolean).join(' and ') || 'someone';
+}
+
+function storyCharacterCandidates(storyText = '') {
+  const source = String(storyText || '');
+  const nonCharacter = /\b(planet|place|forest|ocean|sea|canyon|sky|light|cloud|room|house|home|mill|rock|gold|box|net|bag)\b/i;
+  const candidates = [];
+  const named = source.match(/\bnamed\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/);
+  if (named) candidates.push(...[named[1], named[2]].filter(Boolean));
+  [...source.matchAll(/\b[A-Z][a-z]{2,}\b/g)]
+    .map(match => match[0])
+    .filter(word => !['The','A','An','On','In','At','One','Once','Long','Deep','Suddenly','But','With','It','He','She','They','This','Indeed'].includes(word))
+    .filter(word => !nonCharacter.test(word))
+    .forEach(word => candidates.push(word));
+  [...source.matchAll(/\b(?:a|an|the)\s+(boy|girl|cat|dog|fish|son|man|woman|friend|butterfly|bird|king|queen|child|father|mother)\b/gi)]
+    .map(match => match[0].toLowerCase())
+    .forEach(value => candidates.push(value));
+  return [...new Set(candidates)].filter(value => value && !placeholderText(value));
+}
+
+function settingFallbackPlaces(storyText = '') {
+  const text = String(storyText || '');
+  const candidates = [
+    storyPlaceFromText(firstSceneText(storyText)),
+    ...storyPlacesFromText(text),
+    /Tiny Rock/i.test(text) ? 'on Tiny Rock' : '',
+    /forest/i.test(text) ? 'in the forest' : '',
+    /dark canyon/i.test(text) ? 'in the dark canyon' : '',
+    /ocean/i.test(text) ? 'in the ocean' : '',
+    /sea/i.test(text) ? 'in the sea' : '',
+    /mill/i.test(text) ? 'at the mill' : '',
+    /home|house/i.test(text) ? 'at home' : ''
+  ].filter(value => value && !placeholderText(value));
+  return [...new Set(candidates.map(value => String(value).trim()))];
+}
+
+function settingFallbackActions(storyText = '') {
+  const opening = openingStateFromText(firstSceneText(storyText));
+  const actions = [
+    opening,
+    ...storyActionPhrases(storyText)
+  ]
+    .map(value => String(value || '').replace(/\s+/g, ' ').trim())
+    .filter(value => value && !placeholderText(value) && storySentenceWords(value) <= 6 && /\b(love|watch|spend|go|walk|move|follow|look|search|play|live|sit|stand|swim|start|begin|ride|carry|hold|work|help|want|need|have|make|try|run|fly|vanish|disappear|lose|lost|fall|fell|break|broke|stop)\w*\b/i.test(value));
+  return [...new Set(actions)];
+}
+
+function fallbackSettingInteraction(storyText = '') {
+  const opening = firstSceneText(storyText);
+  const who = openingCharacterFromText(storyText);
+  const places = settingFallbackPlaces(storyText);
+  const where = firstSafe(places, 'in the story');
+  const actions = settingFallbackActions(storyText);
+  const atFirst = firstSafe(actions, 'starts the story');
+  const allNames = storyCharacterCandidates(storyText);
+  const otherName = allNames.find(name => !who.toLowerCase().includes(name.toLowerCase())) || (/friend/i.test(storyText) ? 'a friend' : 'someone else');
+  const otherPlace = places.find(place => place.toLowerCase() !== where.toLowerCase()) || (/home|house/i.test(storyText) && where !== 'at home' ? 'at home' : 'outside');
   const otherAction = actions.find(action => action.toLowerCase() !== atFirst.toLowerCase()) || 'has a problem';
   const distractors = [
     { key: 'other_character', text: otherName, slot: 'who' },
@@ -807,9 +1001,11 @@ function attemptHint(q = {}, storyText = '') {
 function emotionHint(q = {}, storyText = '') {
   const scene = q.resources?.scene || sceneIdFromPath(q.resources?.images?.[0]?.path);
   const text = sceneTextById(storyText, scene).toLowerCase();
-  if (/danger|plastic|trash|bag|stuck|trapped/.test(text)) return 'The character is near danger. How does it feel?';
+  const name = characterFromInstruction(q.instruction) || storyNamesFromText(text || firstSceneText(storyText)).split(' and ')[0] || 'the character';
+  const subject = /^the character$/i.test(name) ? 'the character' : name;
+  if (/danger|plastic|trash|bag|stuck|trapped/.test(text)) return `${subject} is near danger. How does ${/^the character$/i.test(subject) ? 'the character' : subject} feel?`;
   if (/terrible|dark|dull|dim|lost|sad|cry|cried|wrong/.test(text)) return 'Something goes wrong. How does the character feel?';
-  if (/happy|smile|smiled|free|safe|saved/.test(text)) return 'Good news comes. How does the character feel?';
+  if (/happy|smile|smiled|free|safe|saved/.test(text)) return 'Look at what happens now. How does the character feel?';
   return 'Look at the scene. How does the character feel?';
 }
 
@@ -880,9 +1076,15 @@ function sanitizeGeneratedQuiz(qz) {
     q.storyGrammar = normalizeStoryGrammarKey(q.storyGrammar);
     if (contaminatedHint(q.hint, storyText) || genericHint(q, q.hint)) q.hint = fallbackHint(q, storyText);
     if (q.type === 'story_sequence_drag') {
-      const sequence = Array.isArray(q.interaction?.correct) && q.interaction.correct.length
-        ? q.interaction.correct
-        : (q.interaction?.items || []);
+      const storyId = qz.story?.storyId || 'OG0000';
+      const seed = [
+        ...(Array.isArray(q.interaction?.correct) ? q.interaction.correct : []),
+        ...(Array.isArray(q.interaction?.items) ? q.interaction.items : []),
+        ...(Array.isArray(q.resources?.images) ? q.resources.images.map(img => img.sceneId || img.id || img.path) : [])
+      ];
+      const sequence = storyArcScenes(storyText, seed);
+      q.interaction = { ...(q.interaction || {}), promptMode: 'drag_sequence', correct: sequence, items: sequence };
+      q.resources = { ...(q.resources || {}), images: sequence.map(scene => imageResourceForScene(storyId, scene)) };
       q.scoring = weightedPosition(sequence);
     }
     if (q.type === 'setting_slot_drag') {
@@ -912,7 +1114,7 @@ function sanitizeGeneratedQuiz(qz) {
     }
     if (q.type === 'scene_word_unscramble') {
       const sentence = storySentenceById(storyText, q.resources?.sentenceId);
-      if (!sentence) {
+      if (!sentence || weakAttemptSentence(storyText, sentence)) {
         const storyId = qz.story?.storyId || 'OG0000';
         const better = chooseAttemptSentence(storyText);
         if (better) {
@@ -937,6 +1139,7 @@ function sanitizeGeneratedQuiz(qz) {
       fixCharacterInstructionForScene(q, storyText);
       if (genericHint(q, q.hint)) q.hint = fallbackHint(q, storyText);
     }
+    normalizeDiagnosticsForQuestion(q);
   });
   return reconcileQuizResourcesWithPackage(ensureImageResourcesForQuiz(qz));
 }
@@ -1041,6 +1244,7 @@ function generationQualityIssues(qz) {
   const q5 = qz?.questions?.find(q => Number(q.number) === 5);
   const q6 = qz?.questions?.find(q => Number(q.number) === 6);
   if (q1 && (contaminatedHint(q1.hint, storyText) || genericHint(q1, q1.hint))) issues.push('Q1 hint contains prompt/example text or is missing.');
+  if (q1 && (q1.interaction?.correct || []).length !== 5) issues.push('Q1 must use exactly five story-arc scenes.');
   if (q2 && settingInteractionLooksWeak(q2.interaction || {})) issues.push('Q2 setting cards must contain six real story-specific cards.');
   if (q3) {
     const sentence = storySentenceById(storyText, q3.resources?.audio?.sentenceId);
@@ -1049,6 +1253,7 @@ function generationQualityIssues(qz) {
   }
   if (q4) {
     const sentence = storySentenceById(storyText, q4.resources?.sentenceId);
+    if (!sentence || weakAttemptSentence(storyText, sentence)) issues.push('Q4 sentence must show a character action used to handle or solve the problem.');
     const correct = q4.interaction?.correct || [];
     if (sentence && /[.!?]$/.test(sentence.text.trim()) && !/[.!?]$/.test(String(correct[correct.length - 1] || ''))) {
       issues.push('Q4 final punctuation is missing from the last word card.');
@@ -1244,6 +1449,14 @@ function packageAudioFileForId(audioId) {
 function imagesForQuestion(q) {
   const storyId = quiz?.story?.storyId || 'OG0000';
   const imageFor = scene => imageResourceForScene(storyId, scene);
+  if (q?.type === 'story_sequence_drag') {
+    const sequence = storyArcScenes(quiz?.story?.text || '', [
+      ...(Array.isArray(q.interaction?.correct) ? q.interaction.correct : []),
+      ...(Array.isArray(q.interaction?.items) ? q.interaction.items : []),
+      ...(Array.isArray(q.resources?.images) ? q.resources.images.map(img => img.sceneId || img.id || img.path) : [])
+    ]);
+    return sequence.map(imageFor);
+  }
   const normalizedImages = (Array.isArray(q?.resources?.images) ? q.resources.images : [])
     .map(img => {
       const scene = sceneIdFromValue(img?.sceneId) || sceneIdFromValue(img?.id) || sceneIdFromValue(img?.path);
@@ -1373,7 +1586,7 @@ function renderChoiceEditor(q) {
       <div class="choice-row slot-weight-row">
         <div class="choice-key">${escapeHtml(slot.label || slot.key)}</div>
         <input value="${escapeAttr(q.interaction?.correct?.[slot.key] || slot.correct || '')}" readonly aria-label="${escapeAttr(slot.key)} correct item">
-        <input type="number" min="0" max="5" step=".5" value="${Number(slot.weight) || 0}" oninput="updateSettingSlotWeight('${escapeAttr(slot.key)}', this.value)" aria-label="${escapeAttr(slot.key)} weight">
+        <input type="number" min="0" max="5" step=".1" value="${Number(slot.weight) || 0}" oninput="updateSettingSlotWeight('${escapeAttr(slot.key)}', this.value)" aria-label="${escapeAttr(slot.key)} weight">
       </div>
     `).join('');
     box.innerHTML = `<div class="choice-table"><div class="choice-section">${q.interaction.items.map((item, idx) => `
@@ -1397,7 +1610,7 @@ function renderChoiceEditor(q) {
       <div class="choice-row">
         <div class="choice-key">${idx + 1}</div>
         <input value="${escapeAttr(word)}" oninput="updateWordToken(${idx}, this.value)" aria-label="Word ${idx + 1}">
-        <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(word)) || 1}" oninput="updateWordWeight(${idx}, this.value)" aria-label="Word ${idx + 1} weight">
+        <input type="number" min="0" max="5" step=".1" value="${weightByKey.get(String(word)) || 1}" oninput="updateWordWeight(${idx}, this.value)" aria-label="Word ${idx + 1} weight">
       </div>
     `).join('')}</div>`;
     updateWeightSummary(q);
@@ -1410,7 +1623,7 @@ function renderChoiceEditor(q) {
       <div class="choice-row sequence-row">
         <div class="choice-key">${escapeHtml(scene)}</div>
         <input value="${escapeAttr(scene)}" oninput="updateSequenceScene(${idx}, this.value)" aria-label="Scene ${idx + 1}">
-        <input type="number" min="0" max="5" step=".5" value="${weightByKey.get(String(scene)) || 1}" oninput="updateSequenceWeight(${idx}, this.value)" aria-label="Scene ${idx + 1} weight">
+        <input type="number" min="0" max="5" step=".1" value="${weightByKey.get(String(scene)) || 1}" oninput="updateSequenceWeight(${idx}, this.value)" aria-label="Scene ${idx + 1} weight">
       </div>
     `).join('')}</div>`;
     updateWeightSummary(q);
@@ -1435,14 +1648,14 @@ function weightMetricsForQuestion(q) {
     const hasPartial = wrongScores.some(score => score > 0);
     const needsPartial = q.type === 'emotion_mcq' || q.type === 'internal_response_mcq';
     return {
-      text: `Selectable max: ${highest} / 100${needsPartial ? ' - partial distractor required' : ''}`,
+      text: `Selectable max: ${highest} / 100${needsPartial ? (hasPartial ? ' - partial distractor OK' : ' - add partial distractor') : ''}`,
       warn: highest !== 100 || scores.some(score => score > 100 || score < 0) || (needsPartial && !hasPartial)
     };
   }
   const components = Array.isArray(q.scoring?.components) ? q.scoring.components : [];
   const total = components.reduce((sum, c) => sum + (Number(c.weight) || 0), 0);
   return {
-    text: `Weight total: ${Number(total.toFixed(2))} / 10`,
+    text: `Weight total: ${Number(total.toFixed(1))} / 10`,
     warn: total <= 0 || Math.abs(total - 10) > 0.01
   };
 }
@@ -1654,7 +1867,7 @@ async function generateAiDraft() {
   try {
     let bestQuiz = null;
     let issues = [];
-    for (let attempt = 0; attempt < 2; attempt += 1) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
       const attemptPayload = deepClone(payload);
       if (attempt > 0 && issues.length) {
         attemptPayload.input.revisionNotes = [
@@ -1751,8 +1964,7 @@ function buildRuleDraft(payload) {
   const event = usable[1] || first;
   const attempt = sceneAt(.35);
   const reaction = sceneAt(.62);
-  const sequence = [...new Set([first, event, attempt, reaction, usable[usable.length - 1]])];
-  while (sequence.length < 5) sequence.push(usable[Math.min(sequence.length, usable.length - 1)]);
+  const sequence = storyArcScenes(storyText, [first, event, attempt, reaction, usable[usable.length - 1]]);
   const image = scene => ({ id: scene, path: `${storyId}_${scene}_I.webp`, kind: 'image', sceneId: scene });
   const findSentence = scene => (scenes.find(s => s.sceneId === scene)?.sentences?.[0]) || { sentenceId: `${scene}_ST01_N`, text: 'Put the words in order.' };
   const eventSentence = chooseInitiatingSentence(storyText) || { ...findSentence(event), sceneId: event };
@@ -1805,9 +2017,9 @@ function weightedPosition(sequence) {
 function normalizedWeights(count, rawWeightFn) {
   const raw = Array.from({ length: count }, (_, idx) => Number(rawWeightFn(idx, count)) || 1);
   const total = raw.reduce((sum, weight) => sum + weight, 0) || 1;
-  const weights = raw.map(weight => Number((weight * 10 / total).toFixed(2)));
-  const diff = Number((10 - weights.reduce((sum, weight) => sum + weight, 0)).toFixed(2));
-  if (weights.length) weights[weights.length - 1] = Number((weights[weights.length - 1] + diff).toFixed(2));
+  const weights = raw.map(weight => Number((weight * 10 / total).toFixed(1)));
+  const diff = Number((10 - weights.reduce((sum, weight) => sum + weight, 0)).toFixed(1));
+  if (weights.length) weights[weights.length - 1] = Number((weights[weights.length - 1] + diff).toFixed(1));
   return weights;
 }
 
@@ -1871,6 +2083,53 @@ function wordScoring(words) {
 
 function fixedScoring() {
   return { type: 'fixed_option_score', maxScore: 100, formula: 'score = selected_option.score', components: [{ key: 'correct', weight: 100, rule: 'option_score', correctValue: true, rationale: 'Correct option receives 100.' }] };
+}
+
+function normalizeDiagnosticText(message = '') {
+  let text = String(message || '').trim();
+  if (!text) return '';
+  text = text
+    .replace(/혼동함\.?$/u, '혼동합니다.')
+    .replace(/부족함\.?$/u, '부족합니다.')
+    .replace(/필요함\.?$/u, '필요합니다.');
+  if (/[가-힣]/u.test(text) && !/[.!?]$/.test(text)) text += '.';
+  return text;
+}
+
+function fallbackOptionDiagnostic(q = {}, opt = {}) {
+  if (opt.isCorrect || Number(opt.score) >= 100) return '정답 선택지입니다.';
+  const axis = normalizeStoryGrammarKey(q.storyGrammar);
+  const score = Number(opt.score) || 0;
+  if (axis === 'initiating_event') {
+    return score >= 25
+      ? '문제가 시작되는 장면과 가까운 장면을 혼동합니다.'
+      : '문제가 실제로 시작되는 핵심 장면을 다시 확인할 필요가 있습니다.';
+  }
+  if (axis === 'reaction') {
+    return score >= 35
+      ? '감정의 큰 방향은 파악했지만 비슷한 감정을 더 섬세하게 구분할 필요가 있습니다.'
+      : '장면 상황을 근거로 인물의 감정을 파악하는 연습이 필요합니다.';
+  }
+  if (axis === 'internal_response') {
+    return score >= 35
+      ? '장면 정보는 일부 파악했지만 인물의 생각이나 깨달음으로 연결하는 추론이 더 필요합니다.'
+      : '겉으로 보이는 행동과 인물의 내적 생각을 구분하는 연습이 필요합니다.';
+  }
+  return score > 0
+    ? '정답과 가까운 단서는 찾았지만 핵심 의미를 더 정확히 확인할 필요가 있습니다.'
+    : '해당 Story Grammar 항목의 핵심 단서를 다시 확인할 필요가 있습니다.';
+}
+
+function normalizeDiagnosticsForQuestion(q = {}) {
+  (q.diagnostics || []).forEach(d => {
+    d.messageKo = normalizeDiagnosticText(d.messageKo || d.message || '');
+  });
+  (q.interaction?.options || []).forEach(opt => {
+    opt.diagnostic = normalizeDiagnosticText(opt.diagnostic || fallbackOptionDiagnostic(q, opt));
+  });
+  (q.interaction?.items || []).forEach(item => {
+    if (item.diagnostic) item.diagnostic = normalizeDiagnosticText(item.diagnostic);
+  });
 }
 
 function emotionOptions() {
@@ -2920,27 +3179,55 @@ function packageQuizForExport(sourceQuiz) {
 
 function previewHtmlForQuiz(sourceQuiz) {
   const data = JSON.stringify(sourceQuiz).replace(/</g, '\\u003c');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(sourceQuiz.story.title)} Reading Quiz</title><style>
+  const title = escapeHtml(sourceQuiz.story?.title || sourceQuiz.story?.storyId || 'Reading Quiz');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} Reading Quiz</title><style>
 body{font-family:Arial,sans-serif;margin:0;color:#263148;background:#f7f4ff}
-.page{min-height:100vh;padding:28px;background:linear-gradient(rgba(255,255,255,.78),rgba(255,255,255,.78)),var(--bg)}
+.page{min-height:100vh;padding:28px;background:linear-gradient(rgba(255,255,255,.76),rgba(255,255,255,.76)),var(--bg);background-size:cover;background-position:center;background-attachment:fixed}
 .wrap{max-width:980px;margin:auto}.head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
-h1{margin:0;font-size:30px}.meta{color:#6b7280;font-weight:700}.card{background:#fff;border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 12px 30px rgba(0,0,0,.08)}
+h1{margin:0;font-size:30px}.meta{color:#6b7280;font-weight:700}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button{width:40px;height:40px;border:0;border-radius:50%;background:#ede9fe;color:#6d28d9;font-weight:900}.nav button.active{background:#111827;color:white}
+.card{background:#fff;border-radius:22px;padding:22px;box-shadow:0 12px 30px rgba(0,0,0,.08)}
 .pill{display:inline-flex;background:#ede9fe;color:#6d28d9;border-radius:99px;padding:5px 10px;font-weight:bold;margin-bottom:8px}.instruction{font-size:21px;font-weight:800;margin:8px 0 16px}
-.scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.listen .scene-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.scene{border:2px solid #ede9fe;border-radius:16px;overflow:hidden;background:#faf7ff;aspect-ratio:16/9}.sequence .scene{aspect-ratio:4/3}.scene img{width:100%;height:100%;object-fit:cover;display:block}
-.setting{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.slot{border:2px dashed #c4b5fd;border-radius:14px;background:#faf7ff;color:#6d28d9;font-weight:800;text-align:center;padding:16px 10px}
-.chips,.options{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.chip,.option{border:2px solid #d8b4fe;background:#fff;color:#4c1d95;border-radius:12px;padding:10px 14px;font-weight:800}
-.option{color:#374151;min-width:180px}.audio{display:inline-block;background:#7c3aed;color:white;border-radius:99px;padding:10px 16px;font-weight:bold;margin-bottom:12px}
+.scene-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sequence-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.scene{border:2px solid #ede9fe;border-radius:14px;overflow:hidden;background:#faf7ff;aspect-ratio:16/9;position:relative}.scene.draggable{cursor:grab}.scene.selected{border-color:#7c3aed;box-shadow:0 0 0 3px #ede9fe}
+.scene img{width:100%;height:100%;object-fit:cover;display:block}.scene span{display:none;position:absolute;inset:0;align-items:center;justify-content:center;color:#8b5cf6;font-weight:900;background:#f5f3ff}.scene.missing span{display:flex}
+.slots{display:grid;gap:10px;margin:16px 0}.seq-slots{grid-template-columns:repeat(5,1fr)}.setting-slots{grid-template-columns:repeat(3,1fr)}
+.slot{min-height:78px;border:2px dashed #c4b5fd;border-radius:12px;background:#faf7ff;color:#6d28d9;font-weight:900;text-align:center;padding:10px;display:flex;align-items:center;justify-content:center}
+.slot.filled{background:white;border-style:solid}.slot .scene{width:100%}.slot-label{font-weight:900;color:#4c1d95;text-align:center;margin-bottom:6px}
+.chips,.options{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.chip,.option{border:2px solid #d8b4fe;background:#fff;color:#4c1d95;border-radius:12px;padding:10px 14px;font-weight:800}.chip{cursor:grab}
+.answer{min-height:72px;border:2px dashed #c4b5fd;border-radius:12px;background:#faf7ff;padding:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;color:#6d28d9;font-weight:900}
+.option{color:#374151;min-width:190px;cursor:pointer}.option.selected{border-color:#7c3aed;background:#f5f3ff}.audio{display:inline-flex;background:#7c3aed;color:white;border:0;border-radius:99px;padding:10px 16px;font-weight:bold;margin-bottom:12px}
 .hint{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:16px;background:#fff8dd;color:#7c5b00}.hint img{width:42px;height:42px;border-radius:50%;object-fit:contain;background:white}
+.actions{display:flex;gap:10px;margin-top:18px}.actions button{border:0;border-radius:999px;padding:10px 18px;font-weight:900}.check{background:#7c3aed;color:white}.next{background:#ede9fe;color:#6d28d9}.score{margin-top:12px;font-weight:900;color:#111827}
 pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px;color:#4b5563;font-size:12px}
-</style></head><body><main class="page"><div class="wrap" id="app"></div></main><script>
+@media(max-width:760px){.scene-grid,.sequence-grid,.setting-slots{grid-template-columns:1fr}.seq-slots{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><main class="page"><div class="wrap"><div class="head"><div><h1 id="title"></h1><div class="meta" id="meta"></div></div><div class="nav" id="nav"></div></div><div id="app"></div></div></main><script>
 const quiz=${data};
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function asset(p,kind='image'){if(!p)return'';if(/^(https?:|data:|blob:|\\/)/.test(p))return p;if(p.includes('/'))return p;const base=kind==='audio'?(quiz.assets.audioBasePath||'Audio/'):(quiz.assets.imageBasePath||'Image/');return base+p;}
-document.querySelector('.page').style.setProperty('--bg','url("'+asset(quiz.assets.backgroundImage,'image')+'") center/cover fixed');
-function imgs(q){return (q.resources?.images||[]).map(i=>'<div class="scene"><img src="'+esc(asset(i.path,'image'))+'" alt="'+esc(i.sceneId||i.id||'scene')+'"></div>').join('');}
-function choices(q){if(q.type==='setting_slot_drag')return '<div class="setting">'+(q.interaction.slots||[]).map(s=>'<div><b>'+esc(s.label)+'</b><div class="slot">Drop here</div></div>').join('')+'</div><div class="chips">'+(q.interaction.items||[]).map(i=>'<span class="chip">'+esc(i.text||i.key)+'</span>').join('')+'</div>';if(q.type==='scene_word_unscramble')return '<div class="chips">'+(q.interaction.items||[]).map(w=>'<span class="chip">'+esc(w)+'</span>').join('')+'</div>';if(q.interaction?.options)return '<div class="options">'+q.interaction.options.map((o,i)=>'<span class="option">'+['A','B','C','D'][i]+' '+esc(o.text||o.key)+' - '+Number(o.score||0)+'</span>').join('')+'</div>';if(q.type==='story_sequence_drag')return '<div class="setting">'+(q.interaction.correct||[]).map((_,i)=>'<div class="slot">Scene '+(i+1)+'</div>').join('')+'</div>';return '';}
-document.getElementById('app').innerHTML='<div class="head"><div><h1>'+esc(quiz.story.title||quiz.story.storyId)+'</h1><div class="meta">'+esc(quiz.story.storyId)+' - '+esc(quiz.story.level||'')+'</div></div></div>'+quiz.questions.map(q=>'<section class="card '+(q.type==='listen_scene_mcq'?'listen ':'')+(q.type==='story_sequence_drag'?'sequence':'')+'"><span class="pill">Q'+q.number+' - '+esc(q.storyGrammar)+'</span><div class="instruction">'+esc(q.instruction)+'</div>'+(q.resources?.audio?'<div class="audio">Listen: '+esc(q.resources.audio.path||'')+'</div>':'')+'<div class="scene-grid">'+imgs(q)+'</div>'+choices(q)+'<div class="hint"><img src="'+esc(asset(quiz.assets.hintCharacter,'image'))+'" alt="Bookey"><span>'+esc(q.hint||'')+'</span></div><pre>'+esc(JSON.stringify({interaction:q.interaction,scoring:q.scoring},null,2))+'</pre></section>').join('');
+var current=0;var answers={};var checked={};
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function asset(p,kind){if(!p)return'';if(/^(https?:|data:|blob:|\\/)/.test(p))return p;if(String(p).indexOf('/')>=0)return p;var base=kind==='audio'?(quiz.assets.audioBasePath||'Audio/'):(quiz.assets.imageBasePath||'Image/');return base+p;}
+function sceneFrom(v){var m=String(v||'').match(/(SC\\d{2})/i);return m?m[1].toUpperCase():'';}
+function imgForScene(q,scene){var imgs=(q.resources&&q.resources.images)||[];for(var i=0;i<imgs.length;i++){var id=(imgs[i].sceneId||imgs[i].id||sceneFrom(imgs[i].path)||'').toUpperCase();if(id===scene)return imgs[i];}return {id:scene,sceneId:scene,path:(quiz.story.storyId||'STORY')+'_'+scene+'_I.webp'};}
+function imageCard(img,cls,attrs){var scene=(img.sceneId||img.id||sceneFrom(img.path)||'Scene');return '<div class="scene '+(cls||'')+'" '+(attrs||'')+'><img src="'+esc(asset(img.path,'image'))+'" alt="'+esc(scene)+'" onerror="this.parentNode.classList.add(\\'missing\\')"><span>'+esc(scene)+'</span></div>';}
+function state(q,init){var id=q.qId||('q'+q.number);if(!answers[id])answers[id]=init();return answers[id];}
+function drag(ev,type,key){ev.dataTransfer.setData('text/plain',JSON.stringify({type:type,key:key}));}
+function allow(ev){ev.preventDefault();}
+function readDrag(ev,type){try{var d=JSON.parse(ev.dataTransfer.getData('text/plain')||'{}');return d.type===type?d.key:'';}catch(e){return'';}}
+function scoreSeq(q){var s=state(q,function(){return {slots:Array((q.interaction.correct||[]).length).fill('')}}).slots;var comps=q.scoring.components||[];var total=comps.reduce(function(a,c){return a+Number(c.weight||0)},0)||1;var earned=0;comps.forEach(function(c,idx){var pos=s.indexOf(c.key);if(pos>=0)earned+=Number(c.weight||0)*Math.max(0,1-Math.abs(pos-idx)*.5);});return Math.round(earned/total*100);}
+function scoreSetting(q){var s=state(q,function(){return {slots:{}}}).slots;var comps=q.scoring.components||[];var items={};(q.interaction.items||[]).forEach(function(i){items[i.key]=i});var total=comps.reduce(function(a,c){return a+Number(c.weight||0)},0)||1;var earned=0;comps.forEach(function(c){var key=s[c.key];var item=items[key]||{};if(key===c.correctValue)earned+=Number(c.weight||0);else if(item.slot===c.key)earned+=Number(c.weight||0)*Number(c.partialCredit||.35);});return Math.round(earned/total*100);}
+function scoreWords(q){var s=state(q,function(){return {words:[]}}).words.map(function(x){return String(x).replace(/^\\d+:/,'')});var comps=q.scoring.components||[];var total=comps.reduce(function(a,c){return a+Number(c.weight||0)},0)||1;var earned=0;comps.forEach(function(c,idx){if(s[idx]===c.key)earned+=Number(c.weight||0);});return Math.round(earned/total*100);}
+function scoreOption(q){var sel=state(q,function(){return {selected:''}}).selected;var opt=(q.interaction.options||[]).find(function(o){return o.key===sel});return Number(opt&&opt.score||0);}
+function scoreCurrent(){var q=quiz.questions[current];if(q.type==='story_sequence_drag')return scoreSeq(q);if(q.type==='setting_slot_drag')return scoreSetting(q);if(q.type==='scene_word_unscramble')return scoreWords(q);return scoreOption(q);}
+function check(){var q=quiz.questions[current];checked[q.qId||q.number]=scoreCurrent();render();}
+function play(path){var url=asset(path,'audio');if(!url)return;new Audio(url).play();}
+function renderNav(){var nav=document.getElementById('nav');nav.innerHTML=quiz.questions.map(function(q,i){return '<button class="'+(i===current?'active':'')+'" onclick="current='+i+';render()">'+(q.number||i+1)+'</button>';}).join('');}
+function renderQ1(q){var s=state(q,function(){return {slots:Array((q.interaction.correct||[]).length).fill('')}}).slots;var all=(q.interaction.correct||[]).slice(0,5);var used=new Set(s.filter(Boolean));var slots='<div class="slots seq-slots">'+all.map(function(scene,i){return '<div class="slot '+(s[i]?'filled':'')+'" ondragover="allow(event)" ondrop="var k=readDrag(event,\\'scene\\');if(k){answers[\\''+(q.qId||q.number)+'\\'].slots['+i+']=k;render()}">'+(s[i]?imageCard(imgForScene(q,s[i]),'', 'onclick="answers[\\''+(q.qId||q.number)+'\\'].slots['+i+']=\\'\\';render()"'):'Scene '+(i+1))+'</div>';}).join('')+'</div>';var bank='<div class="scene-grid sequence-grid">'+all.filter(function(scene){return !used.has(scene)}).map(function(scene){return imageCard(imgForScene(q,scene),'draggable','draggable="true" ondragstart="drag(event,\\'scene\\',\\''+scene+'\\')"');}).join('')+'</div>';return bank+slots;}
+function renderQ2(q){var s=state(q,function(){return {slots:{}}}).slots;var used=new Set(Object.values(s));var imgs=(q.resources&&q.resources.images)||[];var slots='<div class="slots setting-slots">'+(q.interaction.slots||[]).map(function(slot){var item=(q.interaction.items||[]).find(function(i){return i.key===s[slot.key]});return '<div><div class="slot-label">'+esc(slot.label)+'</div><div class="slot '+(item?'filled':'')+'" ondragover="allow(event)" ondrop="var k=readDrag(event,\\'card\\');if(k){answers[\\''+(q.qId||q.number)+'\\'].slots[\\''+slot.key+'\\']=k;render()}">'+(item?'<span class="chip" onclick="delete answers[\\''+(q.qId||q.number)+'\\'].slots[\\''+slot.key+'\\'];render()">'+esc(item.text||item.key)+'</span>':'Drop here')+'</div></div>';}).join('')+'</div>';var cards='<div class="chips">'+(q.interaction.items||[]).filter(function(item){return !used.has(item.key)}).map(function(item){return '<span class="chip" draggable="true" ondragstart="drag(event,\\'card\\',\\''+esc(item.key)+'\\')">'+esc(item.text||item.key)+'</span>';}).join('')+'</div>';return '<div class="scene-grid">'+imageCard(imgs[0]||{},'','')+'</div>'+slots+cards;}
+function renderQ3(q){var s=state(q,function(){return {selected:''}});var opts=q.interaction.options||[];var audio=q.resources&&q.resources.audio;var imgs=(q.resources&&q.resources.images)||[];return (audio?'<button class="audio" onclick="play(\\''+esc(audio.path||'')+'\\')">Listen</button>':'')+'<div class="scene-grid">'+opts.map(function(o,i){var scene=sceneFrom(o.sceneId||o.id||o.text||o.path);var img=scene?imgForScene(q,scene):(imgs[i]||{});return imageCard(img,s.selected===o.key?'selected':'','onclick="answers[\\''+(q.qId||q.number)+'\\'].selected=\\''+o.key+'\\';render()"');}).join('')+'</div>';}
+function renderQ4(q){var s=state(q,function(){return {words:[]}}).words;var correct=q.interaction.correct||[];var imgs=(q.resources&&q.resources.images)||[];var all=correct.map(function(w,i){return i+':'+w});var used=new Set(s);var answer='<div class="answer" ondragover="allow(event)" ondrop="var k=readDrag(event,\\'word\\');if(k&&!answers[\\''+(q.qId||q.number)+'\\'].words.includes(k)){answers[\\''+(q.qId||q.number)+'\\'].words.push(k);render()}">'+(s.length?s.map(function(k,idx){return '<span class="chip" onclick="answers[\\''+(q.qId||q.number)+'\\'].words.splice('+idx+',1);render()">'+esc(k.replace(/^\\d+:/,''))+'</span>';}).join(''):'Drop words here.')+'</div>';var bank='<div class="chips">'+all.filter(function(k){return !used.has(k)}).reverse().map(function(k){return '<span class="chip" draggable="true" ondragstart="drag(event,\\'word\\',\\''+esc(k)+'\\')">'+esc(k.replace(/^\\d+:/,''))+'</span>';}).join('')+'</div>';return '<div class="scene-grid">'+imageCard(imgs[0]||{},'','')+'</div>'+answer+bank;}
+function renderOptions(q){var s=state(q,function(){return {selected:''}});var imgs=(q.resources&&q.resources.images)||[];return '<div class="scene-grid">'+(imgs[0]?imageCard(imgs[0],'',''):'')+'</div><div class="options">'+(q.interaction.options||[]).map(function(o,i){return '<div class="option '+(s.selected===o.key?'selected':'')+'" onclick="answers[\\''+(q.qId||q.number)+'\\'].selected=\\''+o.key+'\\';render()">'+['A','B','C','D'][i]+'. '+esc(o.text||o.key)+'</div>';}).join('')+'</div>';}
+function body(q){if(q.type==='story_sequence_drag')return renderQ1(q);if(q.type==='setting_slot_drag')return renderQ2(q);if(q.type==='listen_scene_mcq')return renderQ3(q);if(q.type==='scene_word_unscramble')return renderQ4(q);return renderOptions(q);}
+function render(){document.querySelector('.page').style.setProperty('--bg','url("'+asset(quiz.assets.backgroundImage,'image')+'")');document.getElementById('title').textContent=quiz.story.title||quiz.story.storyId;document.getElementById('meta').textContent=(quiz.story.storyId||'')+' - '+(quiz.story.level||'');renderNav();var q=quiz.questions[current];var id=q.qId||q.number;document.getElementById('app').innerHTML='<section class="card"><span class="pill">Q'+(q.number||current+1)+' - '+esc(q.storyGrammar||'')+'</span><div class="instruction">'+esc(q.instruction||'')+'</div>'+body(q)+'<div class="hint"><img src="'+esc(asset(quiz.assets.hintCharacter,'image'))+'" alt="Bookey"><span>'+esc(q.hint||'')+'</span></div><div class="actions"><button class="check" onclick="check()">Check</button><button class="next" onclick="current=Math.min(quiz.questions.length-1,current+1);render()">Next</button></div>'+(checked[id]!=null?'<div class="score">Score: '+checked[id]+' / 100</div>':'')+'</section>';}
+render();
 </script></body></html>`;
 }
 
@@ -3070,7 +3357,11 @@ function buildReadingWorkbook(wb) {
       ['Code','Threshold','Message'],
       ...(q.diagnostics || []).map(d => [d.code, d.threshold, d.messageKo]),
       [],
-      ['SECTION E - Raw JSON'],
+      ['SECTION E - Report Comments'],
+      ['Condition','Score / Weight','Report Comment','Source'],
+      ...reportCommentRows(q),
+      [],
+      ['SECTION F - Raw JSON'],
       ['Interaction JSON', JSON.stringify(q.interaction || {}, null, 2)],
       ['Scoring JSON', JSON.stringify(q.scoring || {}, null, 2)]
     ];
@@ -3174,6 +3465,10 @@ function buildDevWorkbook(wb) {
     ['q_id','verb','object_id','result_fields'],
     ...quiz.questions.map(q => [q.qId, q.lrs?.verb || 'answered', q.lrs?.objectId || '', (q.lrs?.resultFields || []).join('|')])
   ]);
+  aoaSheet(wb, 'REPORT_COMMENTS', [
+    ['q_id','story_grammar','condition','score_or_weight','report_comment','source'],
+    ...quiz.questions.flatMap(q => reportCommentRows(q).map(row => [q.qId, normalizeStoryGrammarKey(q.storyGrammar), ...row]))
+  ]);
 }
 
 function imagePathForSceneInQuestion(q, scene) {
@@ -3205,6 +3500,60 @@ function resourceRows(q) {
     rows.push(['audio', a.id || '', a.path || '', a.sceneId || '', a.sentenceId || '']);
   }
   if (q.resources?.scene) rows.push(['scene', q.resources.scene, '', q.resources.scene, q.resources.sentenceId || '']);
+  return rows;
+}
+
+function reportCommentRows(q) {
+  const rows = [];
+  const axis = normalizeStoryGrammarKey(q.storyGrammar);
+  if (q.type === 'story_sequence_drag') {
+    (q.scoring?.components || []).forEach(c => {
+      rows.push([
+        `${c.key} placed away from position ${c.correctValue}`,
+        c.weight,
+        c.correctValue === 1 || c.correctValue === (q.scoring?.components || []).length
+          ? '이야기의 시작 또는 결말 장면을 기준점으로 잡는 연습이 필요합니다.'
+          : '중간 사건의 전후 관계를 다시 확인할 필요가 있습니다.',
+        'sequence_weight'
+      ]);
+    });
+    return rows;
+  }
+  if (q.type === 'setting_slot_drag') {
+    (q.interaction?.items || []).forEach(item => {
+      const isCorrect = Object.values(q.interaction?.correct || {}).map(String).includes(String(item.key));
+      rows.push([
+        `${item.key} in ${item.slot || 'wrong'} slot`,
+        isCorrect ? slotWeightForSetting(q, item.slot) : Number((slotWeightForSetting(q, item.slot) * .35).toFixed(1)),
+        isCorrect
+          ? '배경 단서를 정확히 파악합니다.'
+          : normalizeDiagnosticText(item.diagnostic || '같은 범주의 오답을 선택하여 배경 단서를 더 정확히 구분할 필요가 있습니다.'),
+        'setting_card'
+      ]);
+    });
+    return rows;
+  }
+  if (q.type === 'scene_word_unscramble') {
+    (q.scoring?.components || []).forEach(c => {
+      rows.push([
+        `${c.key} not in position ${c.correctValue}`,
+        c.weight,
+        c.correctValue <= 2
+          ? '문장의 주어와 핵심 행동을 먼저 찾는 연습이 필요합니다.'
+          : '문장 안에서 행동의 세부 단서와 어순을 확인할 필요가 있습니다.',
+        'word_position'
+      ]);
+    });
+    return rows;
+  }
+  (q.interaction?.options || []).forEach(opt => {
+    rows.push([
+      `select ${opt.key}`,
+      Number(opt.score) || 0,
+      normalizeDiagnosticText(opt.diagnostic || fallbackOptionDiagnostic(q, opt)),
+      `${axis}_option`
+    ]);
+  });
   return rows;
 }
 

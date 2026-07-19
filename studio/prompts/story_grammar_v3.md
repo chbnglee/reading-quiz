@@ -72,7 +72,8 @@ Asset filenames should follow these patterns:
 
 ### Q1 Consequence / Sequencing
 
-- Select 5 scenes that show the full story arc.
+- Select exactly 5 scenes that show the full story arc.
+- Never return 6 or more scenes for Q1.
 - `resources.images` must include one image resource for every selected scene.
 - Do not select scenes clustered only near the ending.
 - Prefer:
@@ -83,9 +84,11 @@ Asset filenames should follow these patterns:
   - final outcome
 - `interaction.correct` must be an array of scene IDs in correct story order.
 - `interaction.items` may use the same scene IDs.
+- `interaction.correct`, `interaction.items`, and `resources.images` must all refer to the same 5 scenes.
 - Scoring must use weighted position-distance scoring.
 - First and last scenes should usually have higher weights.
 - Component weights should sum to exactly 10. Use normalized weights; do not leave totals such as 9.5.
+- Use one decimal place for weights, such as `2.6`, `1.6`, or `4.0`. Do not use long decimals such as `2.63`.
 
 ### Q2 Setting / Slot Fill
 
@@ -101,6 +104,7 @@ Asset filenames should follow these patterns:
 - Cards must be short, A1-friendly phrases.
 - Card text must be actual story-specific content.
 - Never use generic placeholder text such as `main_character`, `main place`, `story place`, `other character`, `first action`, or `later problem` as visible card text.
+- Never output misspelled or placeholder-like text such as `the characgter`, `the story place`, `card_kira`, `opening_state`, or descriptive phrases that do not fit a slot, such as `as black as ink`.
 - If you cannot find 6 good cards on the first pass, reread the opening and nearby scenes and try again before returning JSON.
 - The 3 correct cards must be real content from the story. The 3 distractors must also be story-specific, not generic labels.
 - The `At first...` answer should be a verb phrase from the story when possible.
@@ -112,6 +116,7 @@ Asset filenames should follow these patterns:
 - Scoring must use weighted slot matching with 35% same-category partial credit.
 - Slot weights must sum to exactly 10: `who` = 3, `where` = 3, `at_first` = 4.
 - Same-category wrong cards receive 35% of that slot only when placed in their own category slot; cards from a different category receive 0 in that slot.
+- The 3 distractors should still be usable within their own category. Example: a wrong character card is a possible `Who?` card, not a place or adjective phrase.
 
 ### Q3 Initiating Event / Listening Scene Choice
 
@@ -136,6 +141,9 @@ Asset filenames should follow these patterns:
 - Use an exact story sentence from the story text.
 - `resources.images` must include the scene image for the selected sentence.
 - The sentence must show an action/attempt by the character.
+- Prefer an action after the problem has started.
+- Prefer an action used to handle, fix, rescue, release, search for, help with, or respond to the problem.
+- Do not use a sentence that only states a reaction, a thought, a description, a final result, or a line of dialogue with no action.
 - Do not invent a new sentence.
 - Keep articles with the following noun when possible:
   - `the forest.`
@@ -156,6 +164,7 @@ Asset filenames should follow these patterns:
 - Use exact-position weighted word scoring.
 - Do not use distance-based partial credit for words.
 - Component weights should sum to exactly 10.
+- Use one decimal place for token weights. Do not use long decimals.
 
 ### Q5 Reaction / Emotion
 
@@ -170,6 +179,7 @@ Asset filenames should follow these patterns:
 - Opposite or unrelated emotions receive low or 0 score.
 - Do not make all incorrect options 0. At least one plausible or confusable distractor should receive a partial score such as 20-50.
 - The hint must use visible or inferable scene context. Do not mention face, expression, or what the character says unless the image and scene clearly support it.
+- Do not reveal the answer in the hint. For example, avoid `He is smiling because the problem is solved.`
 
 ### Q6 Internal Response
 
@@ -219,6 +229,7 @@ Diagnostics should explain the likely comprehension gap.
 
 Use polite Korean report-style endings such as `혼동합니다.`, `확인할 필요가 있습니다.`, or `보완이 필요합니다.`
 Do not end diagnostics with only a noun phrase or `혼동함`.
+Diagnostics should be useful for a parent report. Name the likely gap, such as scene order, setting clue, problem-start recognition, action/attempt understanding, emotion distinction, or inner-thought inference.
 
 ## Scoring
 
@@ -231,7 +242,7 @@ Use these formulas:
 - Q3/Q5/Q6: `score = selected_option.score`
 - Q4: `score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)`
 
-For Q1/Q2/Q4, component weights are reviewer-facing metadata and should sum to 10.
+For Q1/Q2/Q4, component weights are reviewer-facing metadata and should sum to 10 with one decimal place at most.
 For Q3/Q5/Q6, do not show or optimize for an option-score total; the student selects only one option.
 
 ## Output Shape
