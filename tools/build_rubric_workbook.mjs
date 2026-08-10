@@ -1,15 +1,31 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Workbook, SpreadsheetFile } from "file:///C:/Users/IM_1783/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/@oai/artifact-tool/dist/artifact_tool.mjs";
+import { FileBlob, Workbook, SpreadsheetFile } from "@oai/artifact-tool";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const outputDir = path.join(root, "outputs", "reading-quiz-rubric-20260810");
-const outputFile = path.join(outputDir, "reading_quiz_diagnostic_rubric_v2.xlsx");
-const previewDir = path.join(outputDir, "previews-v2");
+const outputFile = path.join(outputDir, "reading_quiz_diagnostic_rubric_v3.xlsx");
+const previewDir = path.join(outputDir, "previews-v3");
 const ids = ["CS0003", "CS0006", "OG0005", "OG0021", "OG0036", "OG0049"];
 const quizzes = await Promise.all(ids.map(async id => JSON.parse(await fs.readFile(path.join(root, "v3", id, `${id}.quiz.json`), "utf8"))));
+
+if (process.argv.includes("--inspect-existing")) {
+  const input = await FileBlob.load(outputFile);
+  const existing = await SpreadsheetFile.importXlsx(input);
+  const qaDir = path.join(root, ".codex-artifact-runtime", "current-workbook");
+  await fs.mkdir(qaDir, { recursive: true });
+  const sheetNames = ["Overview", "Response Quality", "Question Rubric", "Feedback Matrix", "Option Diagnostics", "Profile Calculator", "LRS & Validation"];
+  for (const name of sheetNames) {
+    const png = await existing.render({ sheetName: name, autoCrop: "all", scale: .75, format: "png" });
+    await fs.writeFile(path.join(qaDir, `${name.replaceAll(" ", "_")}.png`), new Uint8Array(await png.arrayBuffer()));
+  }
+  const summary = await existing.inspect({ kind: "sheet", include: "id,name", maxChars: 4000 });
+  const feedback = await existing.inspect({ kind: "region", sheetId: "Feedback Matrix", range: "A1:J12", maxChars: 6000 });
+  console.log(JSON.stringify({ qaDir, summary: summary.ndjson, feedback: feedback.ndjson }, null, 2));
+  process.exit(0);
+}
 
 const wb = Workbook.create();
 const COLORS = { purple: "#4C1D95", violet: "#6D28D9", lavender: "#EDE9FE", line: "#D9D9E3", green: "#D1FAE5", blue: "#DBEAFE", amber: "#FEF3C7", red: "#FEE2E2", white: "#FFFFFF", ink: "#1F2937", muted: "#6B7280" };
@@ -40,12 +56,13 @@ function writeTable(s, startRow, headers, rows) {
   s.freezePanes.freezeRows(startRow);
 }
 function colName(n) { let out = ""; while (n) { n--; out = String.fromCharCode(65 + n % 26) + out; n = Math.floor(n / 26); } return out; }
-function levelColor(score) { return score === 100 ? COLORS.green : score === 67 ? COLORS.blue : score === 33 ? COLORS.amber : COLORS.red; }
+function qualityColor(score) { return score === 100 ? COLORS.green : score === 67 ? COLORS.blue : score === 33 ? COLORS.amber : COLORS.red; }
+function qualityName(score) { return score === 100 ? "Accurate" : score === 67 ? "Partial" : score === 33 ? "Related" : "Unrelated"; }
 
 // 1. Overview
 {
   const s = addSheet("Overview");
-  title(s, "Story Comprehension Assessment & Rubric", "기존 6개 문항 유형은 유지하고 scoring / diagnostic metadata만 개정 · v1.0", "H");
+  title(s, "Story Comprehension Assessment & Rubric", "기존 6개 문항 유형은 유지하고 Response Quality / feedback metadata만 개정 · v2.0", "H");
   s.getRange("A4:H4").merge(); s.getRange("A4").values = [["핵심 원칙"]]; s.getRange("A4").format = { fill: COLORS.violet, font: { bold: true, color: COLORS.white } };
   const principles = [
     ["평가 축", "Story Element × Cognitive Process × Response Quality"],
@@ -57,7 +74,7 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
   s.getRange("A5:B9").values = principles; s.getRange("A5:B9").format = { wrapText: true, verticalAlignment: "top", borders: { preset: "all", style: "thin", color: COLORS.line } };
   for (let row=5; row<=9; row++) s.getRange(`B${row}:H${row}`).merge();
   s.getRange("A11:H11").merge(); s.getRange("A11").values = [["5단계 운영 흐름"]]; s.getRange("A11").format = { fill: COLORS.violet, font: { bold: true, color: COLORS.white } };
-  s.getRange("A12:H12").values = [["1. Story Grammar", "→", "2. Cognitive Demand", "→", "3. Response Level", "→", "4. Skill Profile", "→ Feedback / Action"]];
+  s.getRange("A12:H12").values = [["1. Story Grammar", "→", "2. Cognitive Demand", "→", "3. Response Quality", "→", "4. Skill Profile", "→ Feedback / Action"]];
   s.getRange("A12:H12").format = { fill: "#F5F3FF", font: { bold: true, color: COLORS.purple }, horizontalAlignment: "center", wrapText: true, borders: { preset: "all", style: "thin", color: COLORS.line } };
   s.getRange("A14:H14").merge(); s.getRange("A14").values = [["전체 구간(요약값)"]]; s.getRange("A14").format = { fill: COLORS.violet, font: { bold: true, color: COLORS.white } };
   writeTable(s, 15, ["구간", "점수", "해석", "학생 피드백", "학부모 관찰", "다음 활동", "사용 원칙", "주의"], [
@@ -70,14 +87,15 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
   [150, 130, 170, 230, 220, 210, 180, 220].forEach((w,i)=>s.getRangeByIndexes(0,i,22,1).format.columnWidthPx=w);
 }
 
-// 2. Response levels
+// 2. Response Quality
 {
-  const s = addSheet("Response Levels");
-  title(s, "공통 4단계 응답 루브릭", "정답과의 표면 유사도가 아니라 Story Element와 관계 이해의 증거를 분류", "I");
-  const rows = quizzes[0].assessmentFramework.responseLevels.map(l => [l.level, l.score, l.key, l.labelEn, l.labelKo, l.definitionKo, l.score===100?"핵심 요소+관계 정확":l.score===67?"핵심 보존+일부 불완전":l.score===33?"관련 요소 인식+관계 오해":"무응답·무관·증거 없음", l.score===100?"확장":l.score===67?"단서 확인":l.score===33?"관계 재구성":"재읽기·공동 탐색", "운영 점수(미보정)"]);
-  writeTable(s, 4, ["Level", "Score", "Key", "Label EN", "Label KO", "정의", "판정 핵심", "후속 원칙", "측정 상태"], rows);
-  rows.forEach((r,i)=>s.getRange(`A${5+i}:I${5+i}`).format.fill=levelColor(r[1]));
-  [70,70,90,160,160,300,210,160,150].forEach((w,i)=>s.getRangeByIndexes(0,i,12,1).format.columnWidthPx=w);
+  const s = addSheet("Response Quality");
+  title(s, "공통 4단계 Response Quality", "숫자 Level 대신 이해 증거의 질을 Accurate / Partial / Related / Unrelated로 표시", "H");
+  const rows = quizzes[0].assessmentFramework.responseQualities.map(q => [q.responseQuality, q.score, q.key, q.labelKo, q.definitionKo, q.score===100?"핵심 요소+관계 정확":q.score===67?"핵심 보존+일부 불완전":q.score===33?"관련 요소 인식+관계 오해":"무응답·무관·증거 없음", q.score===100?"확장":q.score===67?"단서 확인":q.score===33?"관계 재구성":"재읽기·공동 탐색", "운영 점수(미보정)"]);
+  writeTable(s, 4, ["Response Quality", "Score", "Key", "한국어 해석", "정의", "판정 핵심", "후속 원칙", "측정 상태"], rows);
+  rows.forEach((r,i)=>{s.getRange(`A${5+i}:H${5+i}`).format.fill=qualityColor(r[1]);s.getRange(`A${5+i}:B${5+i}`).format.font={bold:true,color:COLORS.ink};});
+  s.freezePanes.freezeColumns(2);
+  [145,70,95,175,330,210,170,160].forEach((w,i)=>s.getRangeByIndexes(0,i,12,1).format.columnWidthPx=w);
 }
 
 // 3. Question rubric
@@ -87,22 +105,27 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
   const rows=[];
   for (const q of quizzes[0].questions) for (const r of q.responseRubric) { const currentScores=q.interaction.options?new Set(quizzes.flatMap(z=>z.questions[q.number-1].interaction.options.map(o=>o.score))):new Set([0,33,67,100]); rows.push([
     `Q${q.number}`, q.type, q.storyGrammar, q.assessmentMetadata.storyElement, q.assessmentMetadata.cognitiveTarget, q.assessmentMetadata.operationalSkill,
-    q.assessmentMetadata.skillTags.join(", "), r.level, r.score, currentScores.has(r.score)?"현재 가능":"예비 기준(현재 선택지 없음)", r.labelKo, r.evidenceRuleKo, r.misconceptionType, r.recommendedActionKo
+    q.assessmentMetadata.skillTags.join(", "), r.responseQuality, r.score, currentScores.has(r.score)?"현재 가능":"예비 기준(현재 선택지 없음)", r.labelKo, r.evidenceRuleKo, r.misconceptionType, r.recommendedActionKo
   ]); }
-  writeTable(s,4,["문항","유형","Story Grammar","Story Element","Cognitive Target","Operational Skill","Skill Tags","Level","Score","현재 적용","해석","증거 규칙","오개념 유형","추천 활동"],rows);
-  rows.forEach((r,i)=>s.getRange(`A${5+i}:N${5+i}`).format.fill=levelColor(r[8]));
-  [55,170,105,190,150,105,210,55,55,155,160,250,190,310].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+5,1).format.columnWidthPx=w);
+  writeTable(s,4,["문항","유형","Story Grammar","Story Element","Cognitive Target","Operational Skill","Skill Tags","Response Quality","Score","현재 적용","해석","증거 규칙","오개념 유형","추천 활동"],rows);
+  rows.forEach((r,i)=>{s.getRange(`A${5+i}:N${5+i}`).format.fill=qualityColor(r[8]);s.getRange(`H${5+i}:I${5+i}`).format.font={bold:true,color:COLORS.ink};});
+  s.freezePanes.freezeColumns(3);
+  [55,170,105,190,150,105,210,130,60,155,160,250,190,310].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+5,1).format.columnWidthPx=w);
 }
 
 // 4. Feedback matrix
 {
   const s=addSheet("Feedback Matrix");
-  title(s,"학생·학부모 피드백 매트릭스","각 문항×응답 수준별 What you did well / What to practice / What to do next","J");
+  title(s,"학생·학부모 피드백 매트릭스","각 Story Grammar × Response Quality에 맞춘 대상별 진단 문장과 다음 활동","I");
+  s.getRange("A4:I4").values=[["100","67","33","0","색상 범례","학생용","친근하고 행동 중심","학부모용","관찰 가능한 이해 증거 중심"]];
+  s.getRange("A4").format.fill=COLORS.green;s.getRange("B4").format.fill=COLORS.blue;s.getRange("C4").format.fill=COLORS.amber;s.getRange("D4").format.fill=COLORS.red;
+  s.getRange("A4:I4").format.wrapText=true;s.getRange("A4:I4").format.font={bold:true,color:COLORS.ink};s.getRange("A4:I4").format.verticalAlignment="center";
   const rows=[];
-  for(const q of quizzes[0].questions) for(const r of q.responseRubric) rows.push([`Q${q.number}`,q.storyGrammar,q.assessmentMetadata.operationalSkill,r.level,r.score,r.labelKo,r.studentFeedbackKo,r.parentFeedbackKo,r.recommendedActionKo,`${q.storyGrammar}:${r.misconceptionType}`]);
-  writeTable(s,4,["문항","영역","기능","Level","Score","해석","학생 피드백","학부모 피드백","다음 활동","진단 키"],rows);
-  rows.forEach((r,i)=>s.getRange(`A${5+i}:J${5+i}`).format.fill=levelColor(r[4]));
-  [55,110,90,55,55,145,260,360,300,220].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+5,1).format.columnWidthPx=w);
+  for(const q of quizzes[0].questions) for(const r of q.responseRubric) rows.push([`Q${q.number}`,q.storyGrammar,q.assessmentMetadata.storyElement,q.assessmentMetadata.operationalSkill,r.responseQuality,r.score,r.studentFeedbackKo,r.parentFeedbackKo,r.recommendedActionKo]);
+  writeTable(s,6,["문항","Story Grammar","Story Element","기능","Response Quality","Score","학생 피드백","학부모 피드백","다음 활동"],rows);
+  rows.forEach((r,i)=>{const row=7+i;s.getRange(`A${row}:I${row}`).format.fill=qualityColor(r[5]);s.getRange(`E${row}:F${row}`).format.font={bold:true,color:COLORS.ink};if(i%4===0)s.getRange(`A${row}:I${row}`).format.borders={top:{style:"medium",color:COLORS.purple}};});
+  s.freezePanes.freezeRows(6);s.freezePanes.freezeColumns(6);
+  [55,115,190,95,130,60,330,420,330].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+7,1).format.columnWidthPx=w);
 }
 
 // 5. Option diagnostics
@@ -110,28 +133,30 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
   const s=addSheet("Option Diagnostics");
   title(s,"Q3·Q5·Q6 선택지 진단","어떤 오답을 선택했는지를 오개념과 후속 활동으로 연결","L");
   const rows=[];
-  for(const quiz of quizzes) for(const n of [3,5,6]) { const q=quiz.questions[n-1]; for(const o of q.interaction.options) rows.push([quiz.story.storyId,quiz.story.title,`Q${n}`,q.storyGrammar,o.key,o.text,o.isCorrect?"정답":"오답",o.responseLevel,o.score,o.misconceptionType,o.diagnostic||"핵심 요소와 관계를 정확히 연결",o.recommendedActionKo]); }
-  writeTable(s,4,["Story ID","Title","문항","영역","선택지","내용","정오","Level","Score","오개념 유형","진단 근거","추천 활동"],rows);
-  rows.forEach((r,i)=>s.getRange(`A${5+i}:L${5+i}`).format.fill=levelColor(r[8]));
-  [85,210,55,110,55,260,65,55,55,210,340,320].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+5,1).format.columnWidthPx=w);
+  for(const quiz of quizzes) for(const n of [3,5,6]) { const q=quiz.questions[n-1]; for(const o of q.interaction.options) rows.push([quiz.story.storyId,quiz.story.title,`Q${n}`,q.storyGrammar,o.key,o.text,o.isCorrect?"정답":"오답",o.responseQuality,o.score,o.misconceptionType,o.diagnostic||"핵심 요소와 관계를 정확히 연결",o.recommendedActionKo]); }
+  writeTable(s,4,["Story ID","Title","문항","영역","선택지","내용","정오","Response Quality","Score","오개념 유형","진단 근거","추천 활동"],rows);
+  rows.forEach((r,i)=>{s.getRange(`A${5+i}:L${5+i}`).format.fill=qualityColor(r[8]);s.getRange(`H${5+i}:I${5+i}`).format.font={bold:true,color:COLORS.ink};});
+  s.freezePanes.freezeColumns(5);
+  [85,210,55,110,55,260,65,130,55,210,340,320].forEach((w,i)=>s.getRangeByIndexes(0,i,rows.length+5,1).format.columnWidthPx=w);
 }
 
 // 6. Profile calculator
 {
   const s=addSheet("Profile Calculator");
   title(s,"학생 프로파일 계산 예시","노란 셀에 각 문항의 보고점수(0/33/67/100)를 입력하면 전체 구간과 우선 피드백이 계산됩니다.","H");
-  writeTable(s,4,["문항","Story Grammar","기능","입력 점수","Level","상태","오개념/메모","추천 활동"],quizzes[0].questions.map(q=>[`Q${q.number}`,q.storyGrammar,q.assessmentMetadata.operationalSkill,100,"", "", "", q.responseRubric[0].recommendedActionKo]));
+  writeTable(s,4,["문항","Story Grammar","기능","입력 점수","Response Quality","해석","오개념/메모","추천 활동"],quizzes[0].questions.map(q=>[`Q${q.number}`,q.storyGrammar,q.assessmentMetadata.operationalSkill,100,"", "", "", q.responseRubric[0].recommendedActionKo]));
   s.getRange("D5:D10").format.fill="#FFF2CC";
   s.getRange("D5:D10").dataValidation={rule:{type:"list",values:[0,33,67,100]}};
-  s.getRange("E5").formulas=[["=IF(D5=100,3,IF(D5=67,2,IF(D5=33,1,0)))"]]; s.getRange("E5:E10").fillDown();
-  s.getRange("F5").formulas=[["=IF(D5=100,\"Full\",IF(D5=67,\"Partial\",IF(D5=33,\"Related\",\"No evidence\")))"]]; s.getRange("F5:F10").fillDown();
+  s.getRange("E5").formulas=[["=IF(D5=100,\"Accurate\",IF(D5=67,\"Partial\",IF(D5=33,\"Related\",\"Unrelated\")))"]]; s.getRange("E5:E10").fillDown();
+  s.getRange("F5").formulas=[["=IF(D5=100,\"정확한 이해\",IF(D5=67,\"부분 이해\",IF(D5=33,\"관련 요소 인식·관계 오해\",\"관련 없는 응답·이해 증거 없음\")))"]]; s.getRange("F5:F10").fillDown();
   s.getRange("A12:C12").values=[["전체 점수","구간","해석 원칙"]]; s.getRange("A12:C12").format={fill:COLORS.violet,font:{bold:true,color:COLORS.white},borders:{preset:"all",style:"thin",color:COLORS.line}};
   s.getRange("A13").formulas=[["=ROUND(AVERAGE(D5:D10),0)"]];
   s.getRange("B13").formulas=[["=IF(A13>=80,\"통합적 이해\",IF(A13>=60,\"발달 중\",IF(A13>=40,\"부분적 이해\",\"기초 지원\")))"]];
   s.getRange("C13").values=[["총점은 요약값입니다. 가장 낮은 기능과 선택 오개념을 함께 확인하세요."]];
   s.getRange("C13:H13").merge();
   s.getRange("A13:C13").format={fill:"#F5F3FF",font:{bold:true,color:COLORS.purple},wrapText:true,borders:{preset:"all",style:"thin",color:COLORS.line}};
-  [70,125,110,85,60,100,250,310].forEach((w,i)=>s.getRangeByIndexes(0,i,16,1).format.columnWidthPx=w);
+  s.freezePanes.freezeColumns(4);
+  [70,125,110,85,135,210,250,310].forEach((w,i)=>s.getRangeByIndexes(0,i,16,1).format.columnWidthPx=w);
 }
 
 // 7. LRS and sources
@@ -145,7 +170,7 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
     ["cognitive_skill","Sequence","어떤 사고 기능","Y","낮음","기능별 충분한 문항 수?","분기",""],
     ["student_answer","word order","원응답","Y","높음","응답 저장 최소화?","상시","가명 ID 권장"],
     ["evidence_raw",75,"구조적 증거","Y","낮음","보고수준과 일관?","월",""],
-    ["response_level",2,"0–3 수준","Y","낮음","교사 판정과 일치?","분기",""],
+    ["response_quality","Partial","Accurate/Partial/Related/Unrelated","Y","낮음","교사 판정과 일치?","분기","숫자 Level 미표시"],
     ["weighted_score",67,"보고점수","Y","낮음","경계값 적절성?","분기","미보정 점수"],
     ["misconception_type","local_action_order_gap","오개념","Y","낮음","오답 선택과 실제 사고 일치?","분기","표본 면담 권장"],
     ["recommended_action","Rebuild action sentence","후속 학습","Y","낮음","활동 후 향상?","분기",""],
@@ -165,7 +190,7 @@ function levelColor(score) { return score === 100 ? COLORS.green : score === 67 
 await fs.mkdir(outputDir,{recursive:true});
 await fs.mkdir(previewDir,{recursive:true});
 const out=await SpreadsheetFile.exportXlsx(wb);await out.save(outputFile);
-for(const name of ["Overview","Response Levels","Question Rubric","Feedback Matrix","Option Diagnostics","Profile Calculator","LRS & Validation"]){const png=await wb.render({sheetName:name,autoCrop:"all",scale:.75,format:"png"});await fs.writeFile(path.join(previewDir,`${name.replaceAll(" ","_")}.png`),new Uint8Array(await png.arrayBuffer()));}
+for(const name of ["Overview","Response Quality","Question Rubric","Feedback Matrix","Option Diagnostics","Profile Calculator","LRS & Validation"]){const png=await wb.render({sheetName:name,autoCrop:"all",scale:.75,format:"png"});await fs.writeFile(path.join(previewDir,`${name.replaceAll(" ","_")}.png`),new Uint8Array(await png.arrayBuffer()));}
 const inspection=await wb.inspect({kind:"sheet",include:"id,name",maxChars:4000});
 const formulaCheck=await wb.inspect({kind:"formula",sheetId:"Profile Calculator",range:"A1:H16",maxChars:4000,options:{maxResults:30}});
 const errorCheck=await wb.inspect({kind:"match",searchTerm:"#REF!|#DIV/0!|#VALUE!|#NAME\\?|#N/A",options:{useRegex:true,maxResults:100},maxChars:4000});

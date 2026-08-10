@@ -6,3 +6,5 @@ studio/.env
 ~$*.xlsx
 *.inspect.ndjson
 outputs/**/previews-*/
+.codex-artifact-runtime/
+node_modules/

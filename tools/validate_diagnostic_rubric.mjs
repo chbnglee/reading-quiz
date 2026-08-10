@@ -8,6 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const ids=["CS0003","CS0006","OG0005","OG0021","OG0036","OG0049"];
 const expectedTypes=["story_sequence_drag","setting_slot_drag","listen_scene_mcq","scene_word_unscramble","emotion_mcq","internal_response_mcq"];
 const allowed=new Set([0,33,67,100]);
+const expectedQualities=["Accurate","Partial","Related","Unrelated"];
 const execFile=promisify(execFileCallback);
 const git="C:\\Users\\IM_1783\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe";
 for(const id of ids){
@@ -22,8 +23,14 @@ for(const id of ids){
   if(JSON.stringify(quiz.questions.map(contentShape))!==JSON.stringify(headQuiz.questions.map(contentShape)))throw Error(`${id}: question content or options changed`);
   if(quiz.questions.length!==6)throw Error(`${id}: expected six questions`);
   for(const q of quiz.questions){
-    if(q.responseRubric.map(r=>r.score).join(",")!=="100,67,33,0")throw Error(`${id} Q${q.number}: invalid rubric`);
-    if(q.interaction.options)for(const o of q.interaction.options)if(!allowed.has(o.score))throw Error(`${id} Q${q.number}: invalid option score ${o.score}`);
+    if(q.responseRubric.map(r=>r.score).join(",")!=="100,67,33,0")throw Error(`${id} Q${q.number}: invalid rubric scores`);
+    if(JSON.stringify(q.responseRubric.map(r=>r.responseQuality))!==JSON.stringify(expectedQualities))throw Error(`${id} Q${q.number}: invalid Response Quality labels`);
+    if(q.responseRubric.some(r=>"level" in r))throw Error(`${id} Q${q.number}: legacy numeric Level remains in rubric`);
+    if(q.interaction.options)for(const o of q.interaction.options){
+      if(!allowed.has(o.score))throw Error(`${id} Q${q.number}: invalid option score ${o.score}`);
+      if(!expectedQualities.includes(o.responseQuality))throw Error(`${id} Q${q.number}: option Response Quality missing`);
+      if("responseLevel" in o)throw Error(`${id} Q${q.number}: legacy option Level remains`);
+    }
   }
   const html=await fs.readFile(htmlPath,"utf8");
   const embedded=html.match(/const QUIZ = (\{.*?\});\r?\nconst bg/s);
@@ -38,6 +45,6 @@ const rubricHtml=await fs.readFile(path.join(root,"rubric.html"),"utf8");
 const rubricScript=rubricHtml.match(/<script>([\s\S]*?)<\/script>/);
 if(!rubricScript)throw Error("rubric.html: script missing");
 new Function(rubricScript[1]);
-if(!rubricHtml.includes("reading_quiz_diagnostic_rubric_v2.xlsx"))throw Error("rubric.html: workbook link missing");
-await fs.access(path.join(root,"outputs","reading-quiz-rubric-20260810","reading_quiz_diagnostic_rubric_v2.xlsx"));
-console.log(`validated ${ids.length} quizzes: question types/content/options unchanged from HEAD, four-level scores, JSON/HTML parity, JavaScript syntax`);
+if(!rubricHtml.includes("reading_quiz_diagnostic_rubric_v3.xlsx"))throw Error("rubric.html: workbook link missing");
+await fs.access(path.join(root,"outputs","reading-quiz-rubric-20260810","reading_quiz_diagnostic_rubric_v3.xlsx"));
+console.log(`validated ${ids.length} quizzes: question types/content/options unchanged from HEAD, four Response Quality categories, JSON/HTML parity, JavaScript syntax`);
