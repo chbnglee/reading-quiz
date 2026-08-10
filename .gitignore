@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .venv/
 studio/.env
+~$*.xlsx
+*.inspect.ndjson
+outputs/**/previews-*/

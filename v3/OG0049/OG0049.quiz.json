@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "quiz-v3.0",
+  "schemaVersion": "quiz-v3.1-diagnostic",
   "story": {
     "storyId": "OG0049",
     "title": "The Mystery of the Deep: The Lost Light",
@@ -337,51 +337,52 @@
         ]
       },
       "scoring": {
-        "type": "weighted_position",
+        "type": "ordered_lcs_level",
         "maxScore": 100,
-        "formula": "score = round(sum(weight_i * max(0, 1 - abs(placed_pos_i - correct_pos_i) * 0.5)) / sum(weights) * 100)",
+        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
+        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
         "components": [
           {
             "key": "SC01",
-            "weight": 2.5,
-            "rule": "position_distance",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 1,
-            "rationale": "The deep ocean is dark"
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "SC06",
-            "weight": 1.5,
-            "rule": "position_distance",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 2,
-            "rationale": "A bag covers the fish"
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "SC09",
-            "weight": 1.5,
-            "rule": "position_distance",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 3,
-            "rationale": "Kira and Toby act"
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "SC12",
-            "weight": 1.5,
-            "rule": "position_distance",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 4,
-            "rationale": "The bag comes off"
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "SC16",
-            "weight": 2.5,
-            "rule": "position_distance",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 5,
-            "rationale": "The light guides the way"
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           }
         ]
       },
       "diagnostics": [
         {
           "code": "consequence_sequence_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
         }
       ],
@@ -391,9 +392,78 @@
         "resultFields": [
           "score_raw",
           "scene_order",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Consequence / Event sequence",
+        "cognitiveTarget": "Integrate and Interpret",
+        "operationalSkill": "Sequence",
+        "skillTags": [
+          "Story Structure",
+          "Sequence",
+          "Cause & Effect"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "LCS=5/5",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 다음 이야기로 이동하거나 사건의 원인과 결과를 말로 설명합니다.",
+          "recommendedActionKo": "다음 이야기로 이동하거나 사건의 원인과 결과를 말로 설명합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "LCS=4/5",
+          "misconceptionType": "local_sequence_gap",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 처음과 마지막 장면을 고정하고, 흔들린 중간 장면 두 개의 앞뒤를 다시 확인합니다.",
+          "recommendedActionKo": "처음과 마지막 장면을 고정하고, 흔들린 중간 장면 두 개의 앞뒤를 다시 확인합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "LCS=2–3/5",
+          "misconceptionType": "event_relation_confusion",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: Story Map에서 처음-문제-행동-결과를 연결한 뒤 다시 배열합니다.",
+          "recommendedActionKo": "Story Map에서 처음-문제-행동-결과를 연결한 뒤 다시 배열합니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "LCS=0–1/5 또는 무응답",
+          "misconceptionType": "no_sequence_evidence",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 이야기를 다시 읽고 핵심 장면을 한 장씩 말한 뒤 재시도합니다.",
+          "recommendedActionKo": "이야기를 다시 읽고 핵심 장면을 한 장씩 말한 뒤 재시도합니다."
+        }
+      ]
     },
     {
       "qId": "OG0049_V3_Q02",
@@ -480,40 +550,38 @@
         }
       },
       "scoring": {
-        "type": "weighted_slot_match",
+        "type": "exact_slot_count_level",
         "maxScore": 100,
-        "formula": "score = round(sum(slot_weight * (1 if exact card else .35 if same slot category else 0)) / sum(weights) * 100)",
+        "evidenceFormula": "evidence_raw = round(exact_slots / 3 * 100)",
+        "reportingFormula": "3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0",
         "components": [
           {
             "key": "who",
-            "weight": 2.5,
-            "rule": "slot_match",
+            "weight": 1,
+            "rule": "exact_slot_match",
             "correctValue": "aurora_submarine",
-            "partialCredit": 0.35,
-            "rationale": "Identifies Who? in the opening setting."
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
           },
           {
             "key": "where",
-            "weight": 2.0,
-            "rule": "slot_match",
+            "weight": 1,
+            "rule": "exact_slot_match",
             "correctValue": "dark_canyon",
-            "partialCredit": 0.35,
-            "rationale": "Identifies Where? in the opening setting."
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
           },
           {
             "key": "at_first",
-            "weight": 1.5,
-            "rule": "slot_match",
+            "weight": 1,
+            "rule": "exact_slot_match",
             "correctValue": "followed_light",
-            "partialCredit": 0.35,
-            "rationale": "Identifies At first... in the opening setting."
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
           }
         ]
       },
       "diagnostics": [
         {
           "code": "setting_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
         }
       ],
@@ -523,9 +591,78 @@
         "resultFields": [
           "score_raw",
           "slot_values",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Setting",
+        "cognitiveTarget": "Locate and Recall",
+        "operationalSkill": "Identify",
+        "skillTags": [
+          "Story Structure",
+          "Setting",
+          "Locate & Recall"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "3/3 요소 정확",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 첫 장면의 인물·장소·처음 상황을 한 문장으로 설명합니다.",
+          "recommendedActionKo": "첫 장면의 인물·장소·처음 상황을 한 문장으로 설명합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "2/3 요소 정확",
+          "misconceptionType": "one_setting_element_gap",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 틀린 한 요소를 첫 장면에서 다시 찾아 표시합니다.",
+          "recommendedActionKo": "틀린 한 요소를 첫 장면에서 다시 찾아 표시합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "1/3 요소 정확",
+          "misconceptionType": "setting_element_confusion",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: Who / Where / At first를 색으로 나누어 Story Map에 적습니다.",
+          "recommendedActionKo": "Who / Where / At first를 색으로 나누어 Story Map에 적습니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "0/3 요소 정확 또는 무응답",
+          "misconceptionType": "no_setting_evidence",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 첫 장면을 다시 보고 인물부터 함께 찾은 뒤 장소와 상황으로 확장합니다.",
+          "recommendedActionKo": "첫 장면을 다시 보고 인물부터 함께 찾은 뒤 장소와 상황으로 확장합니다."
+        }
+      ]
     },
     {
       "qId": "OG0049_V3_Q03",
@@ -575,10 +712,13 @@
           {
             "key": "A",
             "text": "Kira sees a tiny golden light.",
-            "score": 30,
+            "score": 33,
             "isCorrect": false,
             "diagnostic": "문제의 단서와 문제 자체를 혼동합니다.",
-            "scene": "SC02"
+            "scene": "SC02",
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다."
           },
           {
             "key": "B",
@@ -586,15 +726,21 @@
             "score": 100,
             "isCorrect": true,
             "diagnostic": "",
-            "scene": "SC06"
+            "scene": "SC06",
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "recommendedActionKo": "문제가 시작된 까닭과 다음 사건을 연결해 말합니다."
           },
           {
             "key": "C",
             "text": "Kira and Toby decide to help.",
-            "score": 25,
+            "score": 33,
             "isCorrect": false,
             "diagnostic": "문제 이후의 대응 장면을 사건 시작으로 혼동합니다.",
-            "scene": "SC09"
+            "scene": "SC09",
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다."
           },
           {
             "key": "D",
@@ -602,42 +748,53 @@
             "score": 0,
             "isCorrect": false,
             "diagnostic": "해결 장면을 사건 시작으로 혼동합니다.",
-            "scene": "SC13"
+            "scene": "SC13",
+            "responseLevel": 0,
+            "misconceptionType": "no_problem_evidence",
+            "recommendedActionKo": "오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다."
           }
         ],
         "correct": "B"
       },
       "scoring": {
-        "type": "fixed_option_score",
+        "type": "ordered_option_level",
         "maxScore": 100,
-        "formula": "score = selected_option.score",
+        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
         "components": [
           {
             "key": "A",
-            "weight": 30,
-            "rule": "option_score",
+            "weight": 33,
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_confusion",
             "rationale": "문제의 단서와 문제 자체를 혼동합니다."
           },
           {
             "key": "B",
             "weight": 100,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": true,
-            "rationale": "Correct initiating event scene."
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "rationale": "Correct response."
           },
           {
             "key": "C",
-            "weight": 25,
-            "rule": "option_score",
+            "weight": 33,
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_confusion",
             "rationale": "문제 이후의 대응 장면을 사건 시작으로 혼동합니다."
           },
           {
             "key": "D",
             "weight": 0,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 0,
+            "misconceptionType": "no_problem_evidence",
             "rationale": "해결 장면을 사건 시작으로 혼동합니다."
           }
         ]
@@ -645,7 +802,7 @@
       "diagnostics": [
         {
           "code": "initiating_event_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "문제가 시작되는 장면과 다른 장면을 구분하는 연습이 필요합니다."
         }
       ],
@@ -656,9 +813,79 @@
           "score_raw",
           "option_selected",
           "audio_src",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Initiating Event / Problem",
+        "cognitiveTarget": "Integrate and Interpret",
+        "operationalSkill": "Connect",
+        "skillTags": [
+          "Story Structure",
+          "Problem",
+          "Cause & Effect",
+          "Listening"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 문제가 시작된 까닭과 다음 사건을 연결해 말합니다.",
+          "recommendedActionKo": "문제가 시작된 까닭과 다음 사건을 연결해 말합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "partial_problem_relation",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 문제의 단서는 찾았으므로, 그 단서가 어떤 변화를 일으켰는지 확인합니다.",
+          "recommendedActionKo": "문제의 단서는 찾았으므로, 그 단서가 어떤 변화를 일으켰는지 확인합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "story_phase_confusion",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: 배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다.",
+          "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "no_problem_evidence",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다.",
+          "recommendedActionKo": "오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다."
+        }
+      ]
     },
     {
       "qId": "OG0049_V3_Q04",
@@ -700,65 +927,66 @@
         ]
       },
       "scoring": {
-        "type": "weighted_word_position",
+        "type": "ordered_lcs_level",
         "maxScore": 100,
-        "formula": "score = round(sum(weight[word] if submitted_pos == correct_pos) / sum(weights) * 100)",
+        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
+        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
         "components": [
           {
             "key": "Diver",
-            "weight": 2.5,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 1,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "Toby",
-            "weight": 2.5,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 2,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "opened",
-            "weight": 1.0,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 3,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "the submarine's",
-            "weight": 1.0,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 4,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "silver",
-            "weight": 1.0,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 5,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "robot",
-            "weight": 1.0,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 6,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
             "key": "arms.",
-            "weight": 2.5,
-            "rule": "exact_position",
+            "weight": 1,
+            "rule": "ordered_evidence",
             "correctValue": 7,
-            "rationale": "Actor/action/result word order."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           }
         ]
       },
       "diagnostics": [
         {
           "code": "attempt_sentence_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "인물이 문제를 해결하려고 한 행동 문장을 순서대로 구성하는 연습이 필요합니다."
         }
       ],
@@ -768,9 +996,78 @@
         "resultFields": [
           "score_raw",
           "word_order",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Attempt",
+        "cognitiveTarget": "Integrate and Interpret",
+        "operationalSkill": "Sequence",
+        "skillTags": [
+          "Story Structure",
+          "Attempt",
+          "Sequence"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "전체 어절 순서 정확",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 인물의 행동이 문제 해결에 어떻게 연결되는지 말합니다.",
+          "recommendedActionKo": "인물의 행동이 문제 해결에 어떻게 연결되는지 말합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "정답과의 최장 공통 순서가 전체의 75% 이상",
+          "misconceptionType": "local_action_order_gap",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 유지된 문장 덩어리는 그대로 두고, 흔들린 어절의 위치만 다시 확인합니다.",
+          "recommendedActionKo": "유지된 문장 덩어리는 그대로 두고, 흔들린 어절의 위치만 다시 확인합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "정답과의 최장 공통 순서가 전체의 40% 이상",
+          "misconceptionType": "action_relation_confusion",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: 그림을 보고 ‘누가-무엇을 했다’를 먼저 말한 뒤 문장을 다시 배열합니다.",
+          "recommendedActionKo": "그림을 보고 ‘누가-무엇을 했다’를 먼저 말한 뒤 문장을 다시 배열합니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "공통 순서가 40% 미만 또는 무응답",
+          "misconceptionType": "no_action_evidence",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 핵심 인물과 행동어를 먼저 찾고 짧은 구로 묶어 재시도합니다.",
+          "recommendedActionKo": "핵심 인물과 행동어를 먼저 찾고 짧은 구로 묶어 재시도합니다."
+        }
+      ]
     },
     {
       "qId": "OG0049_V3_Q05",
@@ -799,63 +1096,83 @@
             "text": "afraid",
             "score": 100,
             "isCorrect": true,
-            "diagnostic": ""
+            "diagnostic": "",
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "recommendedActionKo": "감정을 뒷받침하는 장면 단서를 한 가지 말합니다."
           },
           {
             "key": "B",
             "text": "happy",
             "score": 0,
             "isCorrect": false,
-            "diagnostic": "해결 이후 감정을 위기 장면에 적용합니다."
+            "diagnostic": "해결 이후 감정을 위기 장면에 적용합니다.",
+            "responseLevel": 0,
+            "misconceptionType": "no_emotion_evidence",
+            "recommendedActionKo": "현재 장면의 사건과 표정을 다시 보고 긍정·부정 감정부터 구분합니다."
           },
           {
             "key": "C",
             "text": "angry",
-            "score": 30,
+            "score": 67,
             "isCorrect": false,
-            "diagnostic": "위기감은 파악했지만 두려움과 분노를 혼동합니다."
+            "diagnostic": "위기감은 파악했지만 두려움과 분노를 혼동합니다.",
+            "responseLevel": 2,
+            "misconceptionType": "emotion_specificity_confusion",
+            "recommendedActionKo": "감정의 방향은 맞았으므로 표정·사건 단서로 정확한 감정어를 구분합니다."
           },
           {
             "key": "D",
             "text": "proud",
-            "score": 10,
+            "score": 33,
             "isCorrect": false,
-            "diagnostic": "구조 이후의 감정을 현재 장면에 투영합니다."
+            "diagnostic": "구조 이후의 감정을 현재 장면에 투영합니다.",
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_emotion_confusion",
+            "recommendedActionKo": "현재 장면과 다른 장면의 감정을 비교하고, 언제 감정이 바뀌었는지 찾습니다."
           }
         ],
         "correct": "A"
       },
       "scoring": {
-        "type": "fixed_option_score",
+        "type": "ordered_option_level",
         "maxScore": 100,
-        "formula": "score = selected_option.score",
+        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
         "components": [
           {
             "key": "A",
             "weight": 100,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": true,
-            "rationale": "Correct reaction/emotion."
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "rationale": "Correct response."
           },
           {
             "key": "B",
             "weight": 0,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 0,
+            "misconceptionType": "no_emotion_evidence",
             "rationale": "해결 이후 감정을 위기 장면에 적용합니다."
           },
           {
             "key": "C",
-            "weight": 30,
-            "rule": "option_score",
+            "weight": 67,
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 2,
+            "misconceptionType": "emotion_specificity_confusion",
             "rationale": "위기감은 파악했지만 두려움과 분노를 혼동합니다."
           },
           {
             "key": "D",
-            "weight": 10,
-            "rule": "option_score",
+            "weight": 33,
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 1,
+            "misconceptionType": "story_phase_emotion_confusion",
             "rationale": "구조 이후의 감정을 현재 장면에 투영합니다."
           }
         ]
@@ -863,7 +1180,7 @@
       "diagnostics": [
         {
           "code": "reaction_emotion_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "장면의 사건과 인물의 감정 반응을 연결하는 연습이 필요합니다."
         }
       ],
@@ -873,9 +1190,78 @@
         "resultFields": [
           "score_raw",
           "option_selected",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Reaction",
+        "cognitiveTarget": "Integrate and Interpret",
+        "operationalSkill": "Infer",
+        "skillTags": [
+          "Character State",
+          "Emotion",
+          "Inference"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 감정을 뒷받침하는 장면 단서를 한 가지 말합니다.",
+          "recommendedActionKo": "감정을 뒷받침하는 장면 단서를 한 가지 말합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "emotion_specificity_confusion",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 감정의 방향은 맞았으므로 표정·사건 단서로 정확한 감정어를 구분합니다.",
+          "recommendedActionKo": "감정의 방향은 맞았으므로 표정·사건 단서로 정확한 감정어를 구분합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "story_phase_emotion_confusion",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: 현재 장면과 다른 장면의 감정을 비교하고, 언제 감정이 바뀌었는지 찾습니다.",
+          "recommendedActionKo": "현재 장면과 다른 장면의 감정을 비교하고, 언제 감정이 바뀌었는지 찾습니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "no_emotion_evidence",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 현재 장면의 사건과 표정을 다시 보고 긍정·부정 감정부터 구분합니다.",
+          "recommendedActionKo": "현재 장면의 사건과 표정을 다시 보고 긍정·부정 감정부터 구분합니다."
+        }
+      ]
     },
     {
       "qId": "OG0049_V3_Q06",
@@ -903,63 +1289,83 @@
             "text": "We should keep the ocean clean.",
             "score": 100,
             "isCorrect": true,
-            "diagnostic": ""
+            "diagnostic": "",
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "recommendedActionKo": "생각이나 깨달음을 뒷받침하는 행동·말을 한 가지 설명합니다."
           },
           {
             "key": "B",
             "text": "Plastic bags are not dangerous.",
             "score": 0,
             "isCorrect": false,
-            "diagnostic": "이야기의 핵심 깨달음과 반대되는 생각을 선택합니다."
+            "diagnostic": "이야기의 핵심 깨달음과 반대되는 생각을 선택합니다.",
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
+            "recommendedActionKo": "결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다."
           },
           {
             "key": "C",
             "text": "One fish is not important.",
-            "score": 10,
+            "score": 0,
             "isCorrect": false,
-            "diagnostic": "인물의 책임감과 생명 보호 의도를 약하게 이해함"
+            "diagnostic": "인물의 책임감과 생명 보호 의도를 약하게 이해함",
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
+            "recommendedActionKo": "결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다."
           },
           {
             "key": "D",
             "text": "We should leave the trash in the sea.",
             "score": 0,
             "isCorrect": false,
-            "diagnostic": "환경 보호 메시지와 반대되는 생각을 선택합니다."
+            "diagnostic": "환경 보호 메시지와 반대되는 생각을 선택합니다.",
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
+            "recommendedActionKo": "결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다."
           }
         ],
         "correct": "A"
       },
       "scoring": {
-        "type": "fixed_option_score",
+        "type": "ordered_option_level",
         "maxScore": 100,
-        "formula": "score = selected_option.score",
+        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
         "components": [
           {
             "key": "A",
             "weight": 100,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": true,
-            "rationale": "Correct internal response."
+            "responseLevel": 3,
+            "misconceptionType": "none",
+            "rationale": "Correct response."
           },
           {
             "key": "B",
             "weight": 0,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
             "rationale": "이야기의 핵심 깨달음과 반대되는 생각을 선택합니다."
           },
           {
             "key": "C",
-            "weight": 10,
-            "rule": "option_score",
+            "weight": 0,
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
             "rationale": "인물의 책임감과 생명 보호 의도를 약하게 이해함"
           },
           {
             "key": "D",
             "weight": 0,
-            "rule": "option_score",
+            "rule": "preclassified_response_level",
             "correctValue": false,
+            "responseLevel": 0,
+            "misconceptionType": "opposite_or_no_inference",
             "rationale": "환경 보호 메시지와 반대되는 생각을 선택합니다."
           }
         ]
@@ -967,7 +1373,7 @@
       "diagnostics": [
         {
           "code": "internal_response_gap",
-          "threshold": 70,
+          "threshold": 67,
           "messageKo": "인물의 생각, 의도, 깨달음을 장면 근거로 추론하는 연습이 필요합니다."
         }
       ],
@@ -977,45 +1383,193 @@
         "resultFields": [
           "score_raw",
           "option_selected",
-          "hint_used"
+          "hint_used",
+          "evidence_raw",
+          "response_level",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action"
         ]
-      }
+      },
+      "assessmentMetadata": {
+        "storyElement": "Internal Response / Motivation",
+        "cognitiveTarget": "Integrate and Interpret",
+        "operationalSkill": "Infer",
+        "skillTags": [
+          "Character State",
+          "Motivation",
+          "Inference"
+        ]
+      },
+      "responseRubric": [
+        {
+          "level": 3,
+          "score": 100,
+          "key": "full",
+          "labelEn": "Full understanding",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "핵심 정보와 관계를 정확히 이해했어요.",
+          "parentFeedbackKo": "문항의 핵심 Story Element와 관계를 정확히 연결했습니다. 다음 활동: 생각이나 깨달음을 뒷받침하는 행동·말을 한 가지 설명합니다.",
+          "recommendedActionKo": "생각이나 깨달음을 뒷받침하는 행동·말을 한 가지 설명합니다."
+        },
+        {
+          "level": 2,
+          "score": 67,
+          "key": "partial",
+          "labelEn": "Partial understanding",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "partial_internal_inference",
+          "studentFeedbackKo": "핵심은 이해했어요. 한 가지 단서를 더 확인해 보세요.",
+          "parentFeedbackKo": "핵심 정보는 파악했으나 일부 순서·관계·세부 단서가 불완전합니다. 다음 활동: 핵심 생각은 잡았으므로 장면 근거와 더 정확히 연결합니다.",
+          "recommendedActionKo": "핵심 생각은 잡았으므로 장면 근거와 더 정확히 연결합니다."
+        },
+        {
+          "level": 1,
+          "score": 33,
+          "key": "related",
+          "labelEn": "Related but misunderstood",
+          "labelKo": "관련 정보 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "related_inference_misconnection",
+          "studentFeedbackKo": "관련 장면은 찾았어요. 질문이 묻는 관계를 다시 연결해 보세요.",
+          "parentFeedbackKo": "관련 이야기 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다. 다음 활동: 인물의 말·행동과 속마음을 ‘그래서’로 연결해 다시 추론합니다.",
+          "recommendedActionKo": "인물의 말·행동과 속마음을 ‘그래서’로 연결해 다시 추론합니다."
+        },
+        {
+          "level": 0,
+          "score": 0,
+          "key": "none",
+          "labelEn": "No evidence",
+          "labelKo": "이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "opposite_or_no_inference",
+          "studentFeedbackKo": "장면의 핵심 단서를 함께 다시 찾아보세요.",
+          "parentFeedbackKo": "현재 응답만으로는 문항의 핵심 이해를 뒷받침하는 증거가 부족합니다. 다음 활동: 결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다.",
+          "recommendedActionKo": "결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다."
+        }
+      ]
     }
   ],
   "reporting": {
-    "overallFormula": "overall = average(consequence, setting, initiating_event, attempt, reaction, internal_response)",
+    "overallFormula": "overall = round(average(the six ordered question scores))",
     "masteryBands": [
       {
-        "key": "stable",
-        "min": 85,
+        "key": "strong",
+        "min": 80,
         "max": 100,
-        "labelKo": "안정"
+        "labelKo": "통합적 이해",
+        "labelEn": "Strong"
       },
       {
         "key": "developing",
-        "min": 70,
-        "max": 84,
-        "labelKo": "발달 중"
+        "min": 60,
+        "max": 79,
+        "labelKo": "주요 내용 이해·관계 보완",
+        "labelEn": "Developing"
       },
       {
-        "key": "shaky",
-        "min": 50,
-        "max": 69,
-        "labelKo": "흔들림"
+        "key": "emerging",
+        "min": 40,
+        "max": 59,
+        "labelKo": "부분적 이해",
+        "labelEn": "Emerging"
       },
       {
-        "key": "focus",
+        "key": "foundation",
         "min": 0,
-        "max": 49,
-        "labelKo": "집중 보완"
+        "max": 39,
+        "labelKo": "기초 지원 필요",
+        "labelEn": "Foundation"
       }
-    ]
+    ],
+    "profileRule": "Use overall band only as a summary. Generate feedback from the lowest operational skill and the misconception selected for each question.",
+    "skillProfiles": {
+      "Story Structure": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "Cause & Effect": [
+        1,
+        3,
+        4
+      ],
+      "Character State & Motivation": [
+        5,
+        6
+      ]
+    },
+    "studentDisplay": [
+      "What you did well",
+      "What to practice",
+      "What to do next"
+    ],
+    "validationStatus": "provisional_criterion_referenced_rules_pending_student_data_review"
   },
   "generation": {
     "provider": "codex",
     "model": "manual-v3-logic",
     "promptVersion": "story_grammar_v3",
     "createdAt": "2026-07-08",
-    "notes": "Generated directly from Resources_0708."
+    "notes": "Generated directly from Resources_0708.",
+    "scoringRubricVersion": "diagnostic-4-level-v1"
+  },
+  "assessmentFramework": {
+    "name": "Story Comprehension Assessment & Rubric",
+    "version": "1.0",
+    "scoreInterpretation": "criterion_referenced_ordered_categories",
+    "responseLevels": [
+      {
+        "level": 3,
+        "score": 100,
+        "key": "full",
+        "labelEn": "Full understanding",
+        "labelKo": "정확한 이해",
+        "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다."
+      },
+      {
+        "level": 2,
+        "score": 67,
+        "key": "partial",
+        "labelEn": "Partial understanding",
+        "labelKo": "부분 이해",
+        "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서 일부가 불완전합니다."
+      },
+      {
+        "level": 1,
+        "score": 33,
+        "key": "related",
+        "labelEn": "Related but misunderstood",
+        "labelKo": "관련 정보 인식·관계 오해",
+        "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구한 핵심 관계를 잘못 연결했습니다."
+      },
+      {
+        "level": 0,
+        "score": 0,
+        "key": "none",
+        "labelEn": "No evidence",
+        "labelKo": "이해 증거 없음",
+        "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다."
+      }
+    ],
+    "designAxes": [
+      "Story Element",
+      "Cognitive Process",
+      "Response Quality"
+    ],
+    "principles": [
+      "Story Grammar structures what is assessed but is not treated as the sole model of reading comprehension.",
+      "Scores reflect evidence of Story Element and relationship understanding, not lexical or semantic similarity alone.",
+      "100/67/33/0 are operational reporting values; they are not empirically calibrated IRT ability estimates.",
+      "Overall feedback must be combined with the lowest skill profile and selected misconception."
+    ]
   }
 }

@@ -276,7 +276,7 @@ def rule_based_quiz(payload: dict) -> dict:
         }
     ]
 
-    return {
+    quiz = {
         "schemaVersion": "quiz-v3.0",
         "story": {"storyId": story_id, "title": title, "level": level, "text": story_text, "scenes": scenes},
         "assets": {
@@ -308,6 +308,16 @@ def rule_based_quiz(payload: dict) -> dict:
         },
         "generation": {"provider": "rule_based", "model": "local-heuristic", "promptVersion": "story_grammar_v3", "createdAt": "2026-06-23", "notes": "Draft generated locally. Human review required."}
     }
+    # Keep Studio exports aligned with the deployed four-level diagnostic rubric.
+    # This post-processing changes only scoring metadata and feedback; question
+    # types, prompts, assets, and answer choices remain unchanged.
+    import sys
+    root_dir = str(Path(__file__).resolve().parents[1])
+    if root_dir not in sys.path:
+        sys.path.insert(0, root_dir)
+    from tools.apply_diagnostic_rubric import update_quiz
+    update_quiz(quiz)
+    return quiz
 
 
 def extract_json(text: str) -> dict:

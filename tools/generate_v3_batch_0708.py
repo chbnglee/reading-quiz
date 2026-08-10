@@ -348,7 +348,7 @@ def make_quiz(story: StoryDef, scenes: dict[str, list[dict[str, str]]], emotions
             "lrs": {"verb": "answered", "objectId": f"quiz_{code}_v3_Q06_internal_response", "resultFields": ["score_raw", "option_selected", "hint_used"]},
         },
     ]
-    return {
+    quiz = {
         "schemaVersion": "quiz-v3.0",
         "story": {
             "storyId": code,
@@ -378,6 +378,11 @@ def make_quiz(story: StoryDef, scenes: dict[str, list[dict[str, str]]], emotions
         },
         "generation": {"provider": "codex", "model": "manual-v3-logic", "promptVersion": "story_grammar_v3", "createdAt": "2026-07-08", "notes": "Generated directly from Resources_0708."},
     }
+    # Normalize every batch export to the same criterion-referenced rubric used
+    # by Studio and the deployed quizzes. Question formats and options are kept.
+    from apply_diagnostic_rubric import update_quiz
+    update_quiz(quiz)
+    return quiz
 
 
 HEADER = PatternFill("solid", fgColor="1F4E79")

@@ -1,141 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reading Quiz v3 Scoring Rubric</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=ABeeZee&display=swap" rel="stylesheet">
+<title>Story Comprehension Assessment & Rubric</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-:root{--purple:#6D28D9;--purple-dark:#4C1D95;--lavender:#EDE9FE;--ink:#1F2937;--muted:#6B7280;--line:#DDD6FE;--green:#047857;--green-bg:#D1FAE5;--blue:#1D4ED8;--blue-bg:#DBEAFE;--amber:#B45309;--amber-bg:#FEF3C7;--red:#B91C1C;--red-bg:#FEE2E2}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:'ABeeZee',sans-serif;color:var(--ink);background:linear-gradient(160deg,#F3EEFF,#EAF4FF,#FFF7ED);line-height:1.6}
-a{color:inherit}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.topbar-inner{max-width:1240px;margin:auto;padding:12px 22px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-.brand{font-family:'Nunito',sans-serif;font-weight:900;color:var(--purple-dark);text-decoration:none}
-.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:999px;padding:9px 15px;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;cursor:pointer}
-.btn-primary{background:var(--purple);color:white}.btn-soft{background:var(--lavender);color:var(--purple-dark)}
-main{max-width:1240px;margin:auto;padding:42px 22px 72px}
-.hero{background:white;border:2px solid var(--line);border-radius:30px;padding:34px;box-shadow:0 18px 60px rgba(76,29,149,.12)}
-.eyebrow{display:inline-flex;border-radius:999px;background:var(--lavender);color:var(--purple-dark);padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:900;font-size:12px}
-h1,h2,h3{font-family:'Nunito',sans-serif;color:var(--purple-dark);line-height:1.2}
-h1{font-size:clamp(32px,6vw,56px);margin:14px 0 12px}h2{font-size:30px;margin:0 0 8px}h3{font-size:21px;margin:0 0 8px}
-.lead{max-width:880px;color:var(--muted);font-size:16px;margin:0}
-.callout{margin-top:22px;padding:16px 18px;border-radius:18px;background:#FFF7ED;border:1px solid #FED7AA;color:#9A3412}
-section{margin-top:34px}
-.section-head{display:flex;gap:12px;align-items:end;justify-content:space-between;margin-bottom:15px}.section-head p{margin:0;color:var(--muted)}
-.bands{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.band{background:white;border-radius:22px;padding:20px;border:2px solid transparent;box-shadow:0 10px 30px rgba(76,29,149,.08)}
-.band strong{display:block;font:900 22px 'Nunito',sans-serif;margin-bottom:4px}.band .range{font:900 14px 'Nunito',sans-serif}.band p{font-size:13px;color:#4B5563;margin:9px 0 0}
-.stable{background:var(--green-bg);color:var(--green);border-color:#6EE7B7}.developing{background:var(--blue-bg);color:var(--blue);border-color:#93C5FD}.shaky{background:var(--amber-bg);color:var(--amber);border-color:#FCD34D}.focus{background:var(--red-bg);color:var(--red);border-color:#FCA5A5}
-.formula{background:var(--purple-dark);color:white;border-radius:20px;padding:18px 22px;font:800 15px 'Nunito',sans-serif;margin-top:14px}
-.question-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.q-card{background:white;border:2px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 10px 34px rgba(76,29,149,.08)}
-.q-head{display:flex;align-items:flex-start;gap:12px}.q-num{flex:0 0 auto;width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:var(--purple);color:white;font:900 16px 'Nunito',sans-serif}
-.q-sub{color:var(--muted);font-size:13px}.meta{display:grid;grid-template-columns:105px 1fr;gap:7px 10px;margin:16px 0;font-size:13px}.meta dt{font-family:'Nunito',sans-serif;font-weight:900;color:var(--purple-dark)}.meta dd{margin:0;color:#4B5563}
-.score-label{font:900 13px 'Nunito',sans-serif;color:var(--purple-dark);margin:13px 0 7px}.score-chips{display:flex;flex-wrap:wrap;gap:6px}.chip{min-width:38px;text-align:center;border-radius:999px;padding:4px 9px;font:900 12px 'Nunito',sans-serif;border:1px solid transparent}
-.feedback-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.feedback{border-radius:16px;background:#F9FAFB;padding:12px;font-size:12px}.feedback strong{display:block;color:var(--purple-dark);font-family:'Nunito',sans-serif;margin-bottom:4px}
-.caution{margin-top:12px;border-left:4px solid #F59E0B;padding:8px 11px;background:#FFFBEB;color:#92400E;font-size:12px}
-.q4-breakdown{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.story-score{display:grid;grid-template-columns:150px 1fr;gap:8px;margin:8px 0;font-size:12px}.story-score b{color:var(--purple-dark)}
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.filters label{font:900 12px 'Nunito',sans-serif;color:var(--purple-dark)}select{display:block;margin-top:4px;border:1px solid var(--line);border-radius:12px;background:white;padding:9px 12px;min-width:180px;color:var(--ink)}
-.table-wrap{overflow:auto;background:white;border:2px solid var(--line);border-radius:22px;box-shadow:0 10px 34px rgba(76,29,149,.08)}table{width:100%;border-collapse:collapse;min-width:980px;font-size:12px}th{position:sticky;top:0;background:var(--purple-dark);color:white;font:900 12px 'Nunito',sans-serif;text-align:left;padding:11px}td{padding:10px 11px;border-bottom:1px solid #E5E7EB;vertical-align:top}.answer-correct{color:var(--green);font-family:'Nunito',sans-serif;font-weight:900}.answer-wrong{color:var(--red);font-family:'Nunito',sans-serif;font-weight:900}
-.empty{padding:30px;text-align:center;color:var(--muted)}
-.footnote{background:white;border:2px solid var(--line);border-radius:22px;padding:20px}.footnote ul{margin:8px 0 0;padding-left:20px;color:#4B5563}.footnote li{margin:6px 0}
-@media(max-width:900px){.bands{grid-template-columns:repeat(2,1fr)}.question-grid{grid-template-columns:1fr}.feedback-grid{grid-template-columns:1fr}}
-@media(max-width:560px){main{padding:24px 14px 52px}.hero{padding:23px}.bands{grid-template-columns:1fr}.topbar-inner{align-items:flex-start}.actions{max-width:230px}.story-score{grid-template-columns:1fr}}
+*{box-sizing:border-box}:root{--p:#6d28d9;--pd:#4c1d95;--pl:#ede9fe;--ink:#1f2937;--muted:#6b7280;--line:#ddd6fe;--green:#047857;--blue:#1d4ed8;--amber:#b45309;--red:#b91c1c}html{scroll-behavior:smooth}body{margin:0;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:linear-gradient(145deg,#f5f3ff,#eff6ff,#fff7ed);line-height:1.65}a{color:inherit}.top{position:sticky;top:0;z-index:10;background:#fffffff0;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}.top>div{max-width:1180px;margin:auto;padding:12px 20px;display:flex;gap:10px;align-items:center;justify-content:space-between}.brand{font:900 17px Nunito;color:var(--pd);text-decoration:none}.nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:999px;padding:9px 14px;background:var(--pl);color:var(--pd);text-decoration:none;font:900 12px Nunito}.btn.primary{background:var(--p);color:#fff}main{max-width:1180px;margin:auto;padding:38px 20px 70px}.hero,.card,.table-wrap{background:#fff;border:2px solid var(--line);box-shadow:0 14px 45px #4c1d9512}.hero{border-radius:30px;padding:34px}.tag{display:inline-block;padding:5px 11px;border-radius:999px;background:var(--pl);color:var(--pd);font:900 12px Nunito}h1,h2,h3{font-family:Nunito,'Noto Sans KR';color:var(--pd);line-height:1.2}h1{font-size:clamp(32px,6vw,56px);margin:13px 0}h2{font-size:29px;margin:0 0 8px}h3{margin:0 0 7px}.lead{max-width:880px;color:var(--muted)}.notice{margin-top:20px;padding:15px 17px;border-radius:16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}section{margin-top:34px}.section-head{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-bottom:14px}.section-head p{margin:0;color:var(--muted)}.levels,.axis-grid,.question-grid{display:grid;gap:13px}.levels{grid-template-columns:repeat(4,1fr)}.axis-grid{grid-template-columns:repeat(3,1fr)}.question-grid{grid-template-columns:repeat(2,1fr)}.card{border-radius:22px;padding:20px}.level{border-width:2px}.l3{background:#ecfdf5;border-color:#6ee7b7}.l2{background:#eff6ff;border-color:#93c5fd}.l1{background:#fffbeb;border-color:#fcd34d}.l0{background:#fef2f2;border-color:#fca5a5}.level b{display:block;font:900 21px Nunito}.level .score{font:900 14px Nunito}.level p,.small{font-size:13px;color:#4b5563}.formula{margin-top:14px;border-radius:18px;padding:17px 20px;background:var(--pd);color:white;font-weight:700}.qhead{display:flex;gap:12px;align-items:flex-start}.qnum{width:43px;height:43px;flex:0 0 auto;border-radius:14px;display:grid;place-items:center;background:var(--p);color:#fff;font:900 15px Nunito}.meta{display:grid;grid-template-columns:115px 1fr;gap:7px 10px;margin:15px 0;font-size:13px}.meta dt{font-weight:700;color:var(--pd)}.meta dd{margin:0}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{border-radius:999px;padding:4px 9px;font:900 12px Nunito}.chip.s100{background:#d1fae5;color:var(--green)}.chip.s67{background:#dbeafe;color:var(--blue)}.chip.s33{background:#fef3c7;color:var(--amber)}.chip.s0{background:#fee2e2;color:var(--red)}.table-wrap{border-radius:22px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px;font-size:12px}th{background:var(--pd);color:white;text-align:left;padding:11px;position:sticky;top:0}td{padding:10px 11px;border-bottom:1px solid #e5e7eb;vertical-align:top}.profile{display:grid;grid-template-columns:170px 1fr;gap:8px}.profile b{color:var(--pd)}ul{padding-left:20px}.source-list li{margin:8px 0}.foot{font-size:12px;color:var(--muted)}@media(max-width:900px){.levels,.axis-grid{grid-template-columns:repeat(2,1fr)}.question-grid{grid-template-columns:1fr}}@media(max-width:560px){main{padding:24px 14px 50px}.hero{padding:23px}.levels,.axis-grid{grid-template-columns:1fr}.top>div{align-items:flex-start}.meta{grid-template-columns:1fr}.profile{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="topbar-inner">
-  <a class="brand" href="./">← Reading Quiz</a>
-  <div class="actions">
-    <a class="btn btn-soft" href="#questions">문항별 루브릭</a>
-    <a class="btn btn-soft" href="#diagnostics">선택지 진단</a>
-    <a class="btn btn-primary" href="outputs/reading-quiz-rubric-20260810/reading_quiz_scoring_rubric.xlsx" download>Excel 다운로드</a>
-  </div>
-</div></header>
+<header class="top"><div><a class="brand" href="./">Reading Quiz</a><nav class="nav"><a class="btn" href="#questions">문항별 기준</a><a class="btn" href="#feedback">피드백</a><a class="btn primary" href="outputs/reading-quiz-rubric-20260810/reading_quiz_diagnostic_rubric_v2.xlsx" download>Excel 다운로드</a></nav></div></header>
 <main>
-  <article class="hero">
-    <span class="eyebrow">QUIZ v3 · SCORING RUBRIC</span>
-    <h1>점수와 피드백을<br>같은 근거로 연결합니다.</h1>
-    <p class="lead">v3의 실제 JSON, Quiz Studio 생성 로직, 브라우저 채점 코드를 기준으로 문항별 가중치와 가능한 점수, 학생·학부모 피드백 원칙을 정리했습니다.</p>
-    <div class="callout"><strong>해석 원칙:</strong> 부분점수는 현재 코드가 정의한 구조적 근접성 지표입니다. 점수만 보지 말고 실제 배열, 슬롯 값, 선택지 진단을 함께 확인해야 합니다.</div>
+<article class="hero">
+  <span class="tag">DIAGNOSTIC RUBRIC · v1.0</span>
+  <h1>Story Comprehension<br>Assessment & Rubric</h1>
+  <p class="lead">단순 정답 개수가 아니라 <b>무엇을 이해했는지(Story Element)</b>, <b>어떤 사고가 필요했는지(Cognitive Process)</b>, <b>응답이 어느 수준의 이해 증거인지(Response Quality)</b>를 함께 기록합니다. 기존 6개 문항의 유형·문구·선택지는 변경하지 않았습니다.</p>
+  <div class="notice"><b>점수 해석 주의:</b> 100·67·33·0은 운영을 위한 준거참조형 보고점수입니다. Partial Credit Model로 보정된 능력점수나 표준화 검사 점수가 아니며, 학생 응답 데이터가 쌓이면 오답 분류와 경계값을 재검토해야 합니다.</div>
+</article>
+
+<section>
+  <div class="section-head"><div><h2>1. 세 가지 평가 축</h2><p>Story Grammar만으로 전체 읽기 이해를 단정하지 않고, 인지 과정과 응답 증거를 함께 봅니다.</p></div></div>
+  <div class="axis-grid">
+    <article class="card"><h3>Story Element</h3><p class="small">Setting, Initiating Event/Problem, Attempt, Consequence, Reaction, Internal Response/Motivation</p></article>
+    <article class="card"><h3>Cognitive Process</h3><p class="small">Locate & Recall, Identify, Sequence, Connect/Integrate, Infer/Interpret</p></article>
+    <article class="card"><h3>Response Quality</h3><p class="small">핵심 관계 이해의 증거를 Full, Partial, Related but Misunderstood, No Evidence로 분류</p></article>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><div><h2>2. 공통 4단계 응답 루브릭</h2><p>정답과의 표면 유사도보다 Story Element와 사건·감정·동기의 관계를 우선합니다.</p></div></div>
+  <div class="levels">
+    <article class="card level l3"><b>Level 3 · Full</b><span class="score">100점</span><p>핵심 요소와 관계를 정확히 이해한 증거가 있음</p></article>
+    <article class="card level l2"><b>Level 2 · Partial</b><span class="score">67점</span><p>핵심 정보는 파악했지만 일부 관계나 세부 단서가 불완전함</p></article>
+    <article class="card level l1"><b>Level 1 · Related</b><span class="score">33점</span><p>관련 요소는 알지만 질문이 요구한 핵심 관계를 잘못 연결함</p></article>
+    <article class="card level l0"><b>Level 0 · None</b><span class="score">0점</span><p>무응답·무관 응답 또는 이해를 뒷받침할 증거가 없음</p></article>
+  </div>
+  <div class="formula">전체 점수 = ROUND(6개 문항의 100·67·33·0 보고점수 평균) · 전체 점수는 요약값이며, 실제 피드백은 취약 기능과 오개념 유형에서 생성</div>
+</section>
+
+<section id="questions">
+  <div class="section-head"><div><h2>3. 기존 6개 문항의 채점 기준</h2><p>문항 유형은 유지하고, 임의적 위치 가중치를 감사 가능한 증거 규칙으로 교체했습니다. 현재 선택지에 없는 수준은 가능 점수에 표시하지 않습니다.</p></div><span class="tag" id="loadState">데이터 확인 중</span></div>
+  <div class="question-grid" id="questionGrid"></div>
+</section>
+
+<section>
+  <div class="section-head"><div><h2>4. 선택지별 진단 코딩</h2><p>Q3·Q5·Q6의 선택지는 같은 오답이라도 보여주는 이해 증거에 따라 구분합니다.</p></div></div>
+  <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>문항</th><th>선택지</th><th>내용</th><th>수준</th><th>오개념 유형</th><th>진단 근거</th><th>추천 활동</th></tr></thead><tbody id="diagnosticRows"></tbody></table></div>
+</section>
+
+<section id="feedback">
+  <div class="section-head"><div><h2>5. 종합 프로파일과 피드백</h2><p>총점 하나가 아니라 잘한 점·연습할 점·다음 활동을 함께 제공합니다.</p></div></div>
+  <article class="card">
+    <div class="profile"><b>80–100 · 통합적 이해</b><span>핵심 이야기 정보를 잘 연결함. 가장 낮은 기능의 근거 설명 활동으로 확장</span><b>60–79 · 발달 중</b><span>주요 사건은 이해함. 원인·결과 또는 인물의 생각을 장면 근거와 연결</span><b>40–59 · 부분적 이해</b><span>일부 장면을 기억함. Story Map으로 인물·문제·행동·결과를 재구성</span><b>0–39 · 기초 지원</b><span>재읽기 → 핵심 인물·어휘 확인 → Story Map → 재퀴즈</span></div>
+    <p class="small"><b>우선순위 규칙:</b> 전체 구간 → 가장 낮은 Operational Skill → 선택한 오개념 → 해당 문항의 Recommended Action 순으로 피드백을 구성합니다. 예: 총점 70점이어도 사건 회상은 높고 인과관계가 낮다면 “다시 읽으세요”가 아니라 “사건은 잘 기억했어요. 이제 왜 일어났는지 연결해 보세요”라고 안내합니다.</p>
   </article>
+</section>
 
-  <section id="overall">
-    <div class="section-head"><div><h2>전체 숙달 구간</h2><p>6개 Story Grammar 영역을 같은 비중으로 평균합니다.</p></div></div>
-    <div class="bands" id="bands"></div>
-    <div class="formula">전체점수 = ROUND(AVERAGE(Q1, Q2, Q3, Q4, Q5, Q6), 0) · 각 문항은 전체에서 1/6 비중</div>
-  </section>
+<section>
+  <div class="section-head"><div><h2>6. 타당도·운영 원칙</h2></div></div>
+  <article class="card"><ul>
+    <li>Story Grammar는 문항을 구조화하는 틀이며 읽기 이해 전체를 설명하는 유일한 모형으로 사용하지 않습니다.</li>
+    <li>Q1·Q4는 정답과의 <b>최장 공통 순서(LCS)</b>, Q2는 정확한 Story Setting 요소 수를 사용해 불필요한 위치 프리미엄을 제거했습니다.</li>
+    <li>Q3·Q5·Q6은 선택지의 의미 유사도가 아니라 문제 단계·감정 방향과 구체성·장면 근거와 내면 추론의 연결을 코딩합니다.</li>
+    <li>학생 데이터 축적 후 문항별 선택률, 오답 기능, 재검사 변화, 교사 판정과의 일치도를 검토하고 루브릭을 개정합니다.</li>
+    <li>6문항의 단일 시행 결과만으로 학생의 전체 읽기 능력이나 교육적 진단을 확정하지 않습니다.</li>
+  </ul></article>
+</section>
 
-  <section id="questions">
-    <div class="section-head"><div><h2>문항별 가중치와 가능한 점수</h2><p>가능 점수는 현재 배포된 v3 6종 콘텐츠에서 계산합니다.</p></div><span id="loadState" class="eyebrow">데이터 불러오는 중</span></div>
-    <div class="question-grid" id="questionGrid"></div>
-  </section>
-
-  <section id="diagnostics">
-    <div class="section-head"><div><h2>Q3·Q5·Q6 선택지 진단</h2><p>오답 점수는 모두 집중 보완 구간이지만, diagnostic으로 혼동의 종류를 구분합니다.</p></div></div>
-    <div class="filters">
-      <label>콘텐츠<select id="storyFilter"><option value="all">전체 콘텐츠</option></select></label>
-      <label>문항<select id="questionFilter"><option value="all">Q3·Q5·Q6 전체</option><option value="3">Q3 사건 시작</option><option value="5">Q5 감정 반응</option><option value="6">Q6 내적 반응</option></select></label>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>문항</th><th>선택지</th><th>내용</th><th>점수</th><th>정오</th><th>진단 및 학부모 피드백 근거</th></tr></thead>
-      <tbody id="diagnosticRows"></tbody>
-    </table><div class="empty" id="emptyState" hidden>표시할 데이터가 없습니다.</div></div>
-  </section>
-
-  <section class="footnote">
-    <h3>사용 시 주의</h3>
-    <ul>
-      <li>Q3·Q5·Q6은 정답 100점, 현행 오답 0~40점이므로 문항 단위에서 ‘발달 중’·‘흔들림’ 점수가 발생하지 않습니다.</li>
-      <li>낮은 점수에는 이야기 이해 외에도 어휘, 듣기, 주의집중, 드래그 조작, 기기 환경이 영향을 줄 수 있습니다.</li>
-      <li>이 루브릭은 제품 운영 기준이며 표준화 검사 규준이나 임상적 진단 도구가 아닙니다.</li>
-      <li>가중치를 수정하면 Studio 생성 로직, JSON, 내보낸 HTML과 이 루브릭을 함께 갱신해야 합니다.</li>
-    </ul>
-  </section>
+<section>
+  <div class="section-head"><div><h2>연구 기반</h2><p>각 자료가 정당화하는 범위를 넘지 않도록 제한적으로 적용했습니다.</p></div></div>
+  <article class="card"><ul class="source-list">
+    <li><a href="https://eric.ed.gov/?id=ED121474">Stein & Glenn — 이야기 정보의 구조와 회상 연구</a></li>
+    <li><a href="https://onlinelibrary.wiley.com/doi/abs/10.1207/s15516709cog0303_2">Black & Wilensky — Story Grammar 단독 설명의 한계</a></li>
+    <li><a href="https://www.nagb.gov/naep-subject-areas/reading/framework-archive/2026-reading-framework.html">2026 NAEP Reading Framework — 텍스트 정보의 통합·해석·분석</a></li>
+    <li><a href="https://www.ets.org/research/policy_research_reports/publications/report/2019/kbgc.html">ETS Distractor Analysis — 선택한 오답 자체의 진단 정보</a></li>
+    <li><a href="https://www.testingstandards.net/open-access-files.html">Standards for Educational and Psychological Testing — 점수 해석과 사용에 대한 타당도 증거</a></li>
+    <li><a href="https://www.cambridge.org/core/journals/psychometrika/article/abs/rasch-model-for-partial-credit-scoring/D7202CB6D2D1593889B1318DD6297E01">Masters — Partial Credit Model. 현재 버전은 이 모형을 추정하지 않으며 향후 데이터 단계의 참고자료로만 사용</a></li>
+  </ul></article>
+</section>
+<p class="foot">Rubric version 1.0 · 문항 유형 및 콘텐츠 불변 · scoring/diagnostic metadata revision</p>
 </main>
 <script>
-const STORY_IDS=['CS0003','CS0006','OG0005','OG0021','OG0036','OG0049'];
-const BANDS=[
-  {key:'stable',label:'안정',min:85,max:100,student:'핵심 단서와 정답 근거를 일관되게 연결했습니다.',parent:'다른 이야기에서도 같은 전략을 적용하고 근거를 말하게 해주세요.'},
-  {key:'developing',label:'발달 중',min:70,max:84,student:'큰 흐름은 이해하지만 일부 위치나 단서 연결이 흔들립니다.',parent:'헷갈린 두 장면의 차이를 말하게 해주세요.'},
-  {key:'shaky',label:'흔들림',min:50,max:69,student:'일부 핵심은 파악했지만 구조적 연결이 충분하지 않습니다.',parent:'시각 자료와 짧은 문장으로 단계별 재구성을 도와주세요.'},
-  {key:'focus',label:'집중 보완',min:0,max:49,student:'핵심 구조 이해가 충분히 확인되지 않았습니다.',parent:'힌트 재시도와 함께 어휘·주의집중·조작 요인도 확인해 주세요.'}
-];
-const QDEFS=[
-  {q:1,axis:'결과·사건 순서',en:'Consequence',type:'5개 장면 순서 배열',method:'배치 거리 기반 부분점수',weights:'첫 장면 2.5 · 마지막 장면 2.5 · 중간 장면 각 1.5',formula:'정확 위치 100%, 한 칸 차이 50%, 두 칸 이상 0%를 가중합',basis:'시작과 결과가 이야기의 전체 틀을 고정하므로 높은 가중치',caution:'같은 점수라도 이동한 장면이 다를 수 있어 실제 scene_order를 함께 확인',student:'사건의 시작과 결과를 먼저 찾고 중간 장면의 앞뒤를 연결해 보세요.',parent:'원인-행동-결과를 “그래서/그다음”으로 말하게 해주세요.'},
-  {q:2,axis:'배경',en:'Setting',type:'Who / Where / At first 슬롯 배치',method:'슬롯별 가중 정확도',weights:'Who 2.5 · Where 2.0 · At first 1.5',formula:'정확 카드 100%, 같은 범주의 다른 카드 35%, 다른 범주 0%',basis:'주인공 식별을 가장 핵심으로 보고 장소와 초기 상태 순으로 비중 부여',caution:'점수만으로 어느 슬롯을 틀렸는지 알 수 없어 slot_values 확인 필요',student:'인물, 장소, 처음 상황을 하나씩 따로 찾아보세요.',parent:'첫 장면에서 Who·Where·At first를 색으로 나누어 표시해 주세요.'},
-  {q:3,axis:'사건 시작',en:'Initiating Event',type:'듣기 + 장면 선택',method:'선택지별 고정 진단점수',weights:'정답 100 · 오답 0~35',formula:'선택한 옵션의 score 사용',basis:'배경·중간 위기·해결 장면을 문제 시작과 얼마나 가깝게 혼동했는지 기록',caution:'오답은 모두 집중 보완 구간이므로 option diagnostic으로 세부 해석',student:'선택 장면이 문제의 시작인지 그 뒤의 일인지 비교해 보세요.',parent:'선택지를 문제 전·문제 시작·문제 후로 나누어 보세요.'},
-  {q:4,axis:'시도·행동',en:'Attempt',type:'행동 문장 단어 순서 배열',method:'정확 위치 단어 가중합',weights:'첫 단어 2.5 · 둘째 단어 2.5 · 마지막 단어 2.5 · 나머지 1.0',formula:'정확한 위치의 단어만 가중치를 인정해 100점 환산',basis:'행위자·핵심 동작·문장 종결이 의미와 문장 구조를 고정',caution:'문장 길이에 따라 가능한 점수 집합이 달라 실제 word_order 확인 필요',student:'먼저 누가 무엇을 했는지 찾아 문장 앞에 놓아 보세요.',parent:'그림 속 행동을 짧게 말한 뒤 단어 카드로 옮기게 해주세요.'},
-  {q:5,axis:'감정 반응',en:'Reaction',type:'장면 감정 선택',method:'선택지별 고정 진단점수',weights:'정답 100 · 오답 0~40',formula:'선택한 옵션의 score 사용',basis:'감정의 긍정/부정 방향과 유사 감정 혼동을 구별',caution:'오답은 모두 집중 보완 구간이며 감정 어휘력 영향도 확인',student:'좋은 일인지 어려운 일인지 판단한 뒤 감정을 골라 보세요.',parent:'표정·행동·상황 중 어떤 단서가 감정을 보여주는지 물어보세요.'},
-  {q:6,axis:'내적 반응',en:'Internal Response',type:'인물의 생각·깨달음 선택',method:'선택지별 고정 진단점수',weights:'정답 100 · 오답 0~30',formula:'선택한 옵션의 score 사용',basis:'표면 사실과 인물의 내적 변화 사이의 추론 거리를 기록',caution:'오답은 모두 집중 보완 구간이며 언어 표현보다 추론 근거 확인 필요',student:'인물이 한 행동과 그 행동을 한 이유를 이어 생각해 보세요.',parent:'“인물은 ___했기 때문에 ___라고 생각했다” 문장틀을 사용해 주세요.'}
-];
-let quizzes=[];
-
-function bandFor(score){return BANDS.find(b=>score>=b.min)||BANDS[3]}
-function scoreChip(score){const b=bandFor(score);return `<span class="chip ${b.key}" title="${b.label}">${score}</span>`}
-function permutations(items){const out=[],used=Array(items.length).fill(false),cur=[];function visit(){if(cur.length===items.length){out.push([...cur]);return}items.forEach((item,i)=>{if(used[i])return;used[i]=true;cur.push(item);visit();cur.pop();used[i]=false})}visit();return out}
-function sequenceScores(q){const cs=q.scoring.components,total=cs.reduce((s,c)=>s+Number(c.weight),0);return [...new Set(permutations(cs.map(c=>c.key)).map(order=>Math.round(cs.reduce((got,c)=>{const d=Math.abs(order.indexOf(c.key)+1-Number(c.correctValue));return got+Number(c.weight)*Math.max(0,1-d*.5)},0)/total*100)))].sort((a,b)=>a-b)}
-function settingScores(q){const cs=q.scoring.components,items=q.interaction.items,total=cs.reduce((s,c)=>s+Number(c.weight),0),scores=new Set();function visit(i,used,got){if(i===cs.length){scores.add(Math.round(got/total*100));return}const c=cs[i];visit(i+1,used,got);items.forEach(item=>{if(used.has(item.key))return;const credit=item.key===c.correctValue?1:item.slot===c.key?Number(c.partialCredit??.35):0;const next=new Set(used);next.add(item.key);visit(i+1,next,got+Number(c.weight)*credit)})}visit(0,new Set(),0);return [...scores].sort((a,b)=>a-b)}
-function wordScores(q){const ws=q.scoring.components.map(c=>Number(c.weight)),total=ws.reduce((a,b)=>a+b,0),n=ws.length,scores=new Set();for(let mask=0;mask<(1<<n);mask++){let fixed=0,weight=0;for(let i=0;i<n;i++)if(mask&(1<<i)){fixed++;weight+=ws[i]}if(n-fixed===1)continue;scores.add(Math.round(weight/total*100))}return [...scores].sort((a,b)=>a-b)}
-function optionScores(questionNumber){return [...new Set(quizzes.flatMap(q=>q.questions[questionNumber-1].interaction.options.map(o=>Number(o.score))))].sort((a,b)=>a-b)}
-
-function renderBands(){document.getElementById('bands').innerHTML=BANDS.map(b=>`<article class="band ${b.key}"><strong>${b.label}</strong><span class="range">${b.min}–${b.max}점</span><p>${b.student}</p><p><b>학부모:</b> ${b.parent}</p></article>`).join('')}
-function renderQuestions(){const grid=document.getElementById('questionGrid');if(!quizzes.length){grid.innerHTML='<div class="empty">v3 데이터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.</div>';return}grid.innerHTML=QDEFS.map(def=>{
-  let scores,extra='';
-  if(def.q===1)scores=sequenceScores(quizzes[0].questions[0]);
-  else if(def.q===2)scores=settingScores(quizzes[0].questions[1]);
-  else if(def.q===4){scores=[];extra='<div class="q4-breakdown">'+quizzes.map(quiz=>{const q=quiz.questions[3],list=wordScores(q);return `<div class="story-score"><b>${quiz.story.storyId} · ${q.interaction.correct.length}단어</b><div class="score-chips">${list.map(scoreChip).join('')}</div></div>`}).join('')+'</div>'}
-  else scores=optionScores(def.q);
-  return `<article class="q-card"><div class="q-head"><div class="q-num">Q${def.q}</div><div><h3>${def.axis}</h3><div class="q-sub">${def.en} · ${def.type}</div></div></div><dl class="meta"><dt>채점 방식</dt><dd>${def.method}</dd><dt>가중치</dt><dd>${def.weights}</dd><dt>산식</dt><dd>${def.formula}</dd><dt>근거</dt><dd>${def.basis}</dd></dl>${def.q===4?'':`<div class="score-label">가능 점수</div><div class="score-chips">${scores.map(scoreChip).join('')}</div>`}${extra}<div class="feedback-grid"><div class="feedback"><strong>학생에게</strong>${def.student}</div><div class="feedback"><strong>학부모에게</strong>${def.parent}</div></div><div class="caution"><b>해석 주의:</b> ${def.caution}</div></article>`
-}).join('')}
-function diagnosticData(){return quizzes.flatMap(quiz=>[3,5,6].flatMap(n=>quiz.questions[n-1].interaction.options.map(option=>({storyId:quiz.story.storyId,title:quiz.story.title,q:n,option}))))}
-function renderDiagnostics(){const story=document.getElementById('storyFilter').value,q=document.getElementById('questionFilter').value,rows=diagnosticData().filter(r=>(story==='all'||r.storyId===story)&&(q==='all'||String(r.q)===q));document.getElementById('diagnosticRows').innerHTML=rows.map(r=>`<tr><td><b>${r.storyId}</b><br>${r.title}</td><td>Q${r.q}</td><td>${r.option.key}</td><td>${r.option.text}</td><td>${scoreChip(Number(r.option.score))}</td><td class="${r.option.isCorrect?'answer-correct':'answer-wrong'}">${r.option.isCorrect?'정답':'오답'}</td><td>${r.option.isCorrect?'핵심 단서와 정답 근거를 정확히 연결했습니다.':(r.option.diagnostic||'선택 근거를 다시 확인해 주세요.')}</td></tr>`).join('');document.getElementById('emptyState').hidden=rows.length>0}
-async function load(){renderBands();try{quizzes=await Promise.all(STORY_IDS.map(async id=>{const res=await fetch(`v3/${id}/${id}.quiz.json`);if(!res.ok)throw new Error(`${id}: ${res.status}`);return res.json()}));document.getElementById('loadState').textContent=`v3 ${quizzes.length}종 반영`;document.getElementById('storyFilter').insertAdjacentHTML('beforeend',quizzes.map(q=>`<option value="${q.story.storyId}">${q.story.storyId} · ${q.story.title}</option>`).join(''));renderQuestions();renderDiagnostics()}catch(error){console.error(error);document.getElementById('loadState').textContent='데이터 확인 필요';renderQuestions()}}
-document.getElementById('storyFilter').addEventListener('change',renderDiagnostics);document.getElementById('questionFilter').addEventListener('change',renderDiagnostics);load();
+const IDS=['CS0003','CS0006','OG0005','OG0021','OG0036','OG0049'];
+const qInfo={
+1:{title:'사건·결과 순서',process:'Integrate & Interpret · Sequence',rule:'5개 장면 LCS: 5=100, 4=67, 2–3=33, 0–1=0',why:'모든 장면을 동등하게 보고, 정답과 공통으로 유지된 순서를 증거로 사용'},
+2:{title:'배경',process:'Locate & Recall · Identify',rule:'Who/Where/At first 정확 개수: 3=100, 2=67, 1=33, 0=0',why:'세 Story Setting 요소를 같은 비중으로 평가'},
+3:{title:'사건 시작',process:'Integrate & Interpret · Connect',rule:'정답=100, 다른 이야기 단계=33, 해결·무관=0',why:'문제의 시작과 배경·결과·해결 단계의 관계를 구분'},
+4:{title:'해결 행동',process:'Integrate & Interpret · Sequence',rule:'어절 LCS: 전체 정확=100, 75% 이상=67, 40% 이상=33, 미만=0',why:'정확 위치 개수보다 유지된 행동 문장 순서를 증거로 사용'},
+5:{title:'감정 반응',process:'Integrate & Interpret · Infer',rule:'정확=100, 같은 감정 방향·세부 혼동=67, 다른 장면 감정=33, 무관=0',why:'긍정/부정 방향과 구체 감정의 구분을 별도로 진단'},
+6:{title:'내면·동기',process:'Integrate & Interpret · Infer',rule:'정확=100, 핵심 일부 보존=67, 관련 장면·관계 오해=33, 반대·무관=0',why:'장면 근거와 생각·동기·깨달음의 연결을 평가'}
+};
+function chip(score){return `<span class="chip s${score}">${score}</span>`}
+async function load(){try{const quizzes=await Promise.all(IDS.map(async id=>{const r=await fetch(`v3/${id}/${id}.quiz.json`);if(!r.ok)throw Error(id);return r.json()}));document.getElementById('loadState').textContent=`v3 ${quizzes.length}종 반영`;document.getElementById('questionGrid').innerHTML=Object.entries(qInfo).map(([n,d])=>{const q=quizzes[0].questions[n-1],possible=q.interaction.options?[...new Set(quizzes.flatMap(z=>z.questions[n-1].interaction.options.map(o=>o.score)))].sort((a,b)=>b-a):[100,67,33,0];return `<article class="card"><div class="qhead"><span class="qnum">Q${n}</span><div><h3>${d.title}</h3><span class="small">${q.type}</span></div></div><dl class="meta"><dt>Story Element</dt><dd>${q.assessmentMetadata.storyElement}</dd><dt>인지 과정</dt><dd>${d.process}</dd><dt>채점 규칙</dt><dd>${d.rule}</dd><dt>설계 근거</dt><dd>${d.why}</dd><dt>현재 가능 점수</dt><dd class="chips">${possible.map(chip).join('')}</dd></dl></article>`}).join('');document.getElementById('diagnosticRows').innerHTML=quizzes.flatMap(quiz=>[3,5,6].flatMap(n=>quiz.questions[n-1].interaction.options.map(o=>`<tr><td><b>${quiz.story.storyId}</b><br>${quiz.story.title}</td><td>Q${n}</td><td>${o.key}</td><td>${o.text}</td><td>${chip(o.score)} · L${o.responseLevel}</td><td>${o.misconceptionType}</td><td>${o.isCorrect?'핵심 요소와 관계를 정확히 연결':(o.diagnostic||'관계 이해 증거 부족')}</td><td>${o.recommendedActionKo}</td></tr>`))).join('')}catch(e){console.error(e);document.getElementById('loadState').textContent='데이터 확인 필요';document.getElementById('questionGrid').innerHTML='<article class="card">퀴즈 데이터를 불러오지 못했습니다. 웹 서버에서 다시 확인해 주세요.</article>'}}
+load();
 </script>
 </body>
 </html>
