@@ -1,3 +1,5 @@
 Resources_0708/
 __pycache__/
 *.pyc
+.venv/
+studio/.env
