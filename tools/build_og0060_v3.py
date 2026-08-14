@@ -103,7 +103,7 @@ def build_quiz() -> dict:
         },
         {
             "qId": "OG0060_V3_Q03", "number": 3, "type": "listen_scene_mcq", "storyGrammar": "initiating_event",
-            "instruction": "Listen. Which scene starts Pip's big change?", "hint": "Listen for how Pip feels before he makes a little house.",
+            "instruction": "Listen. Which scene starts Pip's big change?", "hint": "Listen for how Pip feels now.",
             "resources": {
                 "images": [image("SC03"), image("SC08"), image("SC10"), image("SC13")],
                 "audio": {"id": "SC08_ST04_N_A", "path": "OG0060_SC08_ST04_N_A.mp3", "kind": "audio", "sceneId": "SC08", "sentenceId": "SC08_ST04_N"},
@@ -154,7 +154,7 @@ def build_quiz() -> dict:
                 "promptMode": "text_mcq",
                 "options": [
                     option("A", "Now I will wait for Dot.", 100, ""),
-                    option("B", "Dot will change too.", 67, "Dot의 다음 변화를 예상하지만 Pip이 친구를 위해 하려는 행동까지 연결하지 못합니다."),
+                    option("B", "Dot will not change.", 0, "Dot의 변화 가능성과 Pip이 기다리려는 이유를 반대로 이해합니다."),
                     option("C", "I want more leaves.", 33, "이야기 초반의 욕구를 결말의 생각으로 혼동합니다."),
                     option("D", "I do not need Dot.", 0, "친구를 기다리려는 결말의 마음과 반대되는 생각을 선택합니다."),
                 ],

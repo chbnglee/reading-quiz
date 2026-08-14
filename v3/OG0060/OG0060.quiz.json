@@ -713,7 +713,7 @@
       "type": "listen_scene_mcq",
       "storyGrammar": "initiating_event",
       "instruction": "Listen. Which scene starts Pip's big change?",
-      "hint": "Listen for how Pip feels before he makes a little house.",
+      "hint": "Listen for how Pip feels now.",
       "resources": {
         "images": [
           {
@@ -1329,13 +1329,13 @@
           },
           {
             "key": "B",
-            "text": "Dot will change too.",
-            "score": 67,
+            "text": "Dot will not change.",
+            "score": 0,
             "isCorrect": false,
-            "diagnostic": "Dot의 다음 변화를 예상하지만 Pip이 친구를 위해 하려는 행동까지 연결하지 못합니다.",
-            "responseQuality": "Partial",
-            "misconceptionType": "partial_internal_inference",
-            "recommendedActionKo": "핵심 생각은 잡았으므로 장면 근거와 더 정확히 연결합니다."
+            "diagnostic": "Dot의 변화 가능성과 Pip이 기다리려는 이유를 반대로 이해합니다.",
+            "responseQuality": "Unrelated",
+            "misconceptionType": "opposite_or_no_inference",
+            "recommendedActionKo": "결말 장면을 다시 읽고 인물이 이전과 달라진 점부터 찾습니다."
           },
           {
             "key": "C",
@@ -1461,12 +1461,12 @@
           },
           {
             "key": "B",
-            "weight": 67,
+            "weight": 0,
             "rule": "preclassified_response_quality",
             "correctValue": false,
-            "responseQuality": "Partial",
-            "misconceptionType": "partial_internal_inference",
-            "rationale": "Dot의 다음 변화를 예상하지만 Pip이 친구를 위해 하려는 행동까지 연결하지 못합니다."
+            "responseQuality": "Unrelated",
+            "misconceptionType": "opposite_or_no_inference",
+            "rationale": "Dot의 변화 가능성과 Pip이 기다리려는 이유를 반대로 이해합니다."
           },
           {
             "key": "C",

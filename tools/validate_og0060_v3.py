@@ -53,12 +53,17 @@ def main() -> None:
         fail("Q2 setting mismatch")
     if q3["resources"]["audio"]["sentenceId"] != "SC08_ST04_N" or q3["interaction"]["correct"] != "B":
         fail("Q3 initiating event mismatch")
+    if q3["hint"] != "Listen for how Pip feels now.":
+        fail("Q3 hint mismatch")
     if q4["interaction"]["correct"] != ["Pip", "makes", "a", "hard", "little", "house."]:
         fail("Q4 exact attempt sentence mismatch")
     if q5["resources"]["scene"] != "SC13" or q5["interaction"]["correct"] != "A":
         fail("Q5 reaction mismatch")
     if q6["resources"]["scene"] != "SC15" or q6["interaction"]["correct"] != "A":
         fail("Q6 internal response mismatch")
+    q6_options = {option["key"]: option for option in q6["interaction"]["options"]}
+    if q6_options["B"]["text"] != "Dot will not change." or q6_options["B"]["score"] != 0:
+        fail("Q6 option B text or Response Quality score mismatch")
 
     referenced: list[Path] = []
     for q in quiz["questions"]:
