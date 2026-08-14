@@ -56,16 +56,24 @@ def main() -> None:
         fail("Q1 story sequence mismatch")
     if q2["resources"]["scene"] != "SC02" or len(q2["interaction"]["items"]) != 6:
         fail("Q2 setting construction mismatch")
+    q2_items = {item["key"]: item["text"] for item in q2["interaction"]["items"]}
+    if q2_items.get("resting") != "be in his bed":
+        fail("Q2 At first correct text mismatch")
+    if q2_items.get("hide_bed") != "hide under the bed":
+        fail("Q2 At first distractor text mismatch")
     if q3["resources"]["audio"]["sentenceId"] != "SC03_ST01_N":
         fail("Q3 must use the problem-start sentence")
     if q3["interaction"]["correct"] != "B":
         fail("Q3 correct option mismatch")
-    if q4["interaction"]["correct"] != ["Poco", "takes", "his flashlight."]:
+    if q4["interaction"]["correct"] != ["Poco", "takes", "his", "flashlight."]:
         fail("Q4 must use the exact attempt sentence")
     if q5["resources"]["scene"] != "SC11" or q5["interaction"]["correct"] != "A":
         fail("Q5 reaction mismatch")
     if q6["resources"]["scene"] != "SC12" or q6["interaction"]["correct"] != "A":
         fail("Q6 internal response mismatch")
+    q6_options = {option["key"]: option["text"] for option in q6["interaction"]["options"]}
+    if q6_options.get("B") != "It is small." or q6_options.get("C") != "It is my pajamas.":
+        fail("Q6 simplified distractors mismatch")
 
     referenced = []
     for q in quiz["questions"]:
