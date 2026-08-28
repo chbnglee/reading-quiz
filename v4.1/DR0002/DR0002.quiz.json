@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "decodable-reader-quiz-v4.1-prototype",
+  "quizId": "DR0002",
+  "title": "Can or Can't",
+  "decodingFocus": ["can and can’t", "meaning contrast", "oral word discrimination", "sentence completion"],
+  "sourceText": [
+    "I can’t knit. Cats can’t write. Fish can’t blink.",
+    "And pigs can’t fly!",
+    "Dogs can’t dance. Ants can’t read. Crows can’t sing.",
+    "And monkeys can’t cook!",
+    "But, monkeys can swing!",
+    "Crows can caw. Ants can bite. Dogs can bark!",
+    "Pigs can eat. Fish can swim. Cats can jump. And I can read!"
+  ],
+  "assets": {"sprite": "Image/DR0002_story_sprite.png", "audioMode": "browser_speech_synthesis"},
+  "interactionBlueprint": [
+    {"number": 1, "type": "listen_word_mcq", "focus": "can_cant_auditory_discrimination"},
+    {"number": 2, "type": "binary_picture_choice", "focus": "can_cant_meaning_assignment"},
+    {"number": 3, "type": "letter_order", "focus": "cant_spelling"},
+    {"number": 4, "type": "listen_image_mcq", "focus": "oral_sentence_comprehension"},
+    {"number": 5, "type": "cloze_choice", "focus": "can_cant_sentence_completion"},
+    {"number": 6, "type": "image_sentence_mcq", "focus": "can_cant_picture_sentence_match"}
+  ],
+  "scoringNotes": [
+    "Binary picture choices aggregate correct can/can’t assignments.",
+    "The can’t spelling item gives equal credit to each character in the correct position.",
+    "Selected distractors may carry provisional 67/33/0 diagnostic weights."
+  ]
+}

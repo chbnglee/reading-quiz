@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "decodable-reader-quiz-v4.1-prototype",
+  "quizId": "DR0001",
+  "title": "Short i",
+  "subtitle": "Tim, Fish and Pig",
+  "decodingFocus": ["short i", "CVC and short-i words", "auditory word discrimination", "missing vowel"],
+  "sourceText": [
+    "Tim is a kid.",
+    "Tim has six fish.",
+    "The fish swim.",
+    "Tim has a big pig.",
+    "The big pig sees six fish.",
+    "The big pig opens its big mouth.",
+    "The six fish swim fast.",
+    "The pig sits.",
+    "Tim sits with the pig."
+  ],
+  "assets": {"sprite": "Image/DR0001_story_sprite.png", "shortISound": "../audio/short-i.ogg", "shortISoundMaxPlaybackSeconds": 0.3, "audioMode": "recorded_target_sound_and_browser_speech_synthesis"},
+  "interactionBlueprint": [
+    {"number": 1, "type": "listen_letter_mcq", "focus": "short_i_sound_identification"},
+    {"number": 2, "type": "missing_letter_mcq", "focus": "medial_vowel_selection"},
+    {"number": 3, "type": "listen_image_mcq", "focus": "oral_phrase_recognition"},
+    {"number": 4, "type": "listen_word_mcq", "focus": "short_i_auditory_discrimination"},
+    {"number": 5, "type": "picture_word_match", "focus": "short_i_word_recognition"},
+    {"number": 6, "type": "word_order", "focus": "short_i_sentence_reconstruction"}
+  ],
+  "scoringNotes": [
+    "Picture-word matching aggregates item-level accuracy.",
+    "Missing-letter selection moves the chosen vowel into the word frame before scoring.",
+    "Selected distractors may carry provisional 67/33/0 diagnostic weights."
+  ]
+}

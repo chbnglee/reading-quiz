@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "phonics-quiz-v4.0-prototype",
+  "quiz": {
+    "quizId": "PH0001",
+    "title": "A to D Sound Steps",
+    "audience": "Beginning Decodable Readers",
+    "focusLetters": ["A", "B", "C", "D"],
+    "sourceText": [
+      "A, a, apple",
+      "A, a, ant",
+      "B, b, bag",
+      "B, b, ball",
+      "C, c, cat",
+      "C, c, cup",
+      "D, d, dog",
+      "D, d, duck"
+    ]
+  },
+  "assets": {
+    "sprite": "Image/PH0001_phonics_sprite.png",
+    "hintOwl": "Image/PH0001_hint_owl.png",
+    "spriteOrder": ["apple", "ant", "bag", "ball", "cat", "cup", "dog", "duck"],
+    "audioMode": "browser_speech_synthesis"
+  },
+  "interactionBlueprint": [
+    {"number": 1, "type": "sequence_drag", "phonicsFocus": "alphabet_order", "label": "Letter order"},
+    {"number": 2, "type": "case_family_match", "phonicsFocus": "uppercase_lowercase_correspondence", "label": "Letter families"},
+    {"number": 3, "type": "listen_letter_mcq", "phonicsFocus": "auditory_letter_recognition", "label": "Listen for a letter"},
+    {"number": 4, "type": "listen_image_mcq", "phonicsFocus": "auditory_word_recognition", "label": "Listen for a word"},
+    {"number": 5, "type": "letter_unscramble", "phonicsFocus": "grapheme_sequence", "label": "Build a word"},
+    {"number": 6, "type": "image_word_mcq", "phonicsFocus": "visual_word_recognition", "label": "Picture to word"}
+  ],
+  "questions": [
+    {
+      "number": 1,
+      "type": "sequence_drag",
+      "instruction": "Put the letters in order.",
+      "hint": "Start with A. Then say the letters slowly.",
+      "items": [
+        {"id": "D", "letter": "D", "word": "dog", "sprite": 6},
+        {"id": "B", "letter": "B", "word": "ball", "sprite": 3},
+        {"id": "A", "letter": "A", "word": "apple", "sprite": 0},
+        {"id": "C", "letter": "C", "word": "cat", "sprite": 4}
+      ],
+      "correct": ["A", "B", "C", "D"],
+      "scoring": {"type": "position_distance", "rule": "exact position = 1; adjacent position = 0.5; farther position = 0"}
+    },
+    {
+      "number": 2,
+      "type": "case_family_match",
+      "instruction": "Fill in the missing letters.",
+      "hint": "The big letter goes on top. The little letter goes below.",
+      "families": [
+        {"id": "A", "picture": "apple", "sprite": 0, "upper": "upper_a", "lower": "lower_a", "given": "upper"},
+        {"id": "B", "picture": "ball", "sprite": 3, "upper": "upper_b", "lower": "lower_b", "given": "lower"},
+        {"id": "C", "picture": "cat", "sprite": 4, "upper": "upper_c", "lower": "lower_c", "given": "upper"},
+        {"id": "D", "picture": "duck", "sprite": 7, "upper": "upper_d", "lower": "lower_d", "given": "lower"}
+      ],
+      "items": [
+        {"id": "upper_d", "text": "D", "category": "upper"},
+        {"id": "lower_a", "text": "a", "category": "lower"},
+        {"id": "lower_c", "text": "c", "category": "lower"},
+        {"id": "upper_b", "text": "B", "category": "upper"}
+      ],
+      "scoring": {"type": "weighted_missing_case_match", "rule": "Score only the four missing slots: exact letter and case = 1; correct case but wrong family = 0.35; wrong case = 0"}
+    },
+    {
+      "number": 3,
+      "type": "listen_letter_mcq",
+      "instruction": "Choose the letter you hear.",
+      "hint": "Listen one more time. Find the card with A.",
+      "speech": "A.",
+      "options": ["D", "B", "A", "C"],
+      "correct": "A"
+    },
+    {
+      "number": 4,
+      "type": "listen_image_mcq",
+      "instruction": "Choose the picture you hear.",
+      "hint": "Listen for the whole word: ball.",
+      "speech": "B, b, ball.",
+      "options": [
+        {"id": "bag", "sprite": 2, "score": 67},
+        {"id": "ball", "sprite": 3, "score": 100},
+        {"id": "cup", "sprite": 5, "score": 33},
+        {"id": "duck", "sprite": 7, "score": 0}
+      ],
+      "correct": "ball"
+    },
+    {
+      "number": 5,
+      "type": "letter_unscramble",
+      "instruction": "Put the letters in order.",
+      "hint": "Start with a. You need two p letters.",
+      "picture": 0,
+      "items": [
+        {"id": "l", "text": "l"}, {"id": "p2", "text": "p"}, {"id": "a", "text": "a"}, {"id": "e", "text": "e"}, {"id": "p1", "text": "p"}
+      ],
+      "correct": ["a", "p1", "p2", "l", "e"],
+      "accepted": [["a", "p1", "p2", "l", "e"], ["a", "p2", "p1", "l", "e"]],
+      "scoring": {"type": "exact_letter_position", "rule": "each correct letter position contributes equally; duplicate p tiles are interchangeable"}
+    },
+    {
+      "number": 6,
+      "type": "image_word_mcq",
+      "instruction": "Choose the word.",
+      "hint": "The word starts with d.",
+      "picture": 7,
+      "options": [
+        {"id": "duck", "text": "duck", "score": 100},
+        {"id": "dog", "text": "dog", "score": 67},
+        {"id": "cup", "text": "cup", "score": 33},
+        {"id": "cat", "text": "cat", "score": 0}
+      ],
+      "correct": "duck"
+    }
+  ],
+  "prototypeNotes": [
+    "Interaction mechanics mirror v3 but the diagnostic focus is phonics rather than Story Grammar.",
+    "Browser speech synthesis is used only for the prototype; production should use reviewed native-speaker audio.",
+    "Option weights and partial-credit rules are provisional until learner-response validation."
+  ]
+}

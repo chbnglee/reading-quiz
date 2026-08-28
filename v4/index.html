@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Quiz v4 · Phonics</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#24304a;--purple:#7557d9;--coral:#ff7e70;--yellow:#ffd966;--mint:#9be2c3;--sky:#8fd3ff;--paper:#fffdf8}
+body{min-height:100vh;font-family:'Fredoka','Nunito',sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 15%,#fff3bd 0 12%,transparent 13%),radial-gradient(circle at 90% 20%,#dff7ff 0 15%,transparent 16%),linear-gradient(150deg,#fff8e8,#f4f0ff 55%,#e9fbf3);padding:34px 18px}
+.wrap{max-width:1040px;margin:auto}
+.back{display:inline-block;color:#5d52a7;text-decoration:none;font-weight:700;margin-bottom:24px}
+.hero{background:rgba(255,255,255,.94);border:4px solid #fff;border-radius:38px;padding:clamp(26px,6vw,54px);box-shadow:0 20px 55px rgba(83,67,143,.15);display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}
+.eyebrow{display:inline-flex;background:#f0ebff;color:#684fc4;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;margin-bottom:15px}
+h1{font-family:'Nunito',sans-serif;font-size:clamp(38px,7vw,66px);line-height:1;color:#563ea8;margin-bottom:16px}
+.lead{font-size:clamp(17px,2.5vw,22px);line-height:1.5;color:#5d6578;margin-bottom:24px}
+.features{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:28px}.features span{padding:8px 13px;border-radius:15px;background:#fff7d7;color:#6c5b20;font-size:14px;font-weight:700}
+.open{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:linear-gradient(135deg,var(--coral),#ff9d68);color:white;border-radius:22px;padding:16px 30px;font:800 18px 'Nunito',sans-serif;box-shadow:0 9px 0 #d85855;transition:.16s}.open:hover{transform:translateY(-2px);box-shadow:0 11px 0 #d85855}.open:active{transform:translateY(6px);box-shadow:0 3px 0 #d85855}
+.preview{background:linear-gradient(145deg,#e8f8ff,#f5ebff);border-radius:30px;padding:18px;transform:rotate(1.5deg);box-shadow:inset 0 0 0 3px white}.preview img{display:block;width:100%;border-radius:22px}
+.note{text-align:center;color:#737b8e;font-size:14px;line-height:1.6;margin-top:24px}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.preview{order:-1;max-width:430px;margin:auto}.open{width:100%}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="../">← All versions</a>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">PHONICS QUIZ · v4 SAMPLE</span>
+      <h1>A to D<br>Sound Steps</h1>
+      <p class="lead">Big letters, little letters, sounds, and first words for beginning readers.</p>
+      <div class="features"><span>6 playful questions</span><span>A–D review</span><span>Listen & choose</span><span>Build a word</span></div>
+      <a class="open" href="PH0001/PH0001_PhonicsQuiz.html">Start PH0001 →</a>
+    </div>
+    <div class="preview"><img src="PH0001/Image/PH0001_phonics_sprite.png" alt="Apple, ant, bag, ball, cat, cup, dog, and duck illustrations"></div>
+  </section>
+  <p class="note">Prototype for Decodable Readers. It keeps the v3 interaction family while shifting the learning focus from Story Grammar to letter–sound–word connections.</p>
+</main>
+</body>
+</html>

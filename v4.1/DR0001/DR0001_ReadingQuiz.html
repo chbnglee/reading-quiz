@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DR0001 · Short i · Tim, Fish and Pig</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../reader-quiz.css">
+</head>
+<body>
+<section class="screen" id="cover"><div class="cover-card"><div class="cover-content"><span class="tiny-label" id="quizLabel"></span><div class="cover-art" id="coverArt"></div><h1 id="coverTitle"></h1><p class="cover-subtitle" id="coverSubtitle"></p><p class="cover-copy" id="coverCopy"></p><button class="primary" type="button" onclick="startQuiz()">Let's read!</button><div class="cover-note">Turn on your sound for the listening questions.</div></div></div></section>
+<section class="screen hidden" id="quizScreen"><main class="quiz-shell"><header class="topbar"><a class="home" href="../" aria-label="Back to v4.1 home">←</a><nav class="progress" id="progress" aria-label="Quiz progress"></nav><div class="mini-score" id="miniScore">0 / 6</div></header><article class="question-card"><div class="question-head"><span class="focus-chip" id="focusChip"></span><h2 class="instruction" id="instruction"></h2></div><div class="work-area"><div class="activity" id="activity"></div></div><div class="bottom"><button class="hint-btn" id="hintBtn" type="button" onclick="toggleHint()" aria-expanded="false"><img src="../hint_owl.png" alt=""><span class="hint-label">Hint</span><span class="hint-inline" id="hintText"></span></button><div class="feedback" id="feedback" aria-live="polite"></div><div class="nav-actions"><button class="nav-btn check" id="checkBtn" type="button" onclick="checkAnswer()">Check</button><button class="nav-btn next hidden" id="nextBtn" type="button" onclick="nextQuestion()">Next →</button></div></div></article></main></section>
+<section class="screen hidden" id="resultScreen"><main class="result-card"><div class="result-badge">🌟</div><h2 class="result-title" id="resultTitle"></h2><p class="result-copy" id="resultCopy"></p><div class="total" id="totalScore"></div><div class="result-grid" id="resultGrid"></div><div class="result-actions"><button class="primary" type="button" onclick="restartQuiz()">Read again</button><a class="secondary" href="../">v4.1 home</a></div><p class="prototype-note">Prototype note: the target short-i sound uses a reviewed IPA audio sample; word and phrase items still use the browser's English voice.</p></main></section>
+<script>
+window.READER_QUIZ={
+ id:'DR0001',title:'Short i',subtitle:'Tim, Fish and Pig',coverCopy:'Listen for short i, match pictures with words, and complete short-i words.',sprite:'Image/DR0001_story_sprite.png',coverSprites:[0,2,3,7],
+ spriteLabels:['Tim','Tim with six fish','six fish swimming','big pig','pig sees six fish','pig opens its big mouth','six fish swim fast','Tim sits with the pig'],
+ questions:[
+  {focus:'Listen for a vowel',type:'listenLetter',instruction:'Choose the sound you hear.',hint:'Listen for short i, as in pig.',speech:'short i',audio:'../audio/short-i.ogg',maxAudioDuration:.3,balancedSpeaker:true,correct:'i',options:['a','e','i','o']},
+  {focus:'Missing vowel',type:'missingLetter',instruction:'Choose the missing letter.',hint:'Pig has the short i sound.',picture:3,pictureLabel:'pig',accessibleWord:'p blank g',before:'p',after:'g',correct:'i',options:['a','e','i','u']},
+  {focus:'Listen and choose',type:'listenImage',instruction:'Choose the picture you hear.',hint:'Listen for both words: six fish.',speech:'six fish',options:[{id:'tim',sprite:0,label:'Tim',score:0},{id:'sixFish',sprite:2,label:'six fish',score:100},{id:'pig',sprite:3,label:'pig',score:0},{id:'mouth',sprite:5,label:'pig opens its mouth',score:0}]},
+  {focus:'Listen for short i',type:'listenWord',instruction:'Choose the word you hear.',hint:'Listen for the short i sound in pig.',speech:'pig',balancedSpeaker:true,correct:'pig',options:['peg','pig','pug','big']},
+  {focus:'Picture and word',type:'pictureTextMatch',instruction:'Match pictures and words.',hint:'All four words have the short i sound.',pairs:[{id:'tim',sprite:0,label:'Tim',correct:'w1'},{id:'fish',sprite:2,label:'fish',correct:'w2'},{id:'pig',sprite:3,label:'pig',correct:'w3'},{id:'sit',sprite:7,label:'sit',correct:'w4'}],items:[{id:'w3',text:'pig'},{id:'w1',text:'Tim'},{id:'w4',text:'sit'},{id:'w2',text:'fish'}]},
+  {focus:'Short i sentence',type:'wordOrder',instruction:'Put the words in order.',hint:'Start with Tim. The sentence ends with pig.',picture:7,pictureLabel:'Tim sits with the pig',items:[{id:'pig',text:'pig.'},{id:'with',text:'with'},{id:'tim',text:'Tim'},{id:'big',text:'big'},{id:'sits',text:'sits'},{id:'the',text:'the'}],correct:['tim','sits','with','the','big','pig']}
+ ]
+};
+</script>
+<script src="../reader-quiz.js"></script>
+</body></html>

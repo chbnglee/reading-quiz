@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DR0002 · Can or Can't</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../reader-quiz.css">
+</head>
+<body>
+<section class="screen" id="cover"><div class="cover-card"><div class="cover-content"><span class="tiny-label" id="quizLabel"></span><div class="cover-art" id="coverArt"></div><h1 id="coverTitle"></h1><p class="cover-copy" id="coverCopy"></p><button class="primary" type="button" onclick="startQuiz()">Let's read!</button><div class="cover-note">Turn on your sound for the listening questions.</div></div></div></section>
+<section class="screen hidden" id="quizScreen"><main class="quiz-shell"><header class="topbar"><a class="home" href="../" aria-label="Back to v4.1 home">←</a><nav class="progress" id="progress" aria-label="Quiz progress"></nav><div class="mini-score" id="miniScore">0 / 6</div></header><article class="question-card"><div class="question-head"><span class="focus-chip" id="focusChip"></span><h2 class="instruction" id="instruction"></h2></div><div class="work-area"><div class="activity" id="activity"></div></div><div class="bottom"><button class="hint-btn" id="hintBtn" type="button" onclick="toggleHint()" aria-expanded="false"><img src="../hint_owl.png" alt=""><span class="hint-label">Hint</span><span class="hint-inline" id="hintText"></span></button><div class="feedback" id="feedback" aria-live="polite"></div><div class="nav-actions"><button class="nav-btn check" id="checkBtn" type="button" onclick="checkAnswer()">Check</button><button class="nav-btn next hidden" id="nextBtn" type="button" onclick="nextQuestion()">Next →</button></div></div></article></main></section>
+<section class="screen hidden" id="resultScreen"><main class="result-card"><div class="result-badge">🌟</div><h2 class="result-title" id="resultTitle"></h2><p class="result-copy" id="resultCopy"></p><div class="total" id="totalScore"></div><div class="result-grid" id="resultGrid"></div><div class="result-actions"><button class="primary" type="button" onclick="restartQuiz()">Read again</button><a class="secondary" href="../">v4.1 home</a></div><p class="prototype-note">Prototype note: listening uses the browser's English voice. Production audio should be recorded and phonics-reviewed.</p></main></section>
+<script>
+window.READER_QUIZ={
+ id:'DR0002',title:"Can or Can't",coverCopy:'Listen, look, and choose can or can’t to complete each meaning.',sprite:'Image/DR0002_story_sprite.png',coverSprites:[0,2,5,7],
+ spriteLabels:['cat cannot write','monkey cannot cook','monkey can swing','crow can caw','ant can bite','dog can bark','cat can jump','child can read'],
+ questions:[
+  {focus:'Listen for can’t',type:'listenWord',instruction:'Choose the word you hear.',hint:'Listen for the ending sound in can’t.',speech:'can’t',balancedSpeaker:true,correct:'can’t',options:['can','can’t','cat','and']},
+  {focus:'Can or can’t',type:'binaryGrid',instruction:'Choose can or can’t.',hint:'Think about what each animal is able to do.',options:['can','can’t'],items:[{id:'catWrite',sprite:0,label:'cat cannot write',correct:'can’t'},{id:'monkeyCook',sprite:1,label:'monkey cannot cook',correct:'can’t'},{id:'monkeySwing',sprite:2,label:'monkey can swing',correct:'can'},{id:'dogBark',sprite:5,label:'dog can bark',correct:'can'}]},
+  {focus:'Spell can’t',type:'wordOrder',instruction:'Put the letters in order.',hint:'Start with c. Can’t ends with ’t.',picture:0,pictureLabel:'cat cannot write',items:[{id:'t',text:'t'},{id:'a',text:'a'},{id:'apostrophe',text:'’'},{id:'c',text:'c'},{id:'n',text:'n'}],correct:['c','a','n','apostrophe','t']},
+  {focus:'Listen and choose',type:'listenImage',instruction:'Choose the picture you hear.',hint:'Listen for the words ants and bite.',speech:'Ants can bite.',balancedSpeaker:true,options:[{id:'ant',sprite:4,label:'ant bites',score:100},{id:'crow',sprite:3,label:'crow caws',score:67},{id:'dog',sprite:5,label:'dog barks',score:33},{id:'cat',sprite:6,label:'cat jumps',score:0}]},
+  {focus:'Complete the sentence',type:'clozeChoice',instruction:'Choose the word.',hint:'The cat is able to jump.',picture:6,pictureLabel:'cat jumps',prompt:'The cat ___ jump.',correct:'can',options:['can','can’t']},
+  {focus:'Picture to sentence',type:'imageText',instruction:'Choose the sentence.',hint:'The child is able to read.',picture:7,pictureLabel:'child reads',wideCards:true,options:[{id:'right',text:'I can read!',score:100},{id:'near',text:'I can’t read.',score:67},{id:'other',text:'Cats can jump.',score:33},{id:'wrong',text:'Pigs can fly!',score:0}]}
+ ]
+};
+</script>
+<script src="../reader-quiz.js"></script>
+</body></html>
