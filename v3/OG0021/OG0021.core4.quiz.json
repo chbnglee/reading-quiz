@@ -1,0 +1,1153 @@
+{
+  "schemaVersion": "quiz-core-story-v1",
+  "story": {
+    "storyId": "OG0021",
+    "title": "Milo and the Lost Color",
+    "level": "Level 2",
+    "text": "SC01_ST01_N = Milo is a little chameleon.\nSC01_ST02_N = He loves to change colors–green, blue, red!\nSC02_ST01_N = But one morning, he wakes up gray.\nSC02_ST02_N = \"Oh no!\nSC02_ST03_N = Where is my color?\"\nSC02_ST04_N = Milo says.\nSC02_ST05_N = He looks at his tail.\nSC02_ST06_N = It's still gray.\nSC02_ST07_N = He feels sad and shy.\nSC03_ST01_N = Milo walks into the forest.\nSC03_ST02_N = He sees a yellow butterfly.\nSC03_ST03_N = \"Can I have your color?\" he asks.\nSC04_ST01_N = The butterfly smiles.\nSC04_ST02_N = \"My color helps me fly.\"\nSC04_ST03_N = Milo smiles back.\nSC04_ST04_N = \"Then I will keep looking.\"\nSC04_ST05_N = He waves goodbye.\nSC05_ST01_N = He meets a red flower.\nSC05_ST02_N = \"Can I have your color?\"\nSC05_ST03_N = Milo asks.\nSC05_ST04_N = The flower says, \"My color helps the bees find me.\"\nSC06_ST01_N = Milo is sad.\nSC06_ST02_N = \"Everyone has their own color.\"\nSC06_ST03_N = He sits by a blue pond.\nSC06_ST04_N = He cries.\nSC06_ST05_N = A tiny drop falls into the water.\nSC07_ST01_N = The pond shines!\nSC07_ST02_N = Milo sees many colors in the water–red, yellow, blue, green.\nSC07_ST03_N = They mix and dance like a rainbow.\nSC08_ST01_N = Milo laughs.\nSC08_ST02_N = \"Maybe my color is inside me!\"\nSC08_ST03_N = He takes a deep breath and closes his eyes.\nSC08_ST04_N = His body starts to glow.\nSC09_ST01_N = Green!\nSC09_ST02_N = Then blue!\nSC09_ST03_N = Then red again!\nSC09_ST04_N = Milo's colors come back, brighter than before.\nSC09_ST05_N = He feels happy and warm.\nSC10_ST01_N = Milo runs home.\nSC10_ST02_N = He looks in the mirror.\nSC10_ST03_N = \"I found my color.\nSC10_ST04_N = It's me!\" he says proudly.",
+    "scenes": [
+      {
+        "sceneId": "SC01",
+        "sentences": [
+          {
+            "sentenceId": "SC01_ST01_N",
+            "text": "Milo is a little chameleon."
+          },
+          {
+            "sentenceId": "SC01_ST02_N",
+            "text": "He loves to change colors–green, blue, red!"
+          }
+        ]
+      },
+      {
+        "sceneId": "SC02",
+        "sentences": [
+          {
+            "sentenceId": "SC02_ST01_N",
+            "text": "But one morning, he wakes up gray."
+          },
+          {
+            "sentenceId": "SC02_ST02_N",
+            "text": "\"Oh no!"
+          },
+          {
+            "sentenceId": "SC02_ST03_N",
+            "text": "Where is my color?\""
+          },
+          {
+            "sentenceId": "SC02_ST04_N",
+            "text": "Milo says."
+          },
+          {
+            "sentenceId": "SC02_ST05_N",
+            "text": "He looks at his tail."
+          },
+          {
+            "sentenceId": "SC02_ST06_N",
+            "text": "It's still gray."
+          },
+          {
+            "sentenceId": "SC02_ST07_N",
+            "text": "He feels sad and shy."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC03",
+        "sentences": [
+          {
+            "sentenceId": "SC03_ST01_N",
+            "text": "Milo walks into the forest."
+          },
+          {
+            "sentenceId": "SC03_ST02_N",
+            "text": "He sees a yellow butterfly."
+          },
+          {
+            "sentenceId": "SC03_ST03_N",
+            "text": "\"Can I have your color?\" he asks."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC04",
+        "sentences": [
+          {
+            "sentenceId": "SC04_ST01_N",
+            "text": "The butterfly smiles."
+          },
+          {
+            "sentenceId": "SC04_ST02_N",
+            "text": "\"My color helps me fly.\""
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "Milo smiles back."
+          },
+          {
+            "sentenceId": "SC04_ST04_N",
+            "text": "\"Then I will keep looking.\""
+          },
+          {
+            "sentenceId": "SC04_ST05_N",
+            "text": "He waves goodbye."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC05",
+        "sentences": [
+          {
+            "sentenceId": "SC05_ST01_N",
+            "text": "He meets a red flower."
+          },
+          {
+            "sentenceId": "SC05_ST02_N",
+            "text": "\"Can I have your color?\""
+          },
+          {
+            "sentenceId": "SC05_ST03_N",
+            "text": "Milo asks."
+          },
+          {
+            "sentenceId": "SC05_ST04_N",
+            "text": "The flower says, \"My color helps the bees find me.\""
+          }
+        ]
+      },
+      {
+        "sceneId": "SC06",
+        "sentences": [
+          {
+            "sentenceId": "SC06_ST01_N",
+            "text": "Milo is sad."
+          },
+          {
+            "sentenceId": "SC06_ST02_N",
+            "text": "\"Everyone has their own color.\""
+          },
+          {
+            "sentenceId": "SC06_ST03_N",
+            "text": "He sits by a blue pond."
+          },
+          {
+            "sentenceId": "SC06_ST04_N",
+            "text": "He cries."
+          },
+          {
+            "sentenceId": "SC06_ST05_N",
+            "text": "A tiny drop falls into the water."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC07",
+        "sentences": [
+          {
+            "sentenceId": "SC07_ST01_N",
+            "text": "The pond shines!"
+          },
+          {
+            "sentenceId": "SC07_ST02_N",
+            "text": "Milo sees many colors in the water–red, yellow, blue, green."
+          },
+          {
+            "sentenceId": "SC07_ST03_N",
+            "text": "They mix and dance like a rainbow."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC08",
+        "sentences": [
+          {
+            "sentenceId": "SC08_ST01_N",
+            "text": "Milo laughs."
+          },
+          {
+            "sentenceId": "SC08_ST02_N",
+            "text": "\"Maybe my color is inside me!\""
+          },
+          {
+            "sentenceId": "SC08_ST03_N",
+            "text": "He takes a deep breath and closes his eyes."
+          },
+          {
+            "sentenceId": "SC08_ST04_N",
+            "text": "His body starts to glow."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC09",
+        "sentences": [
+          {
+            "sentenceId": "SC09_ST01_N",
+            "text": "Green!"
+          },
+          {
+            "sentenceId": "SC09_ST02_N",
+            "text": "Then blue!"
+          },
+          {
+            "sentenceId": "SC09_ST03_N",
+            "text": "Then red again!"
+          },
+          {
+            "sentenceId": "SC09_ST04_N",
+            "text": "Milo's colors come back, brighter than before."
+          },
+          {
+            "sentenceId": "SC09_ST05_N",
+            "text": "He feels happy and warm."
+          }
+        ]
+      },
+      {
+        "sceneId": "SC10",
+        "sentences": [
+          {
+            "sentenceId": "SC10_ST01_N",
+            "text": "Milo runs home."
+          },
+          {
+            "sentenceId": "SC10_ST02_N",
+            "text": "He looks in the mirror."
+          },
+          {
+            "sentenceId": "SC10_ST03_N",
+            "text": "\"I found my color."
+          },
+          {
+            "sentenceId": "SC10_ST04_N",
+            "text": "It's me!\" he says proudly."
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "imageBasePath": "Image/",
+    "audioBasePath": "Audio/",
+    "coverBasePath": "Cover/",
+    "backgroundImage": "Image/OG0021_Talking_BG_I.webp",
+    "coverImage": "Cover/OG0021_Cover_L_I.webp",
+    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+  },
+  "storyGrammarAxes": [
+    {
+      "key": "setting",
+      "labelEn": "Setting",
+      "labelKo": "배경"
+    },
+    {
+      "key": "key_situation",
+      "labelEn": "Key Situation",
+      "labelKo": "핵심 상황"
+    },
+    {
+      "key": "key_action",
+      "labelEn": "Key Action",
+      "labelKo": "핵심 행동"
+    },
+    {
+      "key": "story_sequence",
+      "labelEn": "Story Sequence",
+      "labelKo": "전체 흐름"
+    }
+  ],
+  "questions": [
+    {
+      "qId": "OG0021_CORE4_Q01",
+      "number": 1,
+      "type": "setting_slot_drag",
+      "storyGrammar": "setting",
+      "instruction": "Look at the picture. Fill in the boxes.",
+      "hint": "Who is there? Where is he?",
+      "resources": {
+        "images": [
+          {
+            "id": "SC01",
+            "path": "OG0021_SC01_I.webp",
+            "kind": "image",
+            "sceneId": "SC01"
+          }
+        ],
+        "scene": "SC01"
+      },
+      "interaction": {
+        "promptMode": "slot_drag",
+        "slots": [
+          {
+            "key": "who",
+            "label": "Who?",
+            "correct": "milo",
+            "weight": 2.5
+          },
+          {
+            "key": "where",
+            "label": "Where?",
+            "correct": "forest",
+            "weight": 2
+          },
+          {
+            "key": "at_first",
+            "label": "At first...",
+            "correct": "changes_colors",
+            "weight": 1.5
+          }
+        ],
+        "items": [
+          {
+            "key": "milo",
+            "text": "Milo",
+            "slot": "who",
+            "diagnostic": ""
+          },
+          {
+            "key": "butterfly",
+            "text": "the butterfly",
+            "slot": "who",
+            "diagnostic": "초반 주인공과 이후 만나는 인물을 혼동합니다."
+          },
+          {
+            "key": "forest",
+            "text": "in the forest",
+            "slot": "where",
+            "diagnostic": ""
+          },
+          {
+            "key": "blue_pond",
+            "text": "by a blue pond",
+            "slot": "where",
+            "diagnostic": "중간 장면의 장소를 처음 배경으로 혼동합니다."
+          },
+          {
+            "key": "changes_colors",
+            "text": "loves to change colors",
+            "slot": "at_first",
+            "diagnostic": ""
+          },
+          {
+            "key": "looks_mirror",
+            "text": "looks in the mirror",
+            "slot": "at_first",
+            "diagnostic": "결말 장면을 처음 상황으로 혼동합니다."
+          }
+        ],
+        "correct": {
+          "who": "milo",
+          "where": "forest",
+          "at_first": "changes_colors"
+        }
+      },
+      "scoring": {
+        "type": "exact_slot_count_response_quality",
+        "maxScore": 100,
+        "evidenceFormula": "evidence_raw = round(exact_slots / 3 * 100)",
+        "reportingFormula": "3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0",
+        "components": [
+          {
+            "key": "who",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "milo",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          },
+          {
+            "key": "where",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "forest",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          },
+          {
+            "key": "at_first",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "changes_colors",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "setting_gap",
+          "threshold": 67,
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_core4_Q01_setting",
+        "resultFields": [
+          "score_raw",
+          "slot_values",
+          "hint_used",
+          "evidence_raw",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action",
+          "response_quality"
+        ]
+      },
+      "assessmentMetadata": {
+        "storyElement": "Setting",
+        "operationalSkill": "Identify story anchors",
+        "skillTags": [
+          "Setting",
+          "Character",
+          "Place",
+          "Initial State"
+        ]
+      },
+      "responseRubric": [
+        {
+          "score": 100,
+          "key": "accurate",
+          "responseQuality": "Accurate",
+          "labelEn": "Accurate",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "3/3 요소 정확",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "이야기가 시작될 때 누가, 어디에서, 어떤 상황에 있었는지 모두 정확히 찾았어요.",
+          "parentFeedbackKo": "첫 장면의 인물·장소·초기 상황을 정확히 구분하여 배경 정보를 안정적으로 이해합니다. 다음 활동: 첫 장면의 인물·장소·처음 상황을 한 문장으로 설명합니다.",
+          "recommendedActionKo": "첫 장면의 인물·장소·처음 상황을 한 문장으로 설명합니다.",
+          "studentFeedbackEn": "You found who, where, and what happened first!"
+        },
+        {
+          "score": 67,
+          "key": "partial",
+          "responseQuality": "Partial",
+          "labelEn": "Partial",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서의 일부가 불완전합니다.",
+          "evidenceRuleKo": "2/3 요소 정확",
+          "misconceptionType": "one_setting_element_gap",
+          "studentFeedbackKo": "처음 장면의 배경을 대부분 찾았어요. 빠진 한 요소를 장면에서 다시 확인해 보세요.",
+          "parentFeedbackKo": "세 가지 배경 요소 중 대부분을 정확히 파악했으나 한 요소에서 후속 장면과의 혼동이 나타납니다. 다음 활동: 틀린 한 요소를 첫 장면에서 다시 찾아 표시합니다.",
+          "recommendedActionKo": "틀린 한 요소를 첫 장면에서 다시 찾아 표시합니다.",
+          "studentFeedbackEn": "You found most of the story clues. Check one box again."
+        },
+        {
+          "score": 33,
+          "key": "related",
+          "responseQuality": "Related",
+          "labelEn": "Related",
+          "labelKo": "관련 요소 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구하는 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "1/3 요소 정확",
+          "misconceptionType": "setting_element_confusion",
+          "studentFeedbackKo": "인물·장소·처음 상황 중 한 가지는 찾았어요. 나머지 요소도 첫 장면에서 다시 찾아보세요.",
+          "parentFeedbackKo": "배경의 일부 요소는 인식하지만 처음 장면과 이후 사건의 인물·장소·상황을 혼동합니다. 다음 활동: Who / Where / At first를 색으로 나누어 Story Map에 적습니다.",
+          "recommendedActionKo": "Who / Where / At first를 색으로 나누어 Story Map에 적습니다.",
+          "studentFeedbackEn": "You found one story clue. Check where it belongs."
+        },
+        {
+          "score": 0,
+          "key": "unrelated",
+          "responseQuality": "Unrelated",
+          "labelEn": "Unrelated",
+          "labelKo": "관련 없는 응답·이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "0/3 요소 정확 또는 무응답",
+          "misconceptionType": "no_setting_evidence",
+          "studentFeedbackKo": "첫 장면을 다시 보고 ‘누가, 어디에서, 처음에 무엇을 했는지’를 함께 찾아봐요.",
+          "parentFeedbackKo": "현재 응답에서는 이야기의 초기 배경 요소를 구분한 증거가 확인되지 않습니다. 다음 활동: 첫 장면을 다시 보고 인물부터 함께 찾은 뒤 장소와 상황으로 확장합니다.",
+          "recommendedActionKo": "첫 장면을 다시 보고 인물부터 함께 찾은 뒤 장소와 상황으로 확장합니다.",
+          "studentFeedbackEn": "Look at the picture again. Start with “Who?”"
+        }
+      ]
+    },
+    {
+      "qId": "OG0021_CORE4_Q02",
+      "number": 2,
+      "type": "listen_scene_mcq",
+      "storyGrammar": "key_situation",
+      "instruction": "Listen. What happens to Milo?",
+      "hint": "Listen for the change that gives Milo his problem.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02"
+          },
+          {
+            "id": "SC04",
+            "path": "OG0021_SC04_I.webp",
+            "kind": "image",
+            "sceneId": "SC04"
+          },
+          {
+            "id": "SC07",
+            "path": "OG0021_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07"
+          },
+          {
+            "id": "SC10",
+            "path": "OG0021_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10"
+          }
+        ],
+        "audio": {
+          "id": "SC02_ST01_N_A",
+          "path": "OG0021_SC02_ST01_N_A.mp3",
+          "kind": "audio",
+          "sceneId": "SC02",
+          "sentenceId": "SC02_ST01_N"
+        }
+      },
+      "interaction": {
+        "promptMode": "image_mcq",
+        "options": [
+          {
+            "key": "A",
+            "text": "Milo wakes up gray.",
+            "score": 100,
+            "isCorrect": true,
+            "diagnostic": "",
+            "scene": "SC02",
+            "misconceptionType": "none",
+            "recommendedActionKo": "문제가 시작된 까닭과 다음 사건을 연결해 말합니다.",
+            "responseQuality": "Accurate"
+          },
+          {
+            "key": "B",
+            "text": "The butterfly keeps its color.",
+            "score": 33,
+            "isCorrect": false,
+            "diagnostic": "문제의 시작이 아니라 첫 만남 장면을 선택합니다.",
+            "scene": "SC04",
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다.",
+            "responseQuality": "Related"
+          },
+          {
+            "key": "C",
+            "text": "The pond shines.",
+            "score": 33,
+            "isCorrect": false,
+            "diagnostic": "해결의 실마리 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC07",
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다.",
+            "responseQuality": "Related"
+          },
+          {
+            "key": "D",
+            "text": "Milo looks in the mirror.",
+            "score": 0,
+            "isCorrect": false,
+            "diagnostic": "결말 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC10",
+            "misconceptionType": "no_problem_evidence",
+            "recommendedActionKo": "오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다.",
+            "responseQuality": "Unrelated"
+          }
+        ],
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "ordered_option_response_quality",
+        "maxScore": 100,
+        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "preclassified_response_quality",
+            "correctValue": true,
+            "responseQuality": "Accurate",
+            "misconceptionType": "none",
+            "rationale": "Correct response."
+          },
+          {
+            "key": "B",
+            "weight": 33,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Related",
+            "misconceptionType": "story_phase_confusion",
+            "rationale": "문제의 시작이 아니라 첫 만남 장면을 선택합니다."
+          },
+          {
+            "key": "C",
+            "weight": 33,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Related",
+            "misconceptionType": "story_phase_confusion",
+            "rationale": "해결의 실마리 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Unrelated",
+            "misconceptionType": "no_problem_evidence",
+            "rationale": "결말 장면을 사건 시작으로 혼동합니다."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "key_situation_gap",
+          "threshold": 67,
+          "messageKo": "이야기에 방향을 만드는 핵심 문제·목표·변화를 다른 장면과 구분하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_core4_Q02_key_situation",
+        "resultFields": [
+          "score_raw",
+          "option_selected",
+          "audio_src",
+          "hint_used",
+          "evidence_raw",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action",
+          "response_quality"
+        ]
+      },
+      "assessmentMetadata": {
+        "storyElement": "Key Situation (Problem / Goal / Change)",
+        "operationalSkill": "Connect the key situation to the story",
+        "skillTags": [
+          "Key Situation",
+          "Problem or Change",
+          "Listening"
+        ]
+      },
+      "responseRubric": [
+        {
+          "score": 100,
+          "key": "accurate",
+          "responseQuality": "Accurate",
+          "labelEn": "Accurate",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "이야기에 방향을 만드는 핵심 문제·목표·변화를 정확히 찾았어요.",
+          "parentFeedbackKo": "배경과 핵심 상황을 구분하고, 이 상황이 이후 전개를 이끄는 관계를 정확히 이해합니다.",
+          "recommendedActionKo": "핵심 상황 이후에 일어난 행동을 연결해 말합니다.",
+          "studentFeedbackEn": "You found the key situation!"
+        },
+        {
+          "score": 67,
+          "key": "partial",
+          "responseQuality": "Partial",
+          "labelEn": "Partial",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서의 일부가 불완전합니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "partial_problem_relation",
+          "studentFeedbackKo": "핵심 상황과 가까운 장면을 찾았어요. 이야기가 움직이기 시작한 지점을 다시 확인해 보세요.",
+          "parentFeedbackKo": "핵심 전개와 관련된 장면은 파악했으나 원인이 되는 상황과 뒤따르는 과정의 구분이 일부 불완전합니다.",
+          "recommendedActionKo": "선택한 장면 바로 앞에서 어떤 문제·목표·변화가 생겼는지 확인합니다.",
+          "studentFeedbackEn": "You found a close scene. Listen for what changes the story."
+        },
+        {
+          "score": 33,
+          "key": "related",
+          "responseQuality": "Related",
+          "labelEn": "Related",
+          "labelKo": "관련 요소 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구하는 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "story_phase_confusion",
+          "studentFeedbackKo": "이야기 속 장면은 찾았지만 핵심 상황과 다른 단계가 섞였어요.",
+          "parentFeedbackKo": "관련 사건은 인식하지만 배경·중간 행동·결과를 이야기에 방향을 만드는 핵심 상황과 혼동합니다.",
+          "recommendedActionKo": "처음 상황과 달라진 점을 나란히 비교합니다.",
+          "studentFeedbackEn": "This scene is in the story, but it is not the key situation."
+        },
+        {
+          "score": 0,
+          "key": "unrelated",
+          "responseQuality": "Unrelated",
+          "labelEn": "Unrelated",
+          "labelKo": "관련 없는 응답·이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "선택지에 사전 코딩된 Story Element·관계 이해 수준",
+          "misconceptionType": "no_problem_evidence",
+          "studentFeedbackKo": "이야기가 움직이기 시작한 문제나 변화를 다시 찾아봐요.",
+          "parentFeedbackKo": "현재 선택에서는 이야기의 핵심 상황을 다른 단계와 구분한 증거가 확인되지 않습니다.",
+          "recommendedActionKo": "오디오를 다시 듣고 처음 상황에서 달라진 점을 함께 찾습니다.",
+          "studentFeedbackEn": "Listen again. Find the scene that changes the story."
+        }
+      ]
+    },
+    {
+      "qId": "OG0021_CORE4_Q03",
+      "number": 3,
+      "type": "scene_word_unscramble",
+      "storyGrammar": "key_action",
+      "instruction": "Put the words in order.",
+      "hint": "Look at what Milo does before his colors come back.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08"
+          }
+        ],
+        "scene": "SC08",
+        "sourceSentenceId": "SC08_ST03_N"
+      },
+      "interaction": {
+        "promptMode": "word_unscramble",
+        "items": [
+          "his eyes.",
+          "a deep breath",
+          "He",
+          "closes",
+          "takes",
+          "and"
+        ],
+        "correct": [
+          "He",
+          "takes",
+          "a deep breath",
+          "and",
+          "closes",
+          "his eyes."
+        ]
+      },
+      "scoring": {
+        "type": "ordered_lcs_response_quality",
+        "maxScore": 100,
+        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
+        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
+        "components": [
+          {
+            "key": "He",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 1,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "takes",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 2,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "a deep breath",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 3,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "and",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 4,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "closes",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 5,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "his eyes.",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 6,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "key_action_gap",
+          "threshold": 67,
+          "messageKo": "이야기의 전개나 해결에 중요한 핵심 행동을 문장으로 구성하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_core4_Q03_key_action",
+        "resultFields": [
+          "score_raw",
+          "word_order",
+          "hint_used",
+          "evidence_raw",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action",
+          "response_quality"
+        ]
+      },
+      "assessmentMetadata": {
+        "storyElement": "Key Action (Attempt / Resolution Action)",
+        "operationalSkill": "Build an action sentence",
+        "skillTags": [
+          "Key Action",
+          "Story Connection",
+          "Word Order"
+        ]
+      },
+      "responseRubric": [
+        {
+          "score": 100,
+          "key": "accurate",
+          "responseQuality": "Accurate",
+          "labelEn": "Accurate",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "전체 어절 순서 정확",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "이야기의 전개나 해결에 중요한 핵심 행동을 정확한 문장으로 만들었어요.",
+          "parentFeedbackKo": "이야기의 핵심 상황과 이후 결과를 연결하는 주요 행동을 정확한 어순으로 구성했습니다.",
+          "recommendedActionKo": "이 행동이 다음 장면의 결과로 어떻게 이어지는지 말합니다.",
+          "studentFeedbackEn": "You built the key action correctly!"
+        },
+        {
+          "score": 67,
+          "key": "partial",
+          "responseQuality": "Partial",
+          "labelEn": "Partial",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서의 일부가 불완전합니다.",
+          "evidenceRuleKo": "정답과의 최장 공통 순서가 전체의 75% 이상",
+          "misconceptionType": "local_action_order_gap",
+          "studentFeedbackKo": "핵심 행동은 대부분 이해했어요. 헷갈린 말의 위치를 다시 확인해 보세요.",
+          "parentFeedbackKo": "핵심 행동은 파악했으나 일부 어절의 순서가 불안정합니다.",
+          "recommendedActionKo": "그림을 보고 행동 문장을 소리 내어 말한 뒤 어순을 다시 확인합니다.",
+          "studentFeedbackEn": "Almost there! Check the word order."
+        },
+        {
+          "score": 33,
+          "key": "related",
+          "responseQuality": "Related",
+          "labelEn": "Related",
+          "labelKo": "관련 요소 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구하는 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "정답과의 최장 공통 순서가 전체의 40% 이상",
+          "misconceptionType": "action_relation_confusion",
+          "studentFeedbackKo": "몇몇 핵심 단어는 찾았어요. 누가 무엇을 했는지 순서로 다시 묶어보세요.",
+          "parentFeedbackKo": "관련 단어는 인식하지만 인물과 핵심 행동의 관계를 완전한 문장으로 구성하는 데 어려움이 있습니다.",
+          "recommendedActionKo": "인물과 행동어를 먼저 찾고 짧은 말 덩어리로 연결합니다.",
+          "studentFeedbackEn": "You found some key words. Start with who, then the action."
+        },
+        {
+          "score": 0,
+          "key": "unrelated",
+          "responseQuality": "Unrelated",
+          "labelEn": "Unrelated",
+          "labelKo": "관련 없는 응답·이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "공통 순서가 40% 미만 또는 무응답",
+          "misconceptionType": "no_action_evidence",
+          "studentFeedbackKo": "그림에서 인물과 중요한 행동을 먼저 찾아 한 부분씩 만들어봐요.",
+          "parentFeedbackKo": "현재 응답에서는 핵심 행동을 문장으로 구성한 이해 증거가 확인되지 않습니다.",
+          "recommendedActionKo": "해당 장면을 다시 읽고 인물과 행동어부터 찾습니다.",
+          "studentFeedbackEn": "Look at the picture and build the action one part at a time."
+        }
+      ]
+    },
+    {
+      "qId": "OG0021_CORE4_Q04",
+      "number": 4,
+      "type": "story_sequence_drag",
+      "storyGrammar": "story_sequence",
+      "instruction": "Put the whole story in order.",
+      "hint": "Milo loses his color, looks for it, and finds it inside.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Milo wakes up gray"
+          },
+          {
+            "id": "SC03",
+            "path": "OG0021_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03",
+            "caption": "Milo enters the forest"
+          },
+          {
+            "id": "SC06",
+            "path": "OG0021_SC06_I.webp",
+            "kind": "image",
+            "sceneId": "SC06",
+            "caption": "Milo feels sad"
+          },
+          {
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08",
+            "caption": "Milo understands"
+          },
+          {
+            "id": "SC10",
+            "path": "OG0021_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10",
+            "caption": "Milo returns home"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ],
+        "correct": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ]
+      },
+      "scoring": {
+        "type": "ordered_lcs_response_quality",
+        "maxScore": 100,
+        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
+        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
+        "components": [
+          {
+            "key": "SC02",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 1,
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+          },
+          {
+            "key": "SC03",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 2,
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+          },
+          {
+            "key": "SC06",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 3,
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+          },
+          {
+            "key": "SC08",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 4,
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+          },
+          {
+            "key": "SC10",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 5,
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+          }
+        ]
+      },
+      "diagnostics": [
+        {
+          "code": "consequence_sequence_gap",
+          "threshold": 67,
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
+        }
+      ],
+      "lrs": {
+        "verb": "answered",
+        "objectId": "quiz_OG0021_core4_Q04_story_sequence",
+        "resultFields": [
+          "score_raw",
+          "scene_order",
+          "hint_used",
+          "evidence_raw",
+          "misconception_type",
+          "skill_tags",
+          "recommended_action",
+          "response_quality"
+        ]
+      },
+      "assessmentMetadata": {
+        "storyElement": "Story Sequence",
+        "operationalSkill": "Connect the story from beginning to end",
+        "skillTags": [
+          "Story Sequence",
+          "Beginning to End",
+          "Story Flow"
+        ]
+      },
+      "responseRubric": [
+        {
+          "score": 100,
+          "key": "accurate",
+          "responseQuality": "Accurate",
+          "labelEn": "Accurate",
+          "labelKo": "정확한 이해",
+          "definitionKo": "문항이 요구하는 핵심 Story Element와 관계를 정확히 이해한 증거가 있습니다.",
+          "evidenceRuleKo": "LCS=5/5",
+          "misconceptionType": "none",
+          "studentFeedbackKo": "모든 핵심 장면의 흐름과 사건이 결과로 이어지는 순서를 정확히 이해했어요.",
+          "parentFeedbackKo": "처음–중간–결과의 흐름을 안정적으로 배열하며 장면 간 선후관계와 결과의 연결을 정확히 이해합니다. 다음 활동: 다음 이야기로 이동하거나 사건의 원인과 결과를 말로 설명합니다.",
+          "recommendedActionKo": "다음 이야기로 이동하거나 사건의 원인과 결과를 말로 설명합니다.",
+          "studentFeedbackEn": "You put the whole story in order!"
+        },
+        {
+          "score": 67,
+          "key": "partial",
+          "responseQuality": "Partial",
+          "labelEn": "Partial",
+          "labelKo": "부분 이해",
+          "definitionKo": "핵심 정보는 파악했지만 순서·관계·세부 단서의 일부가 불완전합니다.",
+          "evidenceRuleKo": "LCS=4/5",
+          "misconceptionType": "local_sequence_gap",
+          "studentFeedbackKo": "이야기의 전체 흐름은 이해했어요. 헷갈린 중간 장면의 앞뒤를 다시 확인해 보세요.",
+          "parentFeedbackKo": "시작과 결과를 포함한 전체 흐름은 파악했으나 일부 중간 장면의 세부 순서가 불안정합니다. 다음 활동: 처음과 마지막 장면을 고정하고, 흔들린 중간 장면 두 개의 앞뒤를 다시 확인합니다.",
+          "recommendedActionKo": "처음과 마지막 장면을 고정하고, 흔들린 중간 장면 두 개의 앞뒤를 다시 확인합니다.",
+          "studentFeedbackEn": "You know the story flow. Check the middle scenes again."
+        },
+        {
+          "score": 33,
+          "key": "related",
+          "responseQuality": "Related",
+          "labelEn": "Related",
+          "labelKo": "관련 요소 인식·관계 오해",
+          "definitionKo": "이야기의 관련 요소는 인식했지만 질문이 요구하는 핵심 관계를 잘못 연결했습니다.",
+          "evidenceRuleKo": "LCS=2–3/5",
+          "misconceptionType": "event_relation_confusion",
+          "studentFeedbackKo": "몇몇 장면은 알아보았어요. 각 장면이 다음 사건으로 어떻게 이어지는지 다시 연결해 보세요.",
+          "parentFeedbackKo": "일부 핵심 장면은 인식하지만 사건 간 선후관계를 일관되게 구성하는 데 어려움이 있습니다. 다음 활동: Story Map에서 처음-문제-행동-결과를 연결한 뒤 다시 배열합니다.",
+          "recommendedActionKo": "Story Map에서 처음-문제-행동-결과를 연결한 뒤 다시 배열합니다.",
+          "studentFeedbackEn": "You found some story scenes. Connect what happens next."
+        },
+        {
+          "score": 0,
+          "key": "unrelated",
+          "responseQuality": "Unrelated",
+          "labelEn": "Unrelated",
+          "labelKo": "관련 없는 응답·이해 증거 없음",
+          "definitionKo": "응답하지 않았거나 문항의 핵심 이해를 뒷받침하는 증거가 없습니다.",
+          "evidenceRuleKo": "LCS=0–1/5 또는 무응답",
+          "misconceptionType": "no_sequence_evidence",
+          "studentFeedbackKo": "아직 장면의 흐름을 연결하기 어려워요. 처음 장면부터 한 장씩 함께 살펴보세요.",
+          "parentFeedbackKo": "현재 배열에서는 이야기 흐름과 결과에 대한 일관된 이해 증거가 확인되지 않습니다. 다음 활동: 이야기를 다시 읽고 핵심 장면을 한 장씩 말한 뒤 재시도합니다.",
+          "recommendedActionKo": "이야기를 다시 읽고 핵심 장면을 한 장씩 말한 뒤 재시도합니다.",
+          "studentFeedbackEn": "Start with the first scene and follow the story one step at a time."
+        }
+      ]
+    }
+  ],
+  "reporting": {
+    "overallFormula": "Internal summary only: average the four ordered question scores.",
+    "masteryBands": [
+      {
+        "key": "strong",
+        "min": 80,
+        "max": 100,
+        "labelKo": "통합적 이해",
+        "labelEn": "Strong"
+      },
+      {
+        "key": "developing",
+        "min": 60,
+        "max": 79,
+        "labelKo": "주요 내용 이해·관계 보완",
+        "labelEn": "Developing"
+      },
+      {
+        "key": "emerging",
+        "min": 40,
+        "max": 59,
+        "labelKo": "부분적 이해",
+        "labelEn": "Emerging"
+      },
+      {
+        "key": "foundation",
+        "min": 0,
+        "max": 39,
+        "labelKo": "기초 지원 필요",
+        "labelEn": "Foundation"
+      }
+    ],
+    "profileRule": "Use the response pattern and lowest story area to select feedback; do not interpret the average as Story Grammar proficiency.",
+    "skillProfiles": {
+      "Story Anchors": [
+        1
+      ],
+      "Story Direction": [
+        2,
+        3
+      ],
+      "Story Flow": [
+        4
+      ]
+    },
+    "studentDisplay": [
+      "What you did well",
+      "What to practice",
+      "What to do next"
+    ],
+    "validationStatus": "provisional_criterion_referenced_rules_pending_student_data_review"
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-core-story-logic",
+    "promptVersion": "core_story_v1",
+    "createdAt": "2026-09-15",
+    "notes": "Four-question pilot derived from the existing v3 quiz. The original six-question quiz remains unchanged.",
+    "scoringRubricVersion": "diagnostic-response-quality-v2"
+  },
+  "assessmentFramework": {
+    "name": "Core Story Comprehension Check",
+    "version": "pilot-1.0",
+    "theoreticalBasis": "Story Grammar-informed; operationalized for a four-question, story-specific comprehension check.",
+    "areas": [
+      {
+        "key": "setting",
+        "labelEn": "Setting",
+        "labelKo": "배경"
+      },
+      {
+        "key": "key_situation",
+        "labelEn": "Key Situation",
+        "labelKo": "핵심 상황"
+      },
+      {
+        "key": "key_action",
+        "labelEn": "Key Action",
+        "labelKo": "핵심 행동"
+      },
+      {
+        "key": "story_sequence",
+        "labelEn": "Story Sequence",
+        "labelKo": "전체 흐름"
+      }
+    ],
+    "designAxes": [
+      "Story Area",
+      "Response Quality"
+    ],
+    "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score."
+  }
+}

@@ -10,7 +10,9 @@
 body{font-family:'ABeeZee',sans-serif;background:linear-gradient(160deg,#F3EEFF,#EAF4FF,#FFF0F7);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:44px 20px}
 h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:clamp(24px,5vw,36px);color:#5B21B6;margin-bottom:8px;text-align:center}
 p{color:#6B7280;font-size:14px;margin-bottom:30px;text-align:center}
+h2{width:100%;max-width:1120px;font-family:'Nunito',sans-serif;font-size:20px;color:#4C1D95;margin:10px 0 14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1120px;width:100%}
+.grid+.section-title{margin-top:34px}
 .card{background:white;border-radius:22px;box-shadow:0 8px 28px rgba(124,58,237,.12);padding:22px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-decoration:none;transition:transform .2s,box-shadow .2s;border:2px solid #EDE9FE;min-height:190px}
 .card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(124,58,237,.2)}
 .card-id{font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;color:#7C3AED;background:#F5F3FF;padding:4px 12px;border-radius:50px}
@@ -21,7 +23,23 @@ p{color:#6B7280;font-size:14px;margin-bottom:30px;text-align:center}
 </head>
 <body>
 <h1>Reading Quiz v3</h1>
-<p>Story Grammar-focused quiz samples.</p>
+<p>Core story comprehension pilots and original six-question samples.</p>
+<h2 class="section-title">Core Story Quiz · 4 Questions</h2>
+<div class="grid">
+  <a class="card" href="OG0021/OG0021_CoreStoryQuiz.html">
+    <span class="card-id">OG0021 · CORE 4</span>
+    <div class="card-title">Milo and the Lost Color</div>
+    <div class="card-level">Setting · Key Situation · Key Action · Story Sequence</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+  <a class="card" href="OG0060/OG0060_CoreStoryQuiz.html">
+    <span class="card-id">OG0060 · CORE 4</span>
+    <div class="card-title">Little Pip's Big Change</div>
+    <div class="card-level">Setting · Key Situation · Key Action · Story Sequence</div>
+    <div class="card-btn">Open Quiz</div>
+  </a>
+</div>
+<h2 class="section-title">Original v3 · 6 Questions</h2>
 <div class="grid">
   <a class="card" href="OG0021/OG0021_ReadingQuiz.html">
     <span class="card-id">OG0021</span>
