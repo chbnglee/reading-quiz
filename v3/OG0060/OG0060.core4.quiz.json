@@ -739,36 +739,38 @@
       "type": "scene_word_unscramble",
       "storyGrammar": "key_action",
       "instruction": "Put the words in order.",
-      "hint": "Look at what Pip makes before his big change.",
+      "hint": "Look at what Pip does when his big change is complete.",
       "resources": {
         "images": [
           {
-            "id": "SC10",
-            "path": "OG0060_SC10_I.webp",
+            "id": "SC13",
+            "path": "OG0060_SC13_I.webp",
             "kind": "image",
-            "sceneId": "SC10"
+            "sceneId": "SC13"
           }
         ],
-        "scene": "SC10",
-        "sourceSentenceId": "SC10_ST01_N"
+        "scene": "SC13",
+        "sourceSentenceIds": [
+          "SC11_ST04_N",
+          "SC13_ST01_N",
+          "SC13_ST02_N"
+        ]
       },
       "interaction": {
         "promptMode": "word_unscramble",
         "items": [
-          "little",
+          "his bright orange wings.",
+          "flaps",
           "Pip",
-          "house.",
-          "hard",
-          "makes",
-          "a"
+          "and",
+          "comes out"
         ],
         "correct": [
           "Pip",
-          "makes",
-          "a",
-          "hard",
-          "little",
-          "house."
+          "comes out",
+          "and",
+          "flaps",
+          "his bright orange wings."
         ]
       },
       "diagnostics": [
@@ -870,42 +872,35 @@
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 1,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
           },
           {
-            "key": "makes",
+            "key": "comes out",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 2,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
           },
           {
-            "key": "a",
+            "key": "and",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 3,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
           },
           {
-            "key": "hard",
+            "key": "flaps",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 4,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
           },
           {
-            "key": "little",
+            "key": "his bright orange wings.",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 5,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          },
-          {
-            "key": "house.",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 6,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
           }
         ]
       }

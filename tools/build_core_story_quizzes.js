@@ -88,7 +88,19 @@ function configureKeyAction(question, id) {
     };
     question.scoring.components = orderedComponents(correct);
   } else {
-    question.hint = 'Look at what Pip makes before his big change.';
+    const correct = ['Pip', 'comes out', 'and', 'flaps', 'his bright orange wings.'];
+    question.hint = 'Look at what Pip does when his big change is complete.';
+    question.resources = {
+      images: [{ id: 'SC13', path: 'OG0060_SC13_I.webp', kind: 'image', sceneId: 'SC13' }],
+      scene: 'SC13',
+      sourceSentenceIds: ['SC11_ST04_N', 'SC13_ST01_N', 'SC13_ST02_N'],
+    };
+    question.interaction = {
+      promptMode: 'word_unscramble',
+      items: ['his bright orange wings.', 'flaps', 'Pip', 'and', 'comes out'],
+      correct,
+    };
+    question.scoring.components = orderedComponents(correct);
   }
 
   const rubricText = {
