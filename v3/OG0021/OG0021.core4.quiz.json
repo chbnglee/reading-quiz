@@ -1149,5 +1149,7 @@
       "Response Quality"
     ],
     "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score."
-  }
+  },
+  "productVersion": "story-v4.1",
+  "versionLabel": "Story Quiz v4.1"
 }

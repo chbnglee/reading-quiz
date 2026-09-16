@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "quiz-core-story-v1",
+  "schemaVersion": "quiz-core-story-v4.2",
   "story": {
     "storyId": "OG0060",
     "title": "Little Pip's Big Change",
@@ -276,12 +276,12 @@
     ]
   },
   "assets": {
-    "imageBasePath": "Image/",
-    "audioBasePath": "Audio/",
-    "coverBasePath": "Cover/",
-    "backgroundImage": "Image/OG0060_Talking_BG_I.webp",
-    "coverImage": "Cover/OG0060_Cover_L_I.webp",
-    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+    "imageBasePath": "../../v3/OG0060/Image/",
+    "audioBasePath": "../../v3/OG0060/Audio/",
+    "coverBasePath": "../../v3/OG0060/Cover/",
+    "backgroundImage": "../../v3/OG0060/Image/OG0060_Talking_BG_I.webp",
+    "coverImage": "../../v3/OG0060/Cover/OG0060_Cover_L_I.webp",
+    "hintCharacter": "../../v3/OG0060/Assets/BKTK_Characters_Bookey.png"
   },
   "storyGrammarAxes": [
     {
@@ -309,10 +309,10 @@
     {
       "qId": "OG0060_CORE4_Q01",
       "number": 1,
-      "type": "setting_slot_drag",
+      "type": "setting_progressive_choice",
       "storyGrammar": "setting",
-      "instruction": "Look at the picture. Fill in the boxes.",
-      "hint": "Who is there? Where is he? What does he do at first?",
+      "instruction": "Look at the picture. Choose one answer at a time.",
+      "hint": "Start with Who. Then choose What and Where.",
       "resources": {
         "images": [
           {
@@ -325,69 +325,69 @@
         "scene": "SC03"
       },
       "interaction": {
-        "promptMode": "slot_drag",
-        "slots": [
+        "promptMode": "progressive_binary_choice",
+        "revealOrder": [
+          "who",
+          "what",
+          "where"
+        ],
+        "steps": [
           {
             "key": "who",
             "label": "Who?",
             "correct": "pip",
-            "weight": 1
+            "options": [
+              {
+                "key": "pip",
+                "text": "Pip",
+                "diagnostic": ""
+              },
+              {
+                "key": "dot",
+                "text": "Dot",
+                "diagnostic": "나중에 등장하는 친구를 처음 인물로 혼동합니다."
+              }
+            ]
+          },
+          {
+            "key": "what",
+            "label": "What?",
+            "correct": "eats_leaf",
+            "options": [
+              {
+                "key": "eats_leaf",
+                "text": "eats the leaf",
+                "diagnostic": ""
+              },
+              {
+                "key": "flies_flowers",
+                "text": "flies above the flowers",
+                "diagnostic": "변화 이후의 행동을 처음 상황으로 혼동합니다."
+              }
+            ]
           },
           {
             "key": "where",
             "label": "Where?",
             "correct": "on_leaf",
-            "weight": 1
-          },
-          {
-            "key": "at_first",
-            "label": "At first...",
-            "correct": "eats_leaf",
-            "weight": 1
-          }
-        ],
-        "items": [
-          {
-            "key": "pip",
-            "text": "Pip",
-            "slot": "who",
-            "diagnostic": ""
-          },
-          {
-            "key": "dot",
-            "text": "Dot",
-            "slot": "who",
-            "diagnostic": "나중에 등장하는 친구를 처음 인물로 혼동합니다."
-          },
-          {
-            "key": "on_leaf",
-            "text": "on a green leaf",
-            "slot": "where",
-            "diagnostic": ""
-          },
-          {
-            "key": "among_flowers",
-            "text": "among the flowers",
-            "slot": "where",
-            "diagnostic": "결말의 장소를 처음 배경으로 혼동합니다."
-          },
-          {
-            "key": "eats_leaf",
-            "text": "eats the leaf",
-            "slot": "at_first",
-            "diagnostic": ""
-          },
-          {
-            "key": "flies_flowers",
-            "text": "flies above the flowers",
-            "slot": "at_first",
-            "diagnostic": "변화 이후의 행동을 처음 상황으로 혼동합니다."
+            "options": [
+              {
+                "key": "on_leaf",
+                "text": "on a green leaf",
+                "diagnostic": ""
+              },
+              {
+                "key": "among_flowers",
+                "text": "among the flowers",
+                "diagnostic": "결말의 장소를 처음 배경으로 혼동합니다."
+              }
+            ]
           }
         ],
         "correct": {
           "who": "pip",
-          "where": "on_leaf",
-          "at_first": "eats_leaf"
+          "what": "eats_leaf",
+          "where": "on_leaf"
         }
       },
       "diagnostics": [
@@ -399,7 +399,7 @@
       ],
       "lrs": {
         "verb": "answered",
-        "objectId": "quiz_OG0060_core4_Q01_setting",
+        "objectId": "quiz_OG0060_v42_Q01_setting_progressive",
         "resultFields": [
           "score_raw",
           "slot_values",
@@ -413,12 +413,13 @@
       },
       "assessmentMetadata": {
         "storyElement": "Setting",
-        "operationalSkill": "Identify story anchors",
+        "operationalSkill": "Identify who, what, and where with reduced choice load",
         "skillTags": [
           "Setting",
-          "Character",
-          "Place",
-          "Initial State"
+          "Who",
+          "What",
+          "Where",
+          "Progressive Reveal"
         ]
       },
       "responseRubric": [
@@ -480,31 +481,31 @@
         }
       ],
       "scoring": {
-        "type": "exact_slot_count_response_quality",
+        "type": "progressive_exact_choice_response_quality",
         "maxScore": 100,
-        "evidenceFormula": "evidence_raw = round(exact_slots / 3 * 100)",
+        "evidenceFormula": "evidence_raw = round(exact_choices / 3 * 100)",
         "reportingFormula": "3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0",
         "components": [
           {
             "key": "who",
             "weight": 1,
-            "rule": "exact_slot_match",
+            "rule": "exact_choice_match",
             "correctValue": "pip",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+            "rationale": "Choose between two character options."
+          },
+          {
+            "key": "what",
+            "weight": 1,
+            "rule": "exact_choice_match",
+            "correctValue": "eats_leaf",
+            "rationale": "Choose between two action or initial-state options."
           },
           {
             "key": "where",
             "weight": 1,
-            "rule": "exact_slot_match",
+            "rule": "exact_choice_match",
             "correctValue": "on_leaf",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
-          },
-          {
-            "key": "at_first",
-            "weight": 1,
-            "rule": "exact_slot_match",
-            "correctValue": "eats_leaf",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+            "rationale": "Choose between two place options."
           }
         ]
       }
@@ -1104,14 +1105,14 @@
   "generation": {
     "provider": "codex",
     "model": "manual-core-story-logic",
-    "promptVersion": "core_story_v1",
-    "createdAt": "2026-09-15",
-    "notes": "Four-question pilot derived from the existing v3 quiz. The original six-question quiz remains unchanged.",
+    "promptVersion": "core_story_v4.2",
+    "createdAt": "2026-09-16",
+    "notes": "v4.2 keeps the four story areas and replaces Q1 with progressive, category-bound binary choices.",
     "scoringRubricVersion": "diagnostic-response-quality-v2"
   },
   "assessmentFramework": {
     "name": "Core Story Comprehension Check",
-    "version": "pilot-1.0",
+    "version": "story-v4.2-pilot",
     "theoreticalBasis": "Story Grammar-informed; operationalized for a four-question, story-specific comprehension check.",
     "areas": [
       {
@@ -1139,7 +1140,8 @@
       "Story Area",
       "Response Quality"
     ],
-    "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score."
+    "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score.",
+    "q1Design": "Who, What, and Where are revealed one at a time. Each step presents only two same-category options."
   },
   "reporting": {
     "overallFormula": "Internal summary only: average the four ordered question scores.",
@@ -1193,6 +1195,6 @@
     ],
     "validationStatus": "provisional_criterion_referenced_rules_pending_student_data_review"
   },
-  "productVersion": "story-v4.1",
-  "versionLabel": "Story Quiz v4.1"
+  "productVersion": "story-v4.2",
+  "versionLabel": "Story Quiz v4.2"
 }

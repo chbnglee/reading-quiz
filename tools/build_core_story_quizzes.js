@@ -203,6 +203,8 @@ function buildCoreQuiz(original, id) {
 
   const quiz = clone(original);
   quiz.schemaVersion = 'quiz-core-story-v1';
+  quiz.productVersion = 'story-v4.1';
+  quiz.versionLabel = 'Story Quiz v4.1';
   quiz.storyGrammarAxes = Object.entries(labels).map(([key, value]) => ({ key, ...value }));
   quiz.questions = questions;
   quiz.generation = {
@@ -234,10 +236,95 @@ function buildCoreQuiz(original, id) {
   return quiz;
 }
 
+function buildV42Quiz(coreQuiz, id) {
+  const quiz = clone(coreQuiz);
+  quiz.schemaVersion = 'quiz-core-story-v4.2';
+  quiz.productVersion = 'story-v4.2';
+  quiz.versionLabel = 'Story Quiz v4.2';
+  quiz.assets.imageBasePath = `../../v3/${id}/Image/`;
+  quiz.assets.audioBasePath = `../../v3/${id}/Audio/`;
+  quiz.assets.coverBasePath = `../../v3/${id}/Cover/`;
+  quiz.assets.backgroundImage = `../../v3/${id}/Image/${id}_Talking_BG_I.webp`;
+  quiz.assets.coverImage = `../../v3/${id}/Cover/${id}_Cover_L_I.webp`;
+  quiz.assets.hintCharacter = `../../v3/${id}/Assets/BKTK_Characters_Bookey.png`;
+
+  const setting = quiz.questions[0];
+  const old = setting.interaction;
+  const makeStep = (key, label, slotKey, correctKey) => ({
+    key,
+    label,
+    correct: correctKey,
+    options: old.items
+      .filter(item => item.slot === slotKey)
+      .map(item => ({ key: item.key, text: item.text, diagnostic: item.diagnostic || '' })),
+  });
+  setting.type = 'setting_progressive_choice';
+  setting.instruction = 'Look at the picture. Choose one answer at a time.';
+  setting.hint = 'Start with Who. Then choose What and Where.';
+  setting.interaction = {
+    promptMode: 'progressive_binary_choice',
+    revealOrder: ['who', 'what', 'where'],
+    steps: [
+      makeStep('who', 'Who?', 'who', old.correct.who),
+      makeStep('what', 'What?', 'at_first', old.correct.at_first),
+      makeStep('where', 'Where?', 'where', old.correct.where),
+    ],
+    correct: {
+      who: old.correct.who,
+      what: old.correct.at_first,
+      where: old.correct.where,
+    },
+  };
+  setting.scoring = {
+    ...setting.scoring,
+    type: 'progressive_exact_choice_response_quality',
+    evidenceFormula: 'evidence_raw = round(exact_choices / 3 * 100)',
+    reportingFormula: '3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0',
+    components: [
+      { key: 'who', weight: 1, rule: 'exact_choice_match', correctValue: old.correct.who, rationale: 'Choose between two character options.' },
+      { key: 'what', weight: 1, rule: 'exact_choice_match', correctValue: old.correct.at_first, rationale: 'Choose between two action or initial-state options.' },
+      { key: 'where', weight: 1, rule: 'exact_choice_match', correctValue: old.correct.where, rationale: 'Choose between two place options.' },
+    ],
+  };
+  setting.assessmentMetadata = {
+    storyElement: 'Setting',
+    operationalSkill: 'Identify who, what, and where with reduced choice load',
+    skillTags: ['Setting', 'Who', 'What', 'Where', 'Progressive Reveal'],
+  };
+  setting.lrs.objectId = `quiz_${id}_v42_Q01_setting_progressive`;
+
+  quiz.generation = {
+    ...quiz.generation,
+    promptVersion: 'core_story_v4.2',
+    createdAt: '2026-09-16',
+    notes: 'v4.2 keeps the four story areas and replaces Q1 with progressive, category-bound binary choices.',
+  };
+  quiz.assessmentFramework = {
+    ...quiz.assessmentFramework,
+    version: 'story-v4.2-pilot',
+    q1Design: 'Who, What, and Where are revealed one at a time. Each step presents only two same-category options.',
+  };
+  return quiz;
+}
+
+function buildV41Quiz(coreQuiz, id) {
+  const quiz = clone(coreQuiz);
+  quiz.assets.imageBasePath = `../../v3/${id}/Image/`;
+  quiz.assets.audioBasePath = `../../v3/${id}/Audio/`;
+  quiz.assets.coverBasePath = `../../v3/${id}/Cover/`;
+  quiz.assets.backgroundImage = `../../v3/${id}/Image/${id}_Talking_BG_I.webp`;
+  quiz.assets.coverImage = `../../v3/${id}/Cover/${id}_Cover_L_I.webp`;
+  quiz.assets.hintCharacter = `../../v3/${id}/Assets/BKTK_Characters_Bookey.png`;
+  return quiz;
+}
+
 function buildHtml(sourceHtml, quiz, id) {
   let html = sourceHtml;
-  html = html.replace(/<title>.*?<\/title>/, `<title>${quiz.story.title} – Core Story Quiz</title>`);
-  html = html.replace('<h1>Reading Quiz</h1>', `<h1>Core Story Quiz</h1><p class="cover-subtitle">${quiz.story.title}</p>`);
+  const versionLabel = quiz.versionLabel || 'Story Quiz';
+  html = html.replace(/<title>.*?<\/title>/, `<title>${quiz.story.title} – ${versionLabel}</title>`);
+  html = html.replace('<h1>Reading Quiz</h1>', `<h1>${versionLabel}</h1><p class="cover-subtitle">${quiz.story.title}</p>`);
+  html = html.replace(/<img class="cover-img" src="[^"]+"/, `<img class="cover-img" src="${quiz.assets.coverImage}"`);
+  html = html.replace(/<div class="bookey" id="bookey"><button onclick="toggleHint\(\)"><img src="[^"]+"/, `<div class="bookey" id="bookey"><button onclick="toggleHint()"><img src="${quiz.assets.hintCharacter}"`);
   html = html.replace(/const QUIZ = .*?;\r?\nconst bg =/s, `const QUIZ = ${JSON.stringify(quiz)};\nconst bg =`);
   html = html.replace(
     'const sgOrder = ["consequence","setting","initiating_event","attempt","reaction","internal_response"];',
@@ -290,6 +377,41 @@ function buildHtml(sourceHtml, quiz, id) {
   return html;
 }
 
+function buildV42Html(sourceHtml, quiz, id) {
+  let html = buildHtml(sourceHtml, quiz, id);
+  html = html.replace(
+    "function renderBody(q,i){const b=el('body'+i);if(q.type==='story_sequence_drag')",
+    "function renderBody(q,i){const b=el('body'+i);if(q.type==='setting_progressive_choice'){const first=q.resources.images[0];b.innerHTML=`<div class=\"progressive-setting\"><div class=\"scene-grid single-grid\"><div class=\"scene-card image-only\"><img src=\"${img(first.path)}\"></div></div><div class=\"progressive-steps\">${q.interaction.steps.map((step,stepIndex)=>{const options=Math.random()<.5?[...step.options]:[...step.options].reverse();return `<div class=\"progressive-step ${stepIndex?'is-hidden':''}\" id=\"step${i}-${stepIndex}\"><div class=\"progressive-label\">${step.label}</div><div class=\"progressive-options\">${options.map(option=>`<button class=\"progressive-option\" data-step=\"${step.key}\" data-choice=\"${option.key}\" onclick=\"chooseProgressive(${i},${stepIndex},'${option.key}')\">${option.text}</button>`).join('')}</div></div>`}).join('')}</div></div>`;answers[i]={};el('check'+i).disabled=true;}else if(q.type==='story_sequence_drag')"
+  );
+  html = html.replace(
+    'function addSeqCard(i,r){',
+    "function chooseProgressive(i,stepIndex,key){if(scores[i]!=null)return;const q=QUIZ.questions[i],step=q.interaction.steps[stepIndex];answers[i][step.key]=key;document.querySelectorAll(`#step${i}-${stepIndex} .progressive-option`).forEach(button=>button.classList.toggle('selected',button.dataset.choice===key));const row=el(`step${i}-${stepIndex}`);row.classList.add('complete');const next=el(`step${i}-${stepIndex+1}`);if(next)next.classList.remove('is-hidden');el('check'+i).disabled=!q.interaction.steps.every(item=>answers[i][item.key]);}\nfunction addSeqCard(i,r){"
+  );
+  html = html.replace(
+    "function check(i){if(scores[i]!=null)return;const q=QUIZ.questions[i];let score=0,evidenceRaw=0,detail={};if(q.type==='story_sequence_drag')",
+    "function check(i){if(scores[i]!=null)return;const q=QUIZ.questions[i];let score=0,evidenceRaw=0,detail={};if(q.type==='setting_progressive_choice'){const exact=q.scoring.components.filter(c=>answers[i][c.key]===c.correctValue).length,total=q.scoring.components.length;score=exact===total?100:exact===2?67:exact===1?33:0;evidenceRaw=Math.round(exact/total*100);detail={score,evidenceRaw,exact,total,choices:{...answers[i]}};document.querySelectorAll(`#body${i} .progressive-option`).forEach(button=>{const step=q.interaction.steps.find(item=>item.key===button.dataset.step);if(button.dataset.choice===step.correct)button.classList.add('correct');else if(answers[i][step.key]===button.dataset.choice)button.classList.add('wrong')});}else if(q.type==='story_sequence_drag')"
+  );
+  const extraCss = `
+<style>
+.progressive-setting{max-width:820px;margin:0 auto}
+.progressive-setting .single-grid{max-width:470px;margin:0 auto 18px}
+.progressive-steps{display:grid;gap:12px}
+.progressive-step{display:grid;grid-template-columns:112px 1fr;gap:14px;align-items:stretch;max-height:150px;opacity:1;transform:translateY(0);transition:max-height .28s ease,opacity .22s ease,transform .28s ease,padding .28s ease,border-width .28s ease;overflow:hidden;border-top:1px solid #EDE9FE;padding-top:12px}
+.progressive-step:first-child{border-top:0}
+.progressive-step.is-hidden{max-height:0;opacity:0;transform:translateY(-10px);padding-top:0;border-width:0;pointer-events:none}
+.progressive-label{display:flex;align-items:center;justify-content:center;border-radius:16px;background:#EDE9FE;color:#5B21B6;font:900 18px 'Nunito',sans-serif;box-shadow:0 5px 0 #DDD6FE}
+.progressive-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.progressive-option{min-height:58px;border:2px solid #E5E7EB;border-radius:16px;background:#F8FAFF;color:#374151;padding:10px 14px;font:800 16px 'Nunito',sans-serif;cursor:pointer;box-shadow:0 5px 12px rgba(76,29,149,.08);transition:.15s}
+.progressive-option:hover{border-color:#C4B5FD;transform:translateY(-1px)}
+.progressive-option.selected{border-color:#7C3AED;background:#EDE9FE;color:#4C1D95;box-shadow:0 0 0 3px #F5F3FF}
+.progressive-option.correct{border-color:#10B981;background:#ECFDF5;color:#065F46}
+.progressive-option.wrong{border-color:#EF4444;background:#FEF2F2;color:#991B1B}
+@media(max-width:620px){.progressive-step{grid-template-columns:84px 1fr;gap:8px}.progressive-options{gap:7px}.progressive-option{font-size:14px;padding:8px}.progressive-label{font-size:15px}}
+</style>`;
+  html = html.replace('</head>', `${extraCss}\n</head>`);
+  return html;
+}
+
 for (const id of quizIds) {
   const dir = path.join(root, 'v3', id);
   const jsonPath = path.join(dir, `${id}.quiz.json`);
@@ -299,6 +421,18 @@ for (const id of quizIds) {
   const quiz = buildCoreQuiz(original, id);
   fs.writeFileSync(path.join(dir, `${id}.core4.quiz.json`), JSON.stringify(quiz, null, 2) + '\n');
   fs.writeFileSync(path.join(dir, `${id}_CoreStoryQuiz.html`), buildHtml(sourceHtml, quiz, id));
+
+  const v41 = buildV41Quiz(quiz, id);
+  const v41Dir = path.join(root, 'story-v4.1', id);
+  fs.mkdirSync(v41Dir, { recursive: true });
+  fs.writeFileSync(path.join(v41Dir, `${id}.v41.quiz.json`), JSON.stringify(v41, null, 2) + '\n');
+  fs.writeFileSync(path.join(v41Dir, `${id}_StoryQuiz.html`), buildHtml(sourceHtml, v41, id));
+
+  const v42 = buildV42Quiz(quiz, id);
+  const v42Dir = path.join(root, 'v4.2', id);
+  fs.mkdirSync(v42Dir, { recursive: true });
+  fs.writeFileSync(path.join(v42Dir, `${id}.v42.quiz.json`), JSON.stringify(v42, null, 2) + '\n');
+  fs.writeFileSync(path.join(v42Dir, `${id}_StoryQuiz.html`), buildV42Html(sourceHtml, v42, id));
 }
 
 console.log('Built core story quizzes for ' + quizIds.join(', '));

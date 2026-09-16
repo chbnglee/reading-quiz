@@ -1,25 +1,21 @@
 {
   "schemaVersion": "quiz-core-story-v1",
   "story": {
-    "storyId": "OG0060",
-    "title": "Little Pip's Big Change",
-    "level": "Level 1",
-    "text": "SC01_ST01_N = Look at the green leaf.\nSC01_ST02_N = There is a small egg.\nSC01_ST03_N = It shakes a little.\nSC02_ST01_N = Crack!\nSC02_ST02_N = Crack!\nSC02_ST03_N = A small caterpillar comes out.\nSC02_ST04_N = His name is Pip.\nSC03_ST01_N = Pip is very hungry.\nSC03_ST02_N = He takes a big chomp.\nSC03_ST03_N = Chomp, chomp, chomp!\nSC04_ST01_N = Pip eats all day long.\nSC04_ST02_N = Soon, the leaf has many holes.\nSC05_ST01_N = Then Pip hears a little voice.\nSC05_ST02_N = \"Hello?\" says the voice.\nSC05_ST03_N = Pip looks through a hole.\nSC06_ST01_N = There is another caterpillar!\nSC06_ST02_N = \"Hi!\"\nSC06_ST03_N = I'm Dot,\" she says.\nSC06_ST04_N = They become friends.\nSC07_ST01_N = Pip and Dot eat together.\nSC07_ST02_N = Chomp, chomp, chomp!\nSC07_ST03_N = Pip grows and grows.\nSC08_ST01_N = \"This is fun!\"\nSC08_ST02_N = Pip says.\nSC08_ST03_N = But Pip's eyes slowly close.\nSC08_ST04_N = He feels very sleepy.\nSC09_ST01_N = Dot smiles kindly.\nSC09_ST02_N = \"Goodbye for now, Pip,\" she says.\nSC09_ST03_N = \"See you soon!\"\nSC10_ST01_N = Pip makes a hard little house.\nSC10_ST02_N = It is dark inside.\nSC10_ST03_N = Pip sleeps for a long time.\nSC11_ST01_N = One sunny morning, the hard house cracks.\nSC11_ST02_N = Crack!\nSC11_ST03_N = Crack!\nSC11_ST04_N = Something comes out slowly.\nSC12_ST01_N = Dot comes to the house.\nSC12_ST02_N = \"Pip?\" she whispers.\nSC12_ST03_N = \"Is that you?\"\nSC13_ST01_N = Pip has bright orange wings now.\nSC13_ST02_N = He flaps them slowly.\nSC13_ST03_N = \"I can fly!\" he says.\nSC14_ST01_N = Pip flies above the flowers.\nSC14_ST02_N = Dot waves from the leaf.\nSC14_ST03_N = \"You are beautiful, Pip!\"\nSC15_ST01_N = Pip lands beside Dot.\nSC15_ST02_N = \"I will wait for you now,\" he says.\nSC15_ST03_N = Then they smile at each other.",
+    "storyId": "OG0021",
+    "title": "Milo and the Lost Color",
+    "level": "Level 2",
+    "text": "SC01_ST01_N = Milo is a little chameleon.\nSC01_ST02_N = He loves to change colors–green, blue, red!\nSC02_ST01_N = But one morning, he wakes up gray.\nSC02_ST02_N = \"Oh no!\nSC02_ST03_N = Where is my color?\"\nSC02_ST04_N = Milo says.\nSC02_ST05_N = He looks at his tail.\nSC02_ST06_N = It's still gray.\nSC02_ST07_N = He feels sad and shy.\nSC03_ST01_N = Milo walks into the forest.\nSC03_ST02_N = He sees a yellow butterfly.\nSC03_ST03_N = \"Can I have your color?\" he asks.\nSC04_ST01_N = The butterfly smiles.\nSC04_ST02_N = \"My color helps me fly.\"\nSC04_ST03_N = Milo smiles back.\nSC04_ST04_N = \"Then I will keep looking.\"\nSC04_ST05_N = He waves goodbye.\nSC05_ST01_N = He meets a red flower.\nSC05_ST02_N = \"Can I have your color?\"\nSC05_ST03_N = Milo asks.\nSC05_ST04_N = The flower says, \"My color helps the bees find me.\"\nSC06_ST01_N = Milo is sad.\nSC06_ST02_N = \"Everyone has their own color.\"\nSC06_ST03_N = He sits by a blue pond.\nSC06_ST04_N = He cries.\nSC06_ST05_N = A tiny drop falls into the water.\nSC07_ST01_N = The pond shines!\nSC07_ST02_N = Milo sees many colors in the water–red, yellow, blue, green.\nSC07_ST03_N = They mix and dance like a rainbow.\nSC08_ST01_N = Milo laughs.\nSC08_ST02_N = \"Maybe my color is inside me!\"\nSC08_ST03_N = He takes a deep breath and closes his eyes.\nSC08_ST04_N = His body starts to glow.\nSC09_ST01_N = Green!\nSC09_ST02_N = Then blue!\nSC09_ST03_N = Then red again!\nSC09_ST04_N = Milo's colors come back, brighter than before.\nSC09_ST05_N = He feels happy and warm.\nSC10_ST01_N = Milo runs home.\nSC10_ST02_N = He looks in the mirror.\nSC10_ST03_N = \"I found my color.\nSC10_ST04_N = It's me!\" he says proudly.",
     "scenes": [
       {
         "sceneId": "SC01",
         "sentences": [
           {
             "sentenceId": "SC01_ST01_N",
-            "text": "Look at the green leaf."
+            "text": "Milo is a little chameleon."
           },
           {
             "sentenceId": "SC01_ST02_N",
-            "text": "There is a small egg."
-          },
-          {
-            "sentenceId": "SC01_ST03_N",
-            "text": "It shakes a little."
+            "text": "He loves to change colors–green, blue, red!"
           }
         ]
       },
@@ -28,19 +24,31 @@
         "sentences": [
           {
             "sentenceId": "SC02_ST01_N",
-            "text": "Crack!"
+            "text": "But one morning, he wakes up gray."
           },
           {
             "sentenceId": "SC02_ST02_N",
-            "text": "Crack!"
+            "text": "\"Oh no!"
           },
           {
             "sentenceId": "SC02_ST03_N",
-            "text": "A small caterpillar comes out."
+            "text": "Where is my color?\""
           },
           {
             "sentenceId": "SC02_ST04_N",
-            "text": "His name is Pip."
+            "text": "Milo says."
+          },
+          {
+            "sentenceId": "SC02_ST05_N",
+            "text": "He looks at his tail."
+          },
+          {
+            "sentenceId": "SC02_ST06_N",
+            "text": "It's still gray."
+          },
+          {
+            "sentenceId": "SC02_ST07_N",
+            "text": "He feels sad and shy."
           }
         ]
       },
@@ -49,15 +57,15 @@
         "sentences": [
           {
             "sentenceId": "SC03_ST01_N",
-            "text": "Pip is very hungry."
+            "text": "Milo walks into the forest."
           },
           {
             "sentenceId": "SC03_ST02_N",
-            "text": "He takes a big chomp."
+            "text": "He sees a yellow butterfly."
           },
           {
             "sentenceId": "SC03_ST03_N",
-            "text": "Chomp, chomp, chomp!"
+            "text": "\"Can I have your color?\" he asks."
           }
         ]
       },
@@ -66,11 +74,23 @@
         "sentences": [
           {
             "sentenceId": "SC04_ST01_N",
-            "text": "Pip eats all day long."
+            "text": "The butterfly smiles."
           },
           {
             "sentenceId": "SC04_ST02_N",
-            "text": "Soon, the leaf has many holes."
+            "text": "\"My color helps me fly.\""
+          },
+          {
+            "sentenceId": "SC04_ST03_N",
+            "text": "Milo smiles back."
+          },
+          {
+            "sentenceId": "SC04_ST04_N",
+            "text": "\"Then I will keep looking.\""
+          },
+          {
+            "sentenceId": "SC04_ST05_N",
+            "text": "He waves goodbye."
           }
         ]
       },
@@ -79,15 +99,19 @@
         "sentences": [
           {
             "sentenceId": "SC05_ST01_N",
-            "text": "Then Pip hears a little voice."
+            "text": "He meets a red flower."
           },
           {
             "sentenceId": "SC05_ST02_N",
-            "text": "\"Hello?\" says the voice."
+            "text": "\"Can I have your color?\""
           },
           {
             "sentenceId": "SC05_ST03_N",
-            "text": "Pip looks through a hole."
+            "text": "Milo asks."
+          },
+          {
+            "sentenceId": "SC05_ST04_N",
+            "text": "The flower says, \"My color helps the bees find me.\""
           }
         ]
       },
@@ -96,19 +120,23 @@
         "sentences": [
           {
             "sentenceId": "SC06_ST01_N",
-            "text": "There is another caterpillar!"
+            "text": "Milo is sad."
           },
           {
             "sentenceId": "SC06_ST02_N",
-            "text": "\"Hi!\""
+            "text": "\"Everyone has their own color.\""
           },
           {
             "sentenceId": "SC06_ST03_N",
-            "text": "I'm Dot,\" she says."
+            "text": "He sits by a blue pond."
           },
           {
             "sentenceId": "SC06_ST04_N",
-            "text": "They become friends."
+            "text": "He cries."
+          },
+          {
+            "sentenceId": "SC06_ST05_N",
+            "text": "A tiny drop falls into the water."
           }
         ]
       },
@@ -117,15 +145,15 @@
         "sentences": [
           {
             "sentenceId": "SC07_ST01_N",
-            "text": "Pip and Dot eat together."
+            "text": "The pond shines!"
           },
           {
             "sentenceId": "SC07_ST02_N",
-            "text": "Chomp, chomp, chomp!"
+            "text": "Milo sees many colors in the water–red, yellow, blue, green."
           },
           {
             "sentenceId": "SC07_ST03_N",
-            "text": "Pip grows and grows."
+            "text": "They mix and dance like a rainbow."
           }
         ]
       },
@@ -134,19 +162,19 @@
         "sentences": [
           {
             "sentenceId": "SC08_ST01_N",
-            "text": "\"This is fun!\""
+            "text": "Milo laughs."
           },
           {
             "sentenceId": "SC08_ST02_N",
-            "text": "Pip says."
+            "text": "\"Maybe my color is inside me!\""
           },
           {
             "sentenceId": "SC08_ST03_N",
-            "text": "But Pip's eyes slowly close."
+            "text": "He takes a deep breath and closes his eyes."
           },
           {
             "sentenceId": "SC08_ST04_N",
-            "text": "He feels very sleepy."
+            "text": "His body starts to glow."
           }
         ]
       },
@@ -155,15 +183,23 @@
         "sentences": [
           {
             "sentenceId": "SC09_ST01_N",
-            "text": "Dot smiles kindly."
+            "text": "Green!"
           },
           {
             "sentenceId": "SC09_ST02_N",
-            "text": "\"Goodbye for now, Pip,\" she says."
+            "text": "Then blue!"
           },
           {
             "sentenceId": "SC09_ST03_N",
-            "text": "\"See you soon!\""
+            "text": "Then red again!"
+          },
+          {
+            "sentenceId": "SC09_ST04_N",
+            "text": "Milo's colors come back, brighter than before."
+          },
+          {
+            "sentenceId": "SC09_ST05_N",
+            "text": "He feels happy and warm."
           }
         ]
       },
@@ -172,116 +208,31 @@
         "sentences": [
           {
             "sentenceId": "SC10_ST01_N",
-            "text": "Pip makes a hard little house."
+            "text": "Milo runs home."
           },
           {
             "sentenceId": "SC10_ST02_N",
-            "text": "It is dark inside."
+            "text": "He looks in the mirror."
           },
           {
             "sentenceId": "SC10_ST03_N",
-            "text": "Pip sleeps for a long time."
-          }
-        ]
-      },
-      {
-        "sceneId": "SC11",
-        "sentences": [
-          {
-            "sentenceId": "SC11_ST01_N",
-            "text": "One sunny morning, the hard house cracks."
+            "text": "\"I found my color."
           },
           {
-            "sentenceId": "SC11_ST02_N",
-            "text": "Crack!"
-          },
-          {
-            "sentenceId": "SC11_ST03_N",
-            "text": "Crack!"
-          },
-          {
-            "sentenceId": "SC11_ST04_N",
-            "text": "Something comes out slowly."
-          }
-        ]
-      },
-      {
-        "sceneId": "SC12",
-        "sentences": [
-          {
-            "sentenceId": "SC12_ST01_N",
-            "text": "Dot comes to the house."
-          },
-          {
-            "sentenceId": "SC12_ST02_N",
-            "text": "\"Pip?\" she whispers."
-          },
-          {
-            "sentenceId": "SC12_ST03_N",
-            "text": "\"Is that you?\""
-          }
-        ]
-      },
-      {
-        "sceneId": "SC13",
-        "sentences": [
-          {
-            "sentenceId": "SC13_ST01_N",
-            "text": "Pip has bright orange wings now."
-          },
-          {
-            "sentenceId": "SC13_ST02_N",
-            "text": "He flaps them slowly."
-          },
-          {
-            "sentenceId": "SC13_ST03_N",
-            "text": "\"I can fly!\" he says."
-          }
-        ]
-      },
-      {
-        "sceneId": "SC14",
-        "sentences": [
-          {
-            "sentenceId": "SC14_ST01_N",
-            "text": "Pip flies above the flowers."
-          },
-          {
-            "sentenceId": "SC14_ST02_N",
-            "text": "Dot waves from the leaf."
-          },
-          {
-            "sentenceId": "SC14_ST03_N",
-            "text": "\"You are beautiful, Pip!\""
-          }
-        ]
-      },
-      {
-        "sceneId": "SC15",
-        "sentences": [
-          {
-            "sentenceId": "SC15_ST01_N",
-            "text": "Pip lands beside Dot."
-          },
-          {
-            "sentenceId": "SC15_ST02_N",
-            "text": "\"I will wait for you now,\" he says."
-          },
-          {
-            "sentenceId": "SC15_ST03_N",
-            "text": "Then they smile at each other."
+            "sentenceId": "SC10_ST04_N",
+            "text": "It's me!\" he says proudly."
           }
         ]
       }
     ]
   },
   "assets": {
-    "imageBasePath": "Image/",
-    "audioBasePath": "Audio/",
-    "coverBasePath": "Cover/",
-    "backgroundImage": "Image/OG0060_Talking_BG_I.webp",
-    "coverImage": "Cover/OG0060_Cover_L_I.webp",
-    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+    "imageBasePath": "../../v3/OG0021/Image/",
+    "audioBasePath": "../../v3/OG0021/Audio/",
+    "coverBasePath": "../../v3/OG0021/Cover/",
+    "backgroundImage": "../../v3/OG0021/Image/OG0021_Talking_BG_I.webp",
+    "coverImage": "../../v3/OG0021/Cover/OG0021_Cover_L_I.webp",
+    "hintCharacter": "../../v3/OG0021/Assets/BKTK_Characters_Bookey.png"
   },
   "storyGrammarAxes": [
     {
@@ -307,22 +258,22 @@
   ],
   "questions": [
     {
-      "qId": "OG0060_CORE4_Q01",
+      "qId": "OG0021_CORE4_Q01",
       "number": 1,
       "type": "setting_slot_drag",
       "storyGrammar": "setting",
       "instruction": "Look at the picture. Fill in the boxes.",
-      "hint": "Who is there? Where is he? What does he do at first?",
+      "hint": "Who is there? Where is he?",
       "resources": {
         "images": [
           {
-            "id": "SC03",
-            "path": "OG0060_SC03_I.webp",
+            "id": "SC01",
+            "path": "OG0021_SC01_I.webp",
             "kind": "image",
-            "sceneId": "SC03"
+            "sceneId": "SC01"
           }
         ],
-        "scene": "SC03"
+        "scene": "SC01"
       },
       "interaction": {
         "promptMode": "slot_drag",
@@ -330,85 +281,114 @@
           {
             "key": "who",
             "label": "Who?",
-            "correct": "pip",
-            "weight": 1
+            "correct": "milo",
+            "weight": 2.5
           },
           {
             "key": "where",
             "label": "Where?",
-            "correct": "on_leaf",
-            "weight": 1
+            "correct": "forest",
+            "weight": 2
           },
           {
             "key": "at_first",
             "label": "At first...",
-            "correct": "eats_leaf",
-            "weight": 1
+            "correct": "changes_colors",
+            "weight": 1.5
           }
         ],
         "items": [
           {
-            "key": "pip",
-            "text": "Pip",
+            "key": "milo",
+            "text": "Milo",
             "slot": "who",
             "diagnostic": ""
           },
           {
-            "key": "dot",
-            "text": "Dot",
+            "key": "butterfly",
+            "text": "the butterfly",
             "slot": "who",
-            "diagnostic": "나중에 등장하는 친구를 처음 인물로 혼동합니다."
+            "diagnostic": "초반 주인공과 이후 만나는 인물을 혼동합니다."
           },
           {
-            "key": "on_leaf",
-            "text": "on a green leaf",
+            "key": "forest",
+            "text": "in the forest",
             "slot": "where",
             "diagnostic": ""
           },
           {
-            "key": "among_flowers",
-            "text": "among the flowers",
+            "key": "blue_pond",
+            "text": "by a blue pond",
             "slot": "where",
-            "diagnostic": "결말의 장소를 처음 배경으로 혼동합니다."
+            "diagnostic": "중간 장면의 장소를 처음 배경으로 혼동합니다."
           },
           {
-            "key": "eats_leaf",
-            "text": "eats the leaf",
+            "key": "changes_colors",
+            "text": "loves to change colors",
             "slot": "at_first",
             "diagnostic": ""
           },
           {
-            "key": "flies_flowers",
-            "text": "flies above the flowers",
+            "key": "looks_mirror",
+            "text": "looks in the mirror",
             "slot": "at_first",
-            "diagnostic": "변화 이후의 행동을 처음 상황으로 혼동합니다."
+            "diagnostic": "결말 장면을 처음 상황으로 혼동합니다."
           }
         ],
         "correct": {
-          "who": "pip",
-          "where": "on_leaf",
-          "at_first": "eats_leaf"
+          "who": "milo",
+          "where": "forest",
+          "at_first": "changes_colors"
         }
+      },
+      "scoring": {
+        "type": "exact_slot_count_response_quality",
+        "maxScore": 100,
+        "evidenceFormula": "evidence_raw = round(exact_slots / 3 * 100)",
+        "reportingFormula": "3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0",
+        "components": [
+          {
+            "key": "who",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "milo",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          },
+          {
+            "key": "where",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "forest",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          },
+          {
+            "key": "at_first",
+            "weight": 1,
+            "rule": "exact_slot_match",
+            "correctValue": "changes_colors",
+            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
+          }
+        ]
       },
       "diagnostics": [
         {
           "code": "setting_gap",
           "threshold": 67,
-          "messageKo": "이야기 초반의 인물·장소·처음 행동을 구분하는 연습이 필요합니다."
+          "messageKo": "이야기의 처음 장면에서 인물, 장소, 처음 상황을 구분하는 연습이 필요합니다."
         }
       ],
       "lrs": {
         "verb": "answered",
-        "objectId": "quiz_OG0060_core4_Q01_setting",
+        "objectId": "quiz_OG0021_core4_Q01_setting",
         "resultFields": [
           "score_raw",
           "slot_values",
           "hint_used",
           "evidence_raw",
-          "response_quality",
           "misconception_type",
           "skill_tags",
-          "recommended_action"
+          "recommended_action",
+          "response_quality"
         ]
       },
       "assessmentMetadata": {
@@ -478,77 +458,48 @@
           "recommendedActionKo": "첫 장면을 다시 보고 인물부터 함께 찾은 뒤 장소와 상황으로 확장합니다.",
           "studentFeedbackEn": "Look at the picture again. Start with “Who?”"
         }
-      ],
-      "scoring": {
-        "type": "exact_slot_count_response_quality",
-        "maxScore": 100,
-        "evidenceFormula": "evidence_raw = round(exact_slots / 3 * 100)",
-        "reportingFormula": "3 exact -> 100; 2 exact -> 67; 1 exact -> 33; 0 exact -> 0",
-        "components": [
-          {
-            "key": "who",
-            "weight": 1,
-            "rule": "exact_slot_match",
-            "correctValue": "pip",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
-          },
-          {
-            "key": "where",
-            "weight": 1,
-            "rule": "exact_slot_match",
-            "correctValue": "on_leaf",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
-          },
-          {
-            "key": "at_first",
-            "weight": 1,
-            "rule": "exact_slot_match",
-            "correctValue": "eats_leaf",
-            "rationale": "Who, Where, and At first are equally weighted Story Setting elements."
-          }
-        ]
-      }
+      ]
     },
     {
-      "qId": "OG0060_CORE4_Q02",
+      "qId": "OG0021_CORE4_Q02",
       "number": 2,
       "type": "listen_scene_mcq",
       "storyGrammar": "key_situation",
-      "instruction": "Listen. What happens to Pip?",
-      "hint": "Listen for the change that leads to Pip’s big change.",
+      "instruction": "Listen. What happens to Milo?",
+      "hint": "Listen for the change that gives Milo his problem.",
       "resources": {
         "images": [
           {
-            "id": "SC03",
-            "path": "OG0060_SC03_I.webp",
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
             "kind": "image",
-            "sceneId": "SC03"
+            "sceneId": "SC02"
           },
           {
-            "id": "SC08",
-            "path": "OG0060_SC08_I.webp",
+            "id": "SC04",
+            "path": "OG0021_SC04_I.webp",
             "kind": "image",
-            "sceneId": "SC08"
+            "sceneId": "SC04"
+          },
+          {
+            "id": "SC07",
+            "path": "OG0021_SC07_I.webp",
+            "kind": "image",
+            "sceneId": "SC07"
           },
           {
             "id": "SC10",
-            "path": "OG0060_SC10_I.webp",
+            "path": "OG0021_SC10_I.webp",
             "kind": "image",
             "sceneId": "SC10"
-          },
-          {
-            "id": "SC13",
-            "path": "OG0060_SC13_I.webp",
-            "kind": "image",
-            "sceneId": "SC13"
           }
         ],
         "audio": {
-          "id": "SC08_ST04_N_A",
-          "path": "OG0060_SC08_ST04_N_A.mp3",
+          "id": "SC02_ST01_N_A",
+          "path": "OG0021_SC02_ST01_N_A.mp3",
           "kind": "audio",
-          "sceneId": "SC08",
-          "sentenceId": "SC08_ST04_N"
+          "sceneId": "SC02",
+          "sentenceId": "SC02_ST01_N"
         }
       },
       "interaction": {
@@ -556,50 +507,93 @@
         "options": [
           {
             "key": "A",
-            "text": "Pip eats a leaf.",
-            "score": 33,
-            "isCorrect": false,
-            "diagnostic": "성장 전의 일상 행동을 변화의 시작으로 혼동합니다.",
-            "responseQuality": "Related",
-            "scene": "SC03",
-            "misconceptionType": "story_phase_confusion",
-            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다."
-          },
-          {
-            "key": "B",
-            "text": "Pip becomes very sleepy.",
+            "text": "Milo wakes up gray.",
             "score": 100,
             "isCorrect": true,
             "diagnostic": "",
-            "responseQuality": "Accurate",
-            "scene": "SC08",
+            "scene": "SC02",
             "misconceptionType": "none",
-            "recommendedActionKo": "문제가 시작된 까닭과 다음 사건을 연결해 말합니다."
+            "recommendedActionKo": "문제가 시작된 까닭과 다음 사건을 연결해 말합니다.",
+            "responseQuality": "Accurate"
+          },
+          {
+            "key": "B",
+            "text": "The butterfly keeps its color.",
+            "score": 33,
+            "isCorrect": false,
+            "diagnostic": "문제의 시작이 아니라 첫 만남 장면을 선택합니다.",
+            "scene": "SC04",
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다.",
+            "responseQuality": "Related"
           },
           {
             "key": "C",
-            "text": "Pip sleeps inside a hard little house.",
-            "score": 67,
+            "text": "The pond shines.",
+            "score": 33,
             "isCorrect": false,
-            "diagnostic": "변화 과정은 찾았지만 그 과정을 시작하게 한 졸림보다 뒤 장면을 선택합니다.",
-            "responseQuality": "Partial",
-            "scene": "SC10",
-            "misconceptionType": "partial_problem_relation",
-            "recommendedActionKo": "문제의 단서는 찾았으므로, 그 단서가 어떤 변화를 일으켰는지 확인합니다."
+            "diagnostic": "해결의 실마리 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC07",
+            "misconceptionType": "story_phase_confusion",
+            "recommendedActionKo": "배경·문제 시작·결과·해결 장면을 네 칸으로 나누어 비교합니다.",
+            "responseQuality": "Related"
           },
           {
             "key": "D",
-            "text": "Pip comes out with wings.",
+            "text": "Milo looks in the mirror.",
             "score": 0,
             "isCorrect": false,
-            "diagnostic": "변화의 결과를 변화의 시작으로 혼동합니다.",
-            "responseQuality": "Unrelated",
-            "scene": "SC13",
+            "diagnostic": "결말 장면을 사건 시작으로 혼동합니다.",
+            "scene": "SC10",
             "misconceptionType": "no_problem_evidence",
-            "recommendedActionKo": "오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다."
+            "recommendedActionKo": "오디오를 다시 듣고 ‘처음 큰 변화’가 생기는 장면을 함께 찾습니다.",
+            "responseQuality": "Unrelated"
           }
         ],
-        "correct": "B"
+        "correct": "A"
+      },
+      "scoring": {
+        "type": "ordered_option_response_quality",
+        "maxScore": 100,
+        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
+        "components": [
+          {
+            "key": "A",
+            "weight": 100,
+            "rule": "preclassified_response_quality",
+            "correctValue": true,
+            "responseQuality": "Accurate",
+            "misconceptionType": "none",
+            "rationale": "Correct response."
+          },
+          {
+            "key": "B",
+            "weight": 33,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Related",
+            "misconceptionType": "story_phase_confusion",
+            "rationale": "문제의 시작이 아니라 첫 만남 장면을 선택합니다."
+          },
+          {
+            "key": "C",
+            "weight": 33,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Related",
+            "misconceptionType": "story_phase_confusion",
+            "rationale": "해결의 실마리 장면을 사건 시작으로 혼동합니다."
+          },
+          {
+            "key": "D",
+            "weight": 0,
+            "rule": "preclassified_response_quality",
+            "correctValue": false,
+            "responseQuality": "Unrelated",
+            "misconceptionType": "no_problem_evidence",
+            "rationale": "결말 장면을 사건 시작으로 혼동합니다."
+          }
+        ]
       },
       "diagnostics": [
         {
@@ -610,16 +604,17 @@
       ],
       "lrs": {
         "verb": "answered",
-        "objectId": "quiz_OG0060_core4_Q02_key_situation",
+        "objectId": "quiz_OG0021_core4_Q02_key_situation",
         "resultFields": [
           "score_raw",
           "option_selected",
+          "audio_src",
           "hint_used",
           "evidence_raw",
-          "response_quality",
           "misconception_type",
           "skill_tags",
-          "recommended_action"
+          "recommended_action",
+          "response_quality"
         ]
       },
       "assessmentMetadata": {
@@ -688,89 +683,94 @@
           "recommendedActionKo": "오디오를 다시 듣고 처음 상황에서 달라진 점을 함께 찾습니다.",
           "studentFeedbackEn": "Listen again. Find the scene that changes the story."
         }
-      ],
-      "scoring": {
-        "type": "ordered_option_response_quality",
-        "maxScore": 100,
-        "formula": "score = selected_option.score; allowed values = 100, 67, 33, 0",
-        "components": [
-          {
-            "key": "A",
-            "weight": 33,
-            "rule": "preclassified_response_quality",
-            "correctValue": false,
-            "responseQuality": "Related",
-            "misconceptionType": "story_phase_confusion",
-            "rationale": "성장 전의 일상 행동을 변화의 시작으로 혼동합니다."
-          },
-          {
-            "key": "B",
-            "weight": 100,
-            "rule": "preclassified_response_quality",
-            "correctValue": true,
-            "responseQuality": "Accurate",
-            "misconceptionType": "none",
-            "rationale": "Correct response."
-          },
-          {
-            "key": "C",
-            "weight": 67,
-            "rule": "preclassified_response_quality",
-            "correctValue": false,
-            "responseQuality": "Partial",
-            "misconceptionType": "partial_problem_relation",
-            "rationale": "변화 과정은 찾았지만 그 과정을 시작하게 한 졸림보다 뒤 장면을 선택합니다."
-          },
-          {
-            "key": "D",
-            "weight": 0,
-            "rule": "preclassified_response_quality",
-            "correctValue": false,
-            "responseQuality": "Unrelated",
-            "misconceptionType": "no_problem_evidence",
-            "rationale": "변화의 결과를 변화의 시작으로 혼동합니다."
-          }
-        ]
-      }
+      ]
     },
     {
-      "qId": "OG0060_CORE4_Q03",
+      "qId": "OG0021_CORE4_Q03",
       "number": 3,
       "type": "scene_word_unscramble",
       "storyGrammar": "key_action",
       "instruction": "Put the words in order.",
-      "hint": "Look at what Pip does when his big change is complete.",
+      "hint": "Look at what Milo does before his colors come back.",
       "resources": {
         "images": [
           {
-            "id": "SC13",
-            "path": "OG0060_SC13_I.webp",
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
             "kind": "image",
-            "sceneId": "SC13"
+            "sceneId": "SC08"
           }
         ],
-        "scene": "SC13",
-        "sourceSentenceIds": [
-          "SC11_ST04_N",
-          "SC13_ST01_N",
-          "SC13_ST02_N"
-        ]
+        "scene": "SC08",
+        "sourceSentenceId": "SC08_ST03_N"
       },
       "interaction": {
         "promptMode": "word_unscramble",
         "items": [
-          "his bright orange wings.",
-          "flaps",
-          "Pip",
-          "and",
-          "comes out"
+          "his eyes.",
+          "a deep breath",
+          "He",
+          "closes",
+          "takes",
+          "and"
         ],
         "correct": [
-          "Pip",
-          "comes out",
+          "He",
+          "takes",
+          "a deep breath",
           "and",
-          "flaps",
-          "his bright orange wings."
+          "closes",
+          "his eyes."
+        ]
+      },
+      "scoring": {
+        "type": "ordered_lcs_response_quality",
+        "maxScore": 100,
+        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
+        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
+        "components": [
+          {
+            "key": "He",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 1,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "takes",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 2,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "a deep breath",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 3,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "and",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 4,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "closes",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 5,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          },
+          {
+            "key": "his eyes.",
+            "weight": 1,
+            "rule": "ordered_evidence",
+            "correctValue": 6,
+            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+          }
         ]
       },
       "diagnostics": [
@@ -782,16 +782,16 @@
       ],
       "lrs": {
         "verb": "answered",
-        "objectId": "quiz_OG0060_core4_Q03_key_action",
+        "objectId": "quiz_OG0021_core4_Q03_key_action",
         "resultFields": [
           "score_raw",
           "word_order",
           "hint_used",
           "evidence_raw",
-          "response_quality",
           "misconception_type",
           "skill_tags",
-          "recommended_action"
+          "recommended_action",
+          "response_quality"
         ]
       },
       "assessmentMetadata": {
@@ -860,7 +860,71 @@
           "recommendedActionKo": "해당 장면을 다시 읽고 인물과 행동어부터 찾습니다.",
           "studentFeedbackEn": "Look at the picture and build the action one part at a time."
         }
-      ],
+      ]
+    },
+    {
+      "qId": "OG0021_CORE4_Q04",
+      "number": 4,
+      "type": "story_sequence_drag",
+      "storyGrammar": "story_sequence",
+      "instruction": "Put the whole story in order.",
+      "hint": "Milo loses his color, looks for it, and finds it inside.",
+      "resources": {
+        "images": [
+          {
+            "id": "SC02",
+            "path": "OG0021_SC02_I.webp",
+            "kind": "image",
+            "sceneId": "SC02",
+            "caption": "Milo wakes up gray"
+          },
+          {
+            "id": "SC03",
+            "path": "OG0021_SC03_I.webp",
+            "kind": "image",
+            "sceneId": "SC03",
+            "caption": "Milo enters the forest"
+          },
+          {
+            "id": "SC06",
+            "path": "OG0021_SC06_I.webp",
+            "kind": "image",
+            "sceneId": "SC06",
+            "caption": "Milo feels sad"
+          },
+          {
+            "id": "SC08",
+            "path": "OG0021_SC08_I.webp",
+            "kind": "image",
+            "sceneId": "SC08",
+            "caption": "Milo understands"
+          },
+          {
+            "id": "SC10",
+            "path": "OG0021_SC10_I.webp",
+            "kind": "image",
+            "sceneId": "SC10",
+            "caption": "Milo returns home"
+          }
+        ]
+      },
+      "interaction": {
+        "promptMode": "drag_sequence",
+        "items": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ],
+        "correct": [
+          "SC02",
+          "SC03",
+          "SC06",
+          "SC08",
+          "SC10"
+        ]
+      },
       "scoring": {
         "type": "ordered_lcs_response_quality",
         "maxScore": 100,
@@ -868,125 +932,61 @@
         "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
         "components": [
           {
-            "key": "Pip",
+            "key": "SC02",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 1,
-            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
-            "key": "comes out",
+            "key": "SC03",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 2,
-            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
-            "key": "and",
+            "key": "SC06",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 3,
-            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
-            "key": "flaps",
+            "key": "SC08",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 4,
-            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           },
           {
-            "key": "his bright orange wings.",
+            "key": "SC10",
             "weight": 1,
             "rule": "ordered_evidence",
             "correctValue": 5,
-            "rationale": "Each word group contributes equally to evidence of the complete action sentence."
+            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
           }
-        ]
-      }
-    },
-    {
-      "qId": "OG0060_CORE4_Q04",
-      "number": 4,
-      "type": "story_sequence_drag",
-      "storyGrammar": "story_sequence",
-      "instruction": "Put the whole story in order.",
-      "hint": "Follow Pip from the egg to his big change.",
-      "resources": {
-        "images": [
-          {
-            "id": "SC01",
-            "path": "OG0060_SC01_I.webp",
-            "kind": "image",
-            "sceneId": "SC01",
-            "caption": "A small egg rests on a leaf"
-          },
-          {
-            "id": "SC02",
-            "path": "OG0060_SC02_I.webp",
-            "kind": "image",
-            "sceneId": "SC02",
-            "caption": "Pip comes out of the egg"
-          },
-          {
-            "id": "SC06",
-            "path": "OG0060_SC06_I.webp",
-            "kind": "image",
-            "sceneId": "SC06",
-            "caption": "Pip meets Dot"
-          },
-          {
-            "id": "SC10",
-            "path": "OG0060_SC10_I.webp",
-            "kind": "image",
-            "sceneId": "SC10",
-            "caption": "Pip makes a hard little house"
-          },
-          {
-            "id": "SC13",
-            "path": "OG0060_SC13_I.webp",
-            "kind": "image",
-            "sceneId": "SC13",
-            "caption": "Pip comes out with wings"
-          }
-        ]
-      },
-      "interaction": {
-        "promptMode": "drag_sequence",
-        "items": [
-          "SC01",
-          "SC02",
-          "SC06",
-          "SC10",
-          "SC13"
-        ],
-        "correct": [
-          "SC01",
-          "SC02",
-          "SC06",
-          "SC10",
-          "SC13"
         ]
       },
       "diagnostics": [
         {
           "code": "consequence_sequence_gap",
           "threshold": 67,
-          "messageKo": "Pip의 성장과 변화가 이어지는 순서를 다시 확인하는 연습이 필요합니다."
+          "messageKo": "사건의 흐름과 결과를 순서대로 다시 확인하는 연습이 필요합니다."
         }
       ],
       "lrs": {
         "verb": "answered",
-        "objectId": "quiz_OG0060_core4_Q04_story_sequence",
+        "objectId": "quiz_OG0021_core4_Q04_story_sequence",
         "resultFields": [
           "score_raw",
           "scene_order",
           "hint_used",
           "evidence_raw",
-          "response_quality",
           "misconception_type",
           "skill_tags",
-          "recommended_action"
+          "recommended_action",
+          "response_quality"
         ]
       },
       "assessmentMetadata": {
@@ -1055,92 +1055,9 @@
           "recommendedActionKo": "이야기를 다시 읽고 핵심 장면을 한 장씩 말한 뒤 재시도합니다.",
           "studentFeedbackEn": "Start with the first scene and follow the story one step at a time."
         }
-      ],
-      "scoring": {
-        "type": "ordered_lcs_response_quality",
-        "maxScore": 100,
-        "evidenceFormula": "evidence_raw = round(LCS(submitted_order, correct_order) / item_count * 100)",
-        "reportingFormula": "exact -> 100; LCS ratio >= .75 -> 67; LCS ratio >= .40 -> 33; otherwise -> 0",
-        "components": [
-          {
-            "key": "SC01",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 1,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          },
-          {
-            "key": "SC02",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 2,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          },
-          {
-            "key": "SC06",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 3,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          },
-          {
-            "key": "SC10",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 4,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          },
-          {
-            "key": "SC13",
-            "weight": 1,
-            "rule": "ordered_evidence",
-            "correctValue": 5,
-            "rationale": "All ordered elements contribute equally; no unvalidated positional premium."
-          }
-        ]
-      }
+      ]
     }
   ],
-  "generation": {
-    "provider": "codex",
-    "model": "manual-core-story-logic",
-    "promptVersion": "core_story_v1",
-    "createdAt": "2026-09-15",
-    "notes": "Four-question pilot derived from the existing v3 quiz. The original six-question quiz remains unchanged.",
-    "scoringRubricVersion": "diagnostic-response-quality-v2"
-  },
-  "assessmentFramework": {
-    "name": "Core Story Comprehension Check",
-    "version": "pilot-1.0",
-    "theoreticalBasis": "Story Grammar-informed; operationalized for a four-question, story-specific comprehension check.",
-    "areas": [
-      {
-        "key": "setting",
-        "labelEn": "Setting",
-        "labelKo": "배경"
-      },
-      {
-        "key": "key_situation",
-        "labelEn": "Key Situation",
-        "labelKo": "핵심 상황"
-      },
-      {
-        "key": "key_action",
-        "labelEn": "Key Action",
-        "labelKo": "핵심 행동"
-      },
-      {
-        "key": "story_sequence",
-        "labelEn": "Story Sequence",
-        "labelKo": "전체 흐름"
-      }
-    ],
-    "designAxes": [
-      "Story Area",
-      "Response Quality"
-    ],
-    "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score."
-  },
   "reporting": {
     "overallFormula": "Internal summary only: average the four ordered question scores.",
     "masteryBands": [
@@ -1192,6 +1109,46 @@
       "What to do next"
     ],
     "validationStatus": "provisional_criterion_referenced_rules_pending_student_data_review"
+  },
+  "generation": {
+    "provider": "codex",
+    "model": "manual-core-story-logic",
+    "promptVersion": "core_story_v1",
+    "createdAt": "2026-09-15",
+    "notes": "Four-question pilot derived from the existing v3 quiz. The original six-question quiz remains unchanged.",
+    "scoringRubricVersion": "diagnostic-response-quality-v2"
+  },
+  "assessmentFramework": {
+    "name": "Core Story Comprehension Check",
+    "version": "pilot-1.0",
+    "theoreticalBasis": "Story Grammar-informed; operationalized for a four-question, story-specific comprehension check.",
+    "areas": [
+      {
+        "key": "setting",
+        "labelEn": "Setting",
+        "labelKo": "배경"
+      },
+      {
+        "key": "key_situation",
+        "labelEn": "Key Situation",
+        "labelKo": "핵심 상황"
+      },
+      {
+        "key": "key_action",
+        "labelEn": "Key Action",
+        "labelKo": "핵심 행동"
+      },
+      {
+        "key": "story_sequence",
+        "labelEn": "Story Sequence",
+        "labelKo": "전체 흐름"
+      }
+    ],
+    "designAxes": [
+      "Story Area",
+      "Response Quality"
+    ],
+    "interpretationBoundary": "Results describe evidence from this story and these four tasks; they are not a Story Grammar proficiency score."
   },
   "productVersion": "story-v4.1",
   "versionLabel": "Story Quiz v4.1"

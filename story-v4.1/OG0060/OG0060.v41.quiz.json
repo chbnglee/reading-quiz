@@ -276,12 +276,12 @@
     ]
   },
   "assets": {
-    "imageBasePath": "Image/",
-    "audioBasePath": "Audio/",
-    "coverBasePath": "Cover/",
-    "backgroundImage": "Image/OG0060_Talking_BG_I.webp",
-    "coverImage": "Cover/OG0060_Cover_L_I.webp",
-    "hintCharacter": "Assets/BKTK_Characters_Bookey.png"
+    "imageBasePath": "../../v3/OG0060/Image/",
+    "audioBasePath": "../../v3/OG0060/Audio/",
+    "coverBasePath": "../../v3/OG0060/Cover/",
+    "backgroundImage": "../../v3/OG0060/Image/OG0060_Talking_BG_I.webp",
+    "coverImage": "../../v3/OG0060/Cover/OG0060_Cover_L_I.webp",
+    "hintCharacter": "../../v3/OG0060/Assets/BKTK_Characters_Bookey.png"
   },
   "storyGrammarAxes": [
     {
