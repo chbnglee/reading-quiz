@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "phonics-letter-recognition-v4.2",
+  "quiz": {
+    "id": "PH0001",
+    "title": "A–D Letter Check",
+    "version": "v4.2",
+    "questionCount": 4
+  },
+  "designPrinciple": "Focus only on visual letter identity, uppercase/lowercase correspondence, and heard letter-name recognition.",
+  "removedTypes": [
+    "Letter Order",
+    "multi-family completion",
+    "Letter Unscramble",
+    "Picture to Word"
+  ],
+  "questions": [
+    {
+      "number": 1,
+      "type": "Visual uppercase to uppercase",
+      "target": "A",
+      "correct": "A"
+    },
+    {
+      "number": 2,
+      "type": "Uppercase to lowercase",
+      "target": "B",
+      "correct": "b"
+    },
+    {
+      "number": 3,
+      "type": "Heard letter name to uppercase",
+      "target": "C",
+      "correct": "C"
+    },
+    {
+      "number": 4,
+      "type": "Heard letter name to lowercase",
+      "target": "D",
+      "correct": "d"
+    }
+  ]
+}

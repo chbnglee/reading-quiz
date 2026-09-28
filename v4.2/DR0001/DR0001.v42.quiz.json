@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "decodable-reader-v4.2",
+  "quizId": "DR0001",
+  "title": "Short i · Tim, Fish and Pig",
+  "version": "v4.2",
+  "questionCount": 4,
+  "sourceVersion": "v4.1",
+  "retainedQuestions": [
+    "Listen to Letter",
+    "Missing Letter",
+    "Listen to Picture",
+    "Listen to Word"
+  ],
+  "removedQuestions": [
+    "Picture and Word Match",
+    "Sentence Word Order"
+  ]
+}

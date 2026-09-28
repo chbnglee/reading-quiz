@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "decodable-reader-v4.2",
+  "quizId": "DR0002",
+  "title": "Can or Can't",
+  "version": "v4.2",
+  "questionCount": 4,
+  "sourceVersion": "v4.1",
+  "retainedQuestions": [
+    "Listen to Word",
+    "Listen to Picture",
+    "Complete the Sentence",
+    "Picture to Sentence"
+  ],
+  "removedQuestions": [
+    "Can or Can’t Grid",
+    "Letter Unscramble"
+  ]
+}
