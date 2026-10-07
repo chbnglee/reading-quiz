@@ -57,9 +57,9 @@ function buildPhonics() {
     'PH letter renderer'
   );
   html = replaceOnce(html, "if(q.type==='listenLetter')return s.selected===q.correct?100:0;", "if(q.type==='listenLetter'||q.type==='chooseLetter')return s.selected===q.correct?100:0;", 'PH scoring');
-  html = replaceOnce(html, '</style>', `.letter-cue{width:160px;height:160px;margin:0 auto 32px;padding:9px;border-radius:28px;background:#fff8dd;box-shadow:0 8px 20px rgba(58,54,91,.10)}
-.letter-image{display:grid;place-items:center;width:100%;height:100%;padding:5px}.letter-image img{display:block;max-width:100%;max-height:100%;object-fit:contain}.letter-option .letter-image{height:135px}
-@media(max-width:760px){.letter-cue{width:132px;height:132px;margin-bottom:24px}.letter-option .letter-image{height:120px}}
+  html = replaceOnce(html, '</style>', `.letter-cue{width:160px;height:160px;margin:0 auto 32px;padding:16px;border-radius:28px;background:#fff8dd;box-shadow:0 8px 20px rgba(58,54,91,.10);overflow:hidden}
+.letter-image{display:grid;place-items:center;width:100%;height:100%;padding:8px;overflow:hidden}.letter-image img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}.letter-cue .letter-image img{max-width:118px;max-height:118px}.letter-option{height:155px;min-height:155px;overflow:hidden;padding:14px}.letter-option .letter-image{height:121px;padding:7px}.letter-option .letter-image img{max-width:108px;max-height:105px}
+@media(max-width:760px){.letter-cue{width:132px;height:132px;margin-bottom:24px;padding:14px}.letter-cue .letter-image img{max-width:96px;max-height:96px}.letter-option{height:145px;min-height:145px;padding:12px}.letter-option .letter-image{height:115px}.letter-option .letter-image img{max-width:96px;max-height:94px}}
 </style>`, 'PH cue CSS');
 
   write('v4.2/PH0001/PH0001_PhonicsQuiz.html', html);
