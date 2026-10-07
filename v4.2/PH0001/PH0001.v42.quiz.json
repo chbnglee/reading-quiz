@@ -6,7 +6,7 @@
     "version": "v4.2",
     "questionCount": 4
   },
-  "designPrinciple": "Focus only on visual letter identity, uppercase/lowercase correspondence, and heard letter-name recognition.",
+  "designPrinciple": "Focus on visual letter identity, uppercase/lowercase correspondence, heard letter-name recognition, and a recorded word-to-picture match.",
   "removedTypes": [
     "Letter Order",
     "multi-family completion",
@@ -39,10 +39,16 @@
     },
     {
       "number": 4,
-      "type": "Heard letter name to lowercase image",
-      "target": "d",
-      "optionVariant": "v1",
-      "correct": "d"
+      "type": "Recorded word to picture",
+      "target": "duck",
+      "audio": "Audio/ABC001_SC08_ST01_N_A.mp3",
+      "options": [
+        "apple",
+        "ball",
+        "cat",
+        "duck"
+      ],
+      "correct": "duck"
     }
   ]
 }
