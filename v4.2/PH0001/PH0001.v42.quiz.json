@@ -16,26 +16,32 @@
   "questions": [
     {
       "number": 1,
-      "type": "Visual uppercase to uppercase",
-      "target": "A",
-      "correct": "A"
+      "type": "Uppercase cue to lowercase choice",
+      "target": "A/a",
+      "cueVariant": "v2",
+      "optionVariant": "v1",
+      "correct": "a"
     },
     {
       "number": 2,
-      "type": "Uppercase to lowercase",
-      "target": "B",
-      "correct": "b"
+      "type": "Lowercase cue to uppercase choice",
+      "target": "d/D",
+      "cueVariant": "v2",
+      "optionVariant": "v1",
+      "correct": "D"
     },
     {
       "number": 3,
-      "type": "Heard letter name to uppercase",
+      "type": "Heard letter name to uppercase image",
       "target": "C",
+      "optionVariant": "v2",
       "correct": "C"
     },
     {
       "number": 4,
-      "type": "Heard letter name to lowercase",
-      "target": "D",
+      "type": "Heard letter name to lowercase image",
+      "target": "d",
+      "optionVariant": "v2",
       "correct": "d"
     }
   ]

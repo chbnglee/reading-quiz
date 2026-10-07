@@ -21,10 +21,10 @@ function replaceOnce(text, before, after, label) {
 function buildPhonics() {
   let html = read('v4/PH0001/PH0001_PhonicsQuiz.html');
   const questions = `const QUIZ=[
- {focus:'Same big letter',type:'chooseLetter',instruction:'Choose the same letter.',hint:'Look at A. Find the other A.',cue:'A',correct:'A',options:['C','A','D','B']},
- {focus:'Big and little letters',type:'chooseLetter',instruction:'Choose the little letter.',hint:'Big B and little b are the same letter.',cue:'B',correct:'b',options:['d','b','a','c']},
- {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',correct:'C',options:['A','D','C','B']},
- {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the little letter you hear.',hint:'Listen again. Find little d.',speech:'D.',correct:'d',options:['b','a','d','c']}
+ {focus:'Big to little letter',type:'chooseLetter',instruction:'Choose the little letter.',hint:'Look at big A. Find little a.',cue:'A',cueCase:'upper',cueVariant:'v2',optionCase:'lower',optionVariant:'v1',correct:'a',options:['c','a','d','b']},
+ {focus:'Little to big letter',type:'chooseLetter',instruction:'Choose the big letter.',hint:'Look at little d. Find big D.',cue:'d',cueCase:'lower',cueVariant:'v2',optionCase:'upper',optionVariant:'v1',correct:'D',options:['B','A','D','C']},
+ {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',optionCase:'upper',optionVariant:'v2',correct:'C',options:['A','D','C','B']},
+ {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find little d.',speech:'D.',optionCase:'lower',optionVariant:'v2',correct:'d',options:['b','a','d','c']}
 ];`;
 
   html = html.replace(/const QUIZ=\[[\s\S]*?\n\];\nlet current=/, `${questions}\nlet current=`);
@@ -40,6 +40,12 @@ function buildPhonics() {
   html = replaceOnce(html, "const SPRITE='Image/PH0001_phonics_sprite.png';", "const SPRITE='../../v4/PH0001/Image/PH0001_phonics_sprite.png';", 'PH sprite');
   html = replaceOnce(
     html,
+    'function startQuiz(){',
+    `function letterImage(letter,caseName,variant,label=\`Letter \${letter}\`){const upper=caseName==='upper',glyph=upper?letter.toUpperCase():letter.toLowerCase(),code=upper?'uc':'lc',src=\`Letters/\${caseName}_\${variant}/Alphabet_\${code}_\${variant}_\${glyph}.png\`;return \`<span class="letter-image" role="img" aria-label="\${label}"><img src="\${src}" alt="" draggable="false"></span>\`}\nfunction startQuiz(){`,
+    'PH letter image helper'
+  );
+  html = replaceOnce(
+    html,
     "function renderActivity(q){const a=document.getElementById('activity');if(q.type==='sequence')renderSequence(q,a);else if(q.type==='familyMatch')renderFamilyMatch(q,a);else if(q.type==='listenImage')renderListenImage(q,a);else if(q.type==='letters')renderLetters(q,a);else if(q.type==='imageWord')renderImageWord(q,a);else renderListenLetter(q,a)}",
     "function renderActivity(q){const a=document.getElementById('activity');if(q.type==='chooseLetter')renderChooseLetter(q,a);else renderListenLetter(q,a)}",
     'PH renderer switch'
@@ -47,13 +53,13 @@ function buildPhonics() {
   html = replaceOnce(
     html,
     "function renderListenLetter(q,a){const s=states[current];a.innerHTML=`<div class=\"listen-row\"><button type=\"button\" class=\"speaker\" onclick=\"speak('${q.speech.replace(/'/g,\"\\\\'\")}')\" aria-label=\"Play the letter audio\">🔊</button></div><div class=\"letter-options\">${q.options.map(o=>`<button type=\"button\" class=\"letter-option ${s.selected===o?'selected':''}\" ${locked?'disabled':''} onclick=\"choose('${o}')\">${letterArt(o,null,`Letter ${o}`)}</button>`).join('')}</div>`}",
-    "function renderChooseLetter(q,a){const s=states[current];a.innerHTML=`<div class=\"letter-cue\">${letterArt(q.cue,null,`Look at letter ${q.cue}`)}</div><div class=\"letter-options\">${q.options.map(o=>`<button type=\"button\" class=\"letter-option ${s.selected===o?'selected':''}\" ${locked?'disabled':''} onclick=\"choose('${o}')\">${letterArt(o,null,`Letter ${o}`)}</button>`).join('')}</div>`}\nfunction renderListenLetter(q,a){const s=states[current];a.innerHTML=`<div class=\"listen-row\"><button type=\"button\" class=\"speaker\" onclick=\"speak('${q.speech.replace(/'/g,\"\\\\'\")}')\" aria-label=\"Play the letter audio\">🔊</button></div><div class=\"letter-options\">${q.options.map(o=>`<button type=\"button\" class=\"letter-option ${s.selected===o?'selected':''}\" ${locked?'disabled':''} onclick=\"choose('${o}')\">${letterArt(o,null,`Letter ${o}`)}</button>`).join('')}</div>`}",
+    "function renderChooseLetter(q,a){const s=states[current];a.innerHTML=`<div class=\"letter-cue\">${letterImage(q.cue,q.cueCase,q.cueVariant,`Look at letter ${q.cue}`)}</div><div class=\"letter-options\">${q.options.map(o=>`<button type=\"button\" class=\"letter-option ${s.selected===o?'selected':''}\" ${locked?'disabled':''} onclick=\"choose('${o}')\">${letterImage(o,q.optionCase,q.optionVariant,`Letter ${o}`)}</button>`).join('')}</div>`}\nfunction renderListenLetter(q,a){const s=states[current];a.innerHTML=`<div class=\"listen-row\"><button type=\"button\" class=\"speaker\" onclick=\"speak('${q.speech.replace(/'/g,\"\\\\'\")}')\" aria-label=\"Play the letter audio\">🔊</button></div><div class=\"letter-options\">${q.options.map(o=>`<button type=\"button\" class=\"letter-option ${s.selected===o?'selected':''}\" ${locked?'disabled':''} onclick=\"choose('${o}')\">${letterImage(o,q.optionCase,q.optionVariant,`Letter ${o}`)}</button>`).join('')}</div>`}",
     'PH letter renderer'
   );
   html = replaceOnce(html, "if(q.type==='listenLetter')return s.selected===q.correct?100:0;", "if(q.type==='listenLetter'||q.type==='chooseLetter')return s.selected===q.correct?100:0;", 'PH scoring');
-  html = replaceOnce(html, '</style>', `.letter-cue{width:160px;margin:0 auto 32px;padding:10px;border-radius:28px;background:#fff8dd;box-shadow:0 8px 20px rgba(58,54,91,.10)}
-.letter-cue .letter-art{aspect-ratio:1}.letter-cue .letter-main{font-size:100px}
-@media(max-width:760px){.letter-cue{width:132px;margin-bottom:24px}.letter-cue .letter-main{font-size:82px}}
+  html = replaceOnce(html, '</style>', `.letter-cue{width:160px;height:160px;margin:0 auto 32px;padding:9px;border-radius:28px;background:#fff8dd;box-shadow:0 8px 20px rgba(58,54,91,.10)}
+.letter-image{display:grid;place-items:center;width:100%;height:100%;padding:5px}.letter-image img{display:block;max-width:100%;max-height:100%;object-fit:contain}.letter-option .letter-image{height:135px}
+@media(max-width:760px){.letter-cue{width:132px;height:132px;margin-bottom:24px}.letter-option .letter-image{height:120px}}
 </style>`, 'PH cue CSS');
 
   write('v4.2/PH0001/PH0001_PhonicsQuiz.html', html);
@@ -63,10 +69,10 @@ function buildPhonics() {
     designPrinciple: 'Focus only on visual letter identity, uppercase/lowercase correspondence, and heard letter-name recognition.',
     removedTypes: ['Letter Order', 'multi-family completion', 'Letter Unscramble', 'Picture to Word'],
     questions: [
-      { number: 1, type: 'Visual uppercase to uppercase', target: 'A', correct: 'A' },
-      { number: 2, type: 'Uppercase to lowercase', target: 'B', correct: 'b' },
-      { number: 3, type: 'Heard letter name to uppercase', target: 'C', correct: 'C' },
-      { number: 4, type: 'Heard letter name to lowercase', target: 'D', correct: 'd' }
+      { number: 1, type: 'Uppercase cue to lowercase choice', target: 'A/a', cueVariant: 'v2', optionVariant: 'v1', correct: 'a' },
+      { number: 2, type: 'Lowercase cue to uppercase choice', target: 'd/D', cueVariant: 'v2', optionVariant: 'v1', correct: 'D' },
+      { number: 3, type: 'Heard letter name to uppercase image', target: 'C', optionVariant: 'v2', correct: 'C' },
+      { number: 4, type: 'Heard letter name to lowercase image', target: 'd', optionVariant: 'v2', correct: 'd' }
     ]
   }, null, 2)}\n`);
 }
