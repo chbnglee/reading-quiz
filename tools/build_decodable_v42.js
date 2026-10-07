@@ -23,8 +23,8 @@ function buildPhonics() {
   const questions = `const QUIZ=[
  {focus:'Big to little letter',type:'chooseLetter',instruction:'Choose the little letter.',hint:'Look at big A. Find little a.',cue:'A',cueCase:'upper',cueVariant:'v2',optionCase:'lower',optionVariant:'v1',correct:'a',options:['c','a','d','b']},
  {focus:'Little to big letter',type:'chooseLetter',instruction:'Choose the big letter.',hint:'Look at little d. Find big D.',cue:'d',cueCase:'lower',cueVariant:'v2',optionCase:'upper',optionVariant:'v1',correct:'D',options:['B','A','D','C']},
- {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',optionCase:'upper',optionVariant:'v2',correct:'C',options:['A','D','C','B']},
- {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find little d.',speech:'D.',optionCase:'lower',optionVariant:'v2',correct:'d',options:['b','a','d','c']}
+ {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',optionCase:'upper',optionVariant:'v1',correct:'C',options:['A','D','C','B']},
+ {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find little d.',speech:'D.',optionCase:'lower',optionVariant:'v1',correct:'d',options:['b','a','d','c']}
 ];`;
 
   html = html.replace(/const QUIZ=\[[\s\S]*?\n\];\nlet current=/, `${questions}\nlet current=`);
@@ -71,8 +71,8 @@ function buildPhonics() {
     questions: [
       { number: 1, type: 'Uppercase cue to lowercase choice', target: 'A/a', cueVariant: 'v2', optionVariant: 'v1', correct: 'a' },
       { number: 2, type: 'Lowercase cue to uppercase choice', target: 'd/D', cueVariant: 'v2', optionVariant: 'v1', correct: 'D' },
-      { number: 3, type: 'Heard letter name to uppercase image', target: 'C', optionVariant: 'v2', correct: 'C' },
-      { number: 4, type: 'Heard letter name to lowercase image', target: 'd', optionVariant: 'v2', correct: 'd' }
+      { number: 3, type: 'Heard letter name to uppercase image', target: 'C', optionVariant: 'v1', correct: 'C' },
+      { number: 4, type: 'Heard letter name to lowercase image', target: 'd', optionVariant: 'v1', correct: 'd' }
     ]
   }, null, 2)}\n`);
 }

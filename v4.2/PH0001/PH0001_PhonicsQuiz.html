@@ -104,8 +104,8 @@ const SPRITES={apple:0,ant:1,bag:2,ball:3,cat:4,cup:5,dog:6,duck:7};
 const QUIZ=[
  {focus:'Big to little letter',type:'chooseLetter',instruction:'Choose the little letter.',hint:'Look at big A. Find little a.',cue:'A',cueCase:'upper',cueVariant:'v2',optionCase:'lower',optionVariant:'v1',correct:'a',options:['c','a','d','b']},
  {focus:'Little to big letter',type:'chooseLetter',instruction:'Choose the big letter.',hint:'Look at little d. Find big D.',cue:'d',cueCase:'lower',cueVariant:'v2',optionCase:'upper',optionVariant:'v1',correct:'D',options:['B','A','D','C']},
- {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',optionCase:'upper',optionVariant:'v2',correct:'C',options:['A','D','C','B']},
- {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find little d.',speech:'D.',optionCase:'lower',optionVariant:'v2',correct:'d',options:['b','a','d','c']}
+ {focus:'Listen for a big letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find big C.',speech:'C.',optionCase:'upper',optionVariant:'v1',correct:'C',options:['A','D','C','B']},
+ {focus:'Listen for a little letter',type:'listenLetter',instruction:'Choose the letter you hear.',hint:'Listen again. Find little d.',speech:'D.',optionCase:'lower',optionVariant:'v1',correct:'d',options:['b','a','d','c']}
 ];
 let current=0,maxReached=0,scores=Array(QUIZ.length).fill(null),states=[],locked=false,dragPayload=null;
 

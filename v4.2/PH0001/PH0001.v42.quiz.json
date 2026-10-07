@@ -34,14 +34,14 @@
       "number": 3,
       "type": "Heard letter name to uppercase image",
       "target": "C",
-      "optionVariant": "v2",
+      "optionVariant": "v1",
       "correct": "C"
     },
     {
       "number": 4,
       "type": "Heard letter name to lowercase image",
       "target": "d",
-      "optionVariant": "v2",
+      "optionVariant": "v1",
       "correct": "d"
     }
   ]
