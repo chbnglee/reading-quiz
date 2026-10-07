@@ -90,6 +90,8 @@ function buildReader(id, settings) {
   html = html.replace(/audio:'\.\.\/audio\//g, "audio:'../../v4.1/audio/");
   html = html.replace(/questions:\[[\s\S]*?\n \]\n};/, `questions:[\n${settings.questions.join(',\n')}\n ]\n};`);
   html = html.replace(settings.oldCoverCopy, settings.coverCopy);
+  if (settings.configHeader) html = html.replace(/ id:'DR0001'.*\n/, `${settings.configHeader}\n`);
+  if (settings.prototypeNote) html = html.replace(/<p class="prototype-note">.*?<\/p>/, `<p class="prototype-note">${settings.prototypeNote}</p>`);
   html = html.replace(/<title>(.*?)<\/title>/, `<title>${settings.title}</title>`);
   write(`v4.2/${id}/${id}_ReadingQuiz.html`, html);
   write(`v4.2/${id}/${id}.v42.quiz.json`, `${JSON.stringify({
@@ -107,17 +109,19 @@ function buildReader(id, settings) {
 buildPhonics();
 
 buildReader('DR0001', {
-  title: 'DR0001 · Short i · Tim, Fish and Pig · v4.2',
-  jsonTitle: 'Short i · Tim, Fish and Pig',
+  title: 'DR0001 · Short e · Hen, Red, Pen and Bed · v4.2',
+  jsonTitle: 'Short e · Hen, Red, Pen and Bed',
   oldCoverCopy: 'Listen for short i, match pictures with words, and complete short-i words.',
-  coverCopy: 'Listen for short i, complete a word, and choose the picture or word you hear.',
+  coverCopy: 'Listen for short e, complete a word, and choose the picture or word you hear.',
+  configHeader: " id:'DR0001',title:'Short e',subtitle:'Hen, Red, Pen and Bed',coverCopy:'Listen for short e, complete a word, and choose the picture or word you hear.',sprite:'../../v4.1/DR0001/Image/DR0001_story_sprite.png',coverImages:[{image:'Words/hen.png',label:'hen'},{image:'Words/red.png',label:'red'},{image:'Words/pen.png',label:'pen'},{image:'Words/bed.png',label:'bed'}],letterImageBase:'../PH0001/Letters/lower_v1',",
+  prototypeNote: 'The short-e target uses a reviewed IPA [ɛ] audio sample. Word items use the browser’s English voice.',
   retainedQuestions: ['Listen to Letter', 'Missing Letter', 'Listen to Picture', 'Listen to Word'],
   removedQuestions: ['Picture and Word Match', 'Sentence Word Order'],
   questions: [
-    "  {focus:'Listen for a vowel',type:'listenLetter',instruction:'Choose the sound you hear.',hint:'Listen for short i, as in pig.',speech:'short i',audio:'../../v4.1/audio/short-i.ogg',maxAudioDuration:.3,balancedSpeaker:true,correct:'i',options:['a','e','i','o']}",
-    "  {focus:'Missing vowel',type:'missingLetter',instruction:'Choose the missing letter.',hint:'Pig has the short i sound.',picture:3,pictureLabel:'pig',accessibleWord:'p blank g',before:'p',after:'g',correct:'i',options:['a','e','i','u']}",
-    "  {focus:'Listen and choose',type:'listenImage',instruction:'Choose the picture you hear.',hint:'Listen for both words: six fish.',speech:'six fish',options:[{id:'tim',sprite:0,label:'Tim',score:0},{id:'sixFish',sprite:2,label:'six fish',score:100},{id:'pig',sprite:3,label:'pig',score:0},{id:'mouth',sprite:5,label:'pig opens its mouth',score:0}]}",
-    "  {focus:'Listen for short i',type:'listenWord',instruction:'Choose the word you hear.',hint:'Listen for the short i sound in pig.',speech:'pig',balancedSpeaker:true,correct:'pig',options:['peg','pig','pug','big']}"
+    "  {focus:'Listen for a vowel',type:'listenLetter',instruction:'Choose the sound you hear.',hint:'Listen for short e, as in hen.',speech:'short e',audio:'Audio/short-e.ogg',maxAudioDuration:.35,balancedSpeaker:true,letterImages:true,correct:'e',options:['a','e','i','o']}",
+    "  {focus:'Missing vowel',type:'missingLetter',instruction:'Choose the missing letter.',hint:'Hen has the short e sound.',image:'Words/hen.png',pictureLabel:'hen',accessibleWord:'h blank n',before:'h',after:'n',letterImages:true,correct:'e',options:['a','e','i','u']}",
+    "  {focus:'Listen and choose',type:'listenImage',instruction:'Choose the picture you hear.',hint:'Listen for the word pen.',speech:'pen',balancedSpeaker:true,options:[{id:'hen',image:'Words/hen.png',label:'hen',score:0},{id:'bed',image:'Words/bed.png',label:'bed',score:0},{id:'pen',image:'Words/pen.png',label:'pen',score:100},{id:'red',image:'Words/red.png',label:'red',score:0}]}",
+    "  {focus:'Listen for short e',type:'listenWord',instruction:'Choose the word you hear.',hint:'Listen for the short e sound in bed.',speech:'bed',balancedSpeaker:true,correct:'bed',options:['bad','bed','bid','bud']}"
   ]
 });
 
